@@ -52,6 +52,55 @@ app.post('/api/auth/login', async (req, res) => {
   }
 });
 
+// Client Self-Registration / Create Account
+app.post('/api/auth/register', async (req, res) => {
+  try {
+    const { name, company, email, password, phone } = req.body;
+    if (!name || !company || !email || !password) {
+      return res.status(400).json({ error: 'Name, company name, email, and password are required.' });
+    }
+
+    const cleanEmail = email.trim().toLowerCase();
+    const data = await db.getAllData();
+    const existing = (data.clients || []).find(c => (c.email && c.email.toLowerCase() === cleanEmail));
+    if (existing) {
+      return res.status(400).json({ error: 'An account with this email already exists. Please sign in.' });
+    }
+
+    const tokenSlug = (company.toLowerCase().replace(/[^a-z0-9]/g, '-') + '-portal').trim();
+    const newClient = {
+      id: `client-${Date.now()}`,
+      name: name.trim(),
+      company: company.trim(),
+      email: cleanEmail,
+      phone: (phone || '').trim(),
+      password: password.trim(),
+      portalToken: tokenSlug,
+      avatar: `https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80`,
+      createdAt: new Date().toISOString()
+    };
+
+    const saved = await db.addClient(newClient);
+    const token = crypto.randomBytes(32).toString('hex');
+
+    res.status(201).json({
+      success: true,
+      user: {
+        type: 'client',
+        id: saved.id,
+        name: saved.name,
+        company: saved.company,
+        email: saved.email,
+        portalToken: saved.portalToken,
+        role: 'Client'
+      },
+      token
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Wipes demo data and resets to fresh state
 app.post('/api/auth/reset-data', async (req, res) => {
   try {

@@ -1758,8 +1758,9 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px 16px;
+  padding: 32px 16px;
   background-color: var(--bg-main);
+  background-image: radial-gradient(circle at 50% 25%, var(--accent-glow), transparent 55%);
   position: relative;
   z-index: 1;
 }
@@ -1768,19 +1769,20 @@ html, body {
   background: var(--bg-surface);
   border: 1px solid var(--border-hover);
   border-radius: var(--radius-xl);
-  padding: 36px 32px;
+  padding: 40px 36px;
   width: 100%;
-  max-width: 440px;
-  box-shadow: var(--shadow-lg);
+  max-width: 480px;
+  box-shadow: var(--shadow-lg), 0 0 32px rgba(0, 0, 0, 0.25);
   display: flex;
   flex-direction: column;
   position: relative;
-  animation: fadeIn 0.3s ease;
+  animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  backdrop-filter: blur(12px);
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(10px) scale(0.99); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .signin-header {
@@ -1791,72 +1793,39 @@ html, body {
 .signin-logo-badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 800;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   color: var(--accent-primary);
   background: var(--normal-bg);
   border: 1px solid var(--normal-border);
-  padding: 4px 12px;
+  padding: 5px 14px;
   border-radius: var(--radius-full);
-  margin-bottom: 12px;
+  margin-bottom: 14px;
 }
 
 .signin-dot {
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   background: var(--accent-primary);
-  box-shadow: 0 0 8px var(--accent-glow);
+  box-shadow: 0 0 10px var(--accent-glow);
 }
 
 .signin-header h2 {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 800;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.025em;
   color: var(--text-primary);
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 }
 
 .signin-header p {
-  font-size: 12px;
-  color: var(--text-muted);
-}
-
-.signin-tabs {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 6px;
-  background: var(--bg-surface-elevated);
-  padding: 4px;
-  border-radius: var(--radius-md);
-  margin-bottom: 22px;
-  border: 1px solid var(--border-subtle);
-}
-
-.signin-tab {
-  padding: 9px;
   font-size: 13px;
-  font-weight: 700;
-  border: none;
-  background: transparent;
   color: var(--text-secondary);
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  text-align: center;
-}
-
-.signin-tab:hover {
-  color: var(--text-primary);
-}
-
-.signin-tab.active {
-  background: var(--bg-surface);
-  color: var(--text-primary);
-  box-shadow: var(--shadow-sm);
+  line-height: 1.5;
 }
 
 .signin-error-banner {
@@ -1865,10 +1834,11 @@ html, body {
   color: var(--critical-text);
   font-size: 12px;
   font-weight: 600;
-  padding: 10px 14px;
+  padding: 11px 14px;
   border-radius: var(--radius-md);
-  margin-bottom: 18px;
+  margin-bottom: 20px;
   text-align: center;
+  animation: fadeIn 0.2s ease;
 }
 
 .signin-form {
@@ -1885,45 +1855,41 @@ html, body {
   font-weight: 700;
   cursor: pointer;
   padding: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.signin-show-pw-btn:hover {
+  opacity: 0.8;
 }
 
 .signin-submit-btn {
   width: 100%;
-  min-height: 44px;
-  margin-top: 6px;
+  min-height: 46px;
+  margin-top: 8px;
   font-size: 14px;
+  font-weight: 700;
+  box-shadow: 0 4px 14px var(--accent-glow);
 }
 
 .signin-footer {
   margin-top: 24px;
-  padding-top: 18px;
+  padding-top: 20px;
   border-top: 1px solid var(--border-subtle);
   text-align: center;
 }
 
-.signin-hint-box {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  align-items: center;
-  font-size: 11px;
-  color: var(--text-muted);
+.signin-mode-link:hover {
+  color: var(--accent-hover) !important;
 }
 
-.signin-hint-box code {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--accent-primary);
-  background: var(--bg-surface-elevated);
-  border: 1px solid var(--border-subtle);
-  padding: 3px 8px;
-  border-radius: var(--radius-sm);
-}
-
-@media (max-width: 480px) {
+@media (max-width: 520px) {
   .signin-card {
-    padding: 24px 20px;
+    padding: 28px 20px;
     border-radius: var(--radius-lg);
+  }
+
+  .signin-form div[style*="gridTemplateColumns"] {
+    grid-template-columns: 1fr !important;
   }
 }
 

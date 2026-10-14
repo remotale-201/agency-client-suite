@@ -131,6 +131,20 @@ export default function App() {
     }
   };
 
+  const handleRegister = async (clientData) => {
+    const res = await api.register(clientData);
+    if (res && res.user) {
+      setAuthUser(res.user);
+      localStorage.setItem('byteforge_auth_user', JSON.stringify(res.user));
+      setCurrentPersona({ type: 'client', id: res.user.id });
+      setActiveTab('client-projects');
+      setSelectedProject(null);
+      showToast(`Account created! Welcome, ${res.user.name || res.user.company}`);
+      loadData();
+      return res.user;
+    }
+  };
+
   const handleLogout = () => {
     localStorage.removeItem('byteforge_auth_user');
     setAuthUser(null);
@@ -314,7 +328,11 @@ export default function App() {
             {theme === 'dark' ? 'Neon Dark' : 'Light Mode'}
           </button>
         </div>
-        <SignIn onLogin={handleLogin} initialPortalToken={portalParam} />
+        <SignIn 
+          onLogin={handleLogin} 
+          onRegister={handleRegister}
+          initialPortalToken={portalParam} 
+        />
       </div>
     );
   }

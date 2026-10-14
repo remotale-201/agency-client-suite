@@ -31,6 +31,11 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ identifier, password })
     }),
+  register: (clientData) =>
+    request('/api/auth/register', {
+      method: 'POST',
+      body: JSON.stringify(clientData)
+    }),
   resetData: () => request('/api/auth/reset-data', { method: 'POST' }),
 
   // Stats

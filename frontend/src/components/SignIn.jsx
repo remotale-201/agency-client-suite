@@ -1,31 +1,33 @@
 import React, { useState } from 'react';
 
-export default function SignIn({ onLogin, initialPortalToken }) {
-  const [activeTab, setActiveTab] = useState(initialPortalToken ? 'client' : 'admin');
-  const [identifier, setIdentifier] = useState(
-    initialPortalToken || (activeTab === 'admin' ? 'byteforgeofficial.store@gmail.com' : '')
-  );
-  const [password, setPassword] = useState(activeTab === 'admin' ? 'Agbs1222' : '');
+export default function SignIn({ onLogin, onRegister, initialPortalToken }) {
+  const [mode, setMode] = useState('signin'); // 'signin' or 'register'
+  
+  // Sign In state
+  const [identifier, setIdentifier] = useState(initialPortalToken || '');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+
+  // Register state
+  const [regName, setRegName] = useState('');
+  const [regCompany, setRegCompany] = useState('');
+  const [regEmail, setRegEmail] = useState('');
+  const [regPassword, setRegPassword] = useState('');
+  const [regConfirmPassword, setRegConfirmPassword] = useState('');
+  const [showRegPassword, setShowRegPassword] = useState(false);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const handleTabSwitch = (tab) => {
-    setActiveTab(tab);
+  const handleSwitchMode = (newMode) => {
+    setMode(newMode);
     setError('');
-    if (tab === 'admin') {
-      setIdentifier('byteforgeofficial.store@gmail.com');
-      setPassword('Agbs1222');
-    } else {
-      setIdentifier(initialPortalToken || '');
-      setPassword('');
-    }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSignInSubmit = async (e) => {
     e.preventDefault();
     if (!identifier.trim() || !password) {
-      setError('Please provide your login ID and password.');
+      setError('Please provide your email address and password.');
       return;
     }
 
@@ -41,6 +43,42 @@ export default function SignIn({ onLogin, initialPortalToken }) {
     }
   };
 
+  const handleRegisterSubmit = async (e) => {
+    e.preventDefault();
+    if (!regName.trim() || !regCompany.trim() || !regEmail.trim() || !regPassword) {
+      setError('Please fill in all required fields.');
+      return;
+    }
+
+    if (regPassword !== regConfirmPassword) {
+      setError('Passwords do not match. Please re-enter your password.');
+      return;
+    }
+
+    if (regPassword.length < 6) {
+      setError('Password must be at least 6 characters long.');
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+
+    try {
+      if (onRegister) {
+        await onRegister({
+          name: regName.trim(),
+          company: regCompany.trim(),
+          email: regEmail.trim(),
+          password: regPassword.trim()
+        });
+      }
+    } catch (err) {
+      setError(err.message || 'Registration failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="signin-page-wrapper">
       <div className="signin-card">
@@ -50,97 +88,199 @@ export default function SignIn({ onLogin, initialPortalToken }) {
             <span className="signin-dot"></span>
             BYTEFORGE STUDIO
           </div>
-          <h2>Agency OS & Client Suite</h2>
+          <h2>{mode === 'signin' ? 'Welcome Back' : 'Create Client Portal'}</h2>
           <p>
-            {activeTab === 'admin' 
-              ? 'Authorized Owner & Executive Master Control' 
-              : 'Dedicated Client Workspace & Project Revisions'}
+            {mode === 'signin' 
+              ? 'Enter your credentials to access your workspace' 
+              : 'Set up your company workspace to manage deliverables & revisions'}
           </p>
-        </div>
-
-        {/* Portal Switcher Tabs */}
-        <div className="signin-tabs">
-          <button
-            type="button"
-            className={`signin-tab ${activeTab === 'admin' ? 'active' : ''}`}
-            onClick={() => handleTabSwitch('admin')}
-          >
-            Admin Portal
-          </button>
-          <button
-            type="button"
-            className={`signin-tab ${activeTab === 'client' ? 'active' : ''}`}
-            onClick={() => handleTabSwitch('client')}
-          >
-            Client Portal
-          </button>
         </div>
 
         {/* Error Banner */}
         {error && (
-          <div className="signin-error-banner">
+          <div className="signin-error-banner" role="alert">
             <span>{error}</span>
           </div>
         )}
 
-        {/* Login Form */}
-        <form onSubmit={handleSubmit} className="signin-form">
-          <div className="form-group">
-            <label className="form-label">
-              {activeTab === 'admin' ? 'Administrator Email' : 'Client Email or Portal ID'}
-            </label>
-            <input
-              type={activeTab === 'admin' ? 'email' : 'text'}
-              className="form-input"
-              placeholder={activeTab === 'admin' ? 'byteforgeofficial.store@gmail.com' : 'e.g., client@company.com or acme-portal'}
-              value={identifier}
-              onChange={(e) => setIdentifier(e.target.value)}
-              required
-              autoFocus
-            />
-          </div>
+        {/* Sign In Form */}
+        {mode === 'signin' ? (
+          <form onSubmit={handleSignInSubmit} className="signin-form">
+            <div className="form-group">
+              <label className="form-label">Email or Portal ID</label>
+              <input
+                type="text"
+                className="form-input"
+                placeholder="name@company.com or portal-id"
+                value={identifier}
+                onChange={(e) => setIdentifier(e.target.value)}
+                required
+                autoFocus
+                autoComplete="username"
+              />
+            </div>
 
-          <div className="form-group">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <label className="form-label">Password</label>
+            <div className="form-group">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <label className="form-label">Password</label>
+                <button
+                  type="button"
+                  className="signin-show-pw-btn"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? 'Hide' : 'Show'}
+                </button>
+              </div>
+              <input
+                type={showPassword ? 'text' : 'password'}
+                className="form-input"
+                placeholder="Enter your password..."
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                autoComplete="current-password"
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="btn btn-primary signin-submit-btn"
+              disabled={loading}
+            >
+              {loading ? 'Authenticating...' : 'Sign In →'}
+            </button>
+          </form>
+        ) : (
+          /* Register / Create Account Form */
+          <form onSubmit={handleRegisterSubmit} className="signin-form">
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <div className="form-group">
+                <label className="form-label">Full Name *</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  placeholder="e.g., Alex Vance"
+                  value={regName}
+                  onChange={(e) => setRegName(e.target.value)}
+                  required
+                  autoFocus
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Company / Brand *</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  placeholder="e.g., Acme Labs"
+                  value={regCompany}
+                  onChange={(e) => setRegCompany(e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Work Email *</label>
+              <input
+                type="email"
+                className="form-input"
+                placeholder="alex@company.com"
+                value={regEmail}
+                onChange={(e) => setRegEmail(e.target.value)}
+                required
+                autoComplete="email"
+              />
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <div className="form-group">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <label className="form-label">Password *</label>
+                  <button
+                    type="button"
+                    className="signin-show-pw-btn"
+                    onClick={() => setShowRegPassword(!showRegPassword)}
+                  >
+                    {showRegPassword ? 'Hide' : 'Show'}
+                  </button>
+                </div>
+                <input
+                  type={showRegPassword ? 'text' : 'password'}
+                  className="form-input"
+                  placeholder="Min 6 characters"
+                  value={regPassword}
+                  onChange={(e) => setRegPassword(e.target.value)}
+                  required
+                  autoComplete="new-password"
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Confirm Password *</label>
+                <input
+                  type={showRegPassword ? 'text' : 'password'}
+                  className="form-input"
+                  placeholder="Confirm password"
+                  value={regConfirmPassword}
+                  onChange={(e) => setRegConfirmPassword(e.target.value)}
+                  required
+                  autoComplete="new-password"
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              className="btn btn-primary signin-submit-btn"
+              disabled={loading}
+            >
+              {loading ? 'Creating Account...' : 'Create Account & Enter Portal →'}
+            </button>
+          </form>
+        )}
+
+        {/* Mode Toggle Footer */}
+        <div className="signin-footer">
+          {mode === 'signin' ? (
+            <div style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
+              New to ByteForge?{' '}
               <button
                 type="button"
-                className="signin-show-pw-btn"
-                onClick={() => setShowPassword(!showPassword)}
+                className="signin-mode-link"
+                onClick={() => handleSwitchMode('register')}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--accent-primary)',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  padding: 0,
+                  textDecoration: 'underline'
+                }}
               >
-                {showPassword ? 'Hide' : 'Show'}
+                Create client account
               </button>
             </div>
-            <input
-              type={showPassword ? 'text' : 'password'}
-              className="form-input"
-              placeholder="Enter your access password..."
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-
-          <button
-            type="submit"
-            className="btn btn-primary signin-submit-btn"
-            disabled={loading}
-          >
-            {loading ? 'Authenticating...' : `Sign In to ${activeTab === 'admin' ? 'Admin OS' : 'Client Portal'} →`}
-          </button>
-        </form>
-
-        {/* Security & Access Info */}
-        <div className="signin-footer">
-          {activeTab === 'admin' ? (
-            <div className="signin-hint-box">
-              <span className="hint-label">Default Admin Access:</span>
-              <code>byteforgeofficial.store@gmail.com</code>
-            </div>
           ) : (
-            <div className="signin-hint-box">
-              <span className="hint-label">Client Access:</span>
-              <span>Use the credentials created by your agency administrator.</span>
+            <div style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
+              Already registered?{' '}
+              <button
+                type="button"
+                className="signin-mode-link"
+                onClick={() => handleSwitchMode('signin')}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--accent-primary)',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  padding: 0,
+                  textDecoration: 'underline'
+                }}
+              >
+                Sign in to your portal
+              </button>
             </div>
           )}
         </div>
