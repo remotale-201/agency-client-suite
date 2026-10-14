@@ -162,8 +162,8 @@ export function NewProjectModal({ isOpen, onClose, onSubmit, clients }) {
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'space-between',
-                      background: '#f8fafc',
-                      border: '1px solid #e2e8f0',
+                      background: 'var(--bg-surface-elevated)',
+                      border: '1px solid var(--border-subtle)',
                       padding: '8px 12px',
                       borderRadius: 'var(--radius-sm)',
                       fontSize: '13px'

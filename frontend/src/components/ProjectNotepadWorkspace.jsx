@@ -322,7 +322,7 @@ export default function ProjectNotepadWorkspace({
             </div>
 
             {/* Template Shortcuts */}
-            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            <div className="notepad-quick-helpers">
               <span style={{ fontSize: '12px', color: 'var(--text-muted)', alignSelf: 'center' }}>
                 Quick helpers:
               </span>
@@ -428,7 +428,7 @@ export default function ProjectNotepadWorkspace({
                 </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              <div className="form-row-2col">
                 <div className="form-group">
                   <label className="form-label">Target Completion Deadline</label>
                   <input
@@ -446,7 +446,7 @@ export default function ProjectNotepadWorkspace({
                     className="form-input"
                     value={currentUser?.name || (isAdmin ? 'Agency Admin' : 'Client')}
                     readOnly
-                    style={{ background: '#f8fafc', color: 'var(--text-muted)' }}
+                    style={{ background: 'var(--bg-surface-elevated)', color: 'var(--text-muted)' }}
                   />
                 </div>
               </div>

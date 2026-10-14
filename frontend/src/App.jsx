@@ -307,7 +307,7 @@ export default function App() {
                 />
 
                 {/* Split Overview: Active Projects & Recent Changes */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px', marginTop: '24px' }}>
+                <div className="dashboard-overview-split">
                   {/* Left: Active Projects */}
                   <div>
                     <div className="section-header">

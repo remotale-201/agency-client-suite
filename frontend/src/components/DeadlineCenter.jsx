@@ -24,22 +24,8 @@ export default function DeadlineCenter({ stats, onSelectProjectById }) {
   }
 
   return (
-    <div style={{
-      background: 'var(--bg-surface)',
-      border: '1px solid var(--border-subtle)',
-      borderRadius: 'var(--radius-lg)',
-      padding: '20px 24px',
-      marginBottom: '28px',
-      boxShadow: 'var(--shadow-xs)'
-    }}>
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        flexWrap: 'wrap',
-        gap: '12px',
-        marginBottom: '16px'
-      }}>
+    <div className="deadline-center-card">
+      <div className="deadline-center-header">
         <div>
           <h3 style={{ fontSize: '16px', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '2px' }}>
             Deadline Priority Center
@@ -50,7 +36,7 @@ export default function DeadlineCenter({ stats, onSelectProjectById }) {
         </div>
 
         {/* Filter Tabs */}
-        <div style={{ display: 'flex', gap: '6px' }}>
+        <div className="deadline-tabs">
           <button
             className={`btn btn-sm ${filter === 'all' ? 'btn-primary' : 'btn-outline'}`}
             onClick={() => setFilter('all')}
@@ -87,7 +73,7 @@ export default function DeadlineCenter({ stats, onSelectProjectById }) {
           No items matching this deadline window. All tasks on track.
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '12px' }}>
+        <div className="deadline-items-grid">
           {displayedItems.map(item => {
             const isToday = item.deadline === "2026-10-11";
 

@@ -76,8 +76,8 @@ export default function AdminNotepadsView({ projects, onSelectProject }) {
               display: 'flex',
               gap: '16px',
               padding: '12px 14px',
-              background: '#f8fafc',
-              border: '1px solid #e2e8f0',
+              background: 'var(--bg-surface-elevated)',
+              border: '1px solid var(--border-subtle)',
               borderRadius: 'var(--radius-md)',
               fontSize: '12px',
               color: 'var(--text-secondary)'
