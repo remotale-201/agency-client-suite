@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: vanguard-agency-portal
+    env: node
+    plan: free
+    buildCommand: npm run build:all
+    startCommand: npm run start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      # Set your Neon PostgreSQL URL in Render dashboard or link below
+      - key: DATABASE_URL
+        sync: false

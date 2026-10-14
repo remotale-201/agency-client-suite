@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  agency-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: vanguard-agency-portal
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=production
+      - PORT=5000
+      # Provide Neon Database URL or leave commented out to use persistent volume
+      # - DATABASE_URL=postgres://neondb_owner:password@ep-snowflake.us-east-2.aws.neon.tech/neondb?sslmode=require
+    volumes:
+      - agency_data:/app/backend/data
+
+volumes:
+  agency_data:
