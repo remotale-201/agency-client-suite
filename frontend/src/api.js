@@ -25,6 +25,14 @@ async function request(endpoint, options = {}) {
 }
 
 export const api = {
+  // Authentication
+  login: (identifier, password) => 
+    request('/api/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ identifier, password })
+    }),
+  resetData: () => request('/api/auth/reset-data', { method: 'POST' }),
+
   // Stats
   getStats: () => request('/api/stats'),
 
@@ -36,6 +44,7 @@ export const api = {
   getClients: () => request('/api/clients'),
   getClient: (id) => request(`/api/clients/${id}`),
   createClient: (clientData) => request('/api/clients', { method: 'POST', body: JSON.stringify(clientData) }),
+  deleteClient: (id) => request(`/api/clients/${id}`, { method: 'DELETE' }),
 
   // Projects
   getProjects: (params = {}) => {

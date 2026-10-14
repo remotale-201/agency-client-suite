@@ -75,7 +75,8 @@ export default function DeadlineCenter({ stats, onSelectProjectById }) {
       ) : (
         <div className="deadline-items-grid">
           {displayedItems.map(item => {
-            const isToday = item.deadline === "2026-10-11";
+            const todayIso = new Date().toISOString().slice(0, 10);
+            const isToday = item.deadline === todayIso;
 
             return (
               <div 
@@ -108,7 +109,7 @@ export default function DeadlineCenter({ stats, onSelectProjectById }) {
 
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '12px', paddingTop: '8px', borderTop: '1px solid var(--border-subtle)' }}>
                   <span style={{ fontWeight: 700, color: isToday ? 'var(--critical-text)' : 'var(--high-text)' }}>
-                    {isToday ? 'Deadline: Today (Oct 11)' : `Target: ${item.deadline}`}
+                    {isToday ? `Deadline: Today (${item.deadline})` : `Target: ${item.deadline}`}
                   </span>
 
                   <button 

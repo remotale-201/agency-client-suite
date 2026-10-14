@@ -202,18 +202,30 @@ export function NewClientModal({ isOpen, onClose, onSubmit }) {
   const [company, setCompany] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
+  const [password, setPassword] = useState('Client123!');
+  const [portalToken, setPortalToken] = useState('');
 
   if (!isOpen) return null;
+
+  const handleCompanyChange = (val) => {
+    setCompany(val);
+    if (!portalToken || portalToken.endsWith('-portal')) {
+      const slug = val.toLowerCase().replace(/[^a-z0-9]/g, '-') + '-portal';
+      setPortalToken(slug);
+    }
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!name.trim() || !company.trim()) return;
 
     onSubmit({
-      name,
-      company,
-      email,
-      phone
+      name: name.trim(),
+      company: company.trim(),
+      email: email.trim(),
+      phone: phone.trim(),
+      password: password.trim() || 'Client123!',
+      portalToken: portalToken.trim() || (company.toLowerCase().replace(/[^a-z0-9]/g, '-') + '-portal')
     });
 
     onClose();
@@ -238,7 +250,7 @@ export function NewClientModal({ isOpen, onClose, onSubmit }) {
                 className="form-input"
                 placeholder="e.g., Stripe Global / Acme Corp"
                 value={company}
-                onChange={(e) => setCompany(e.target.value)}
+                onChange={(e) => handleCompanyChange(e.target.value)}
                 required
               />
             </div>
@@ -255,26 +267,54 @@ export function NewClientModal({ isOpen, onClose, onSubmit }) {
               />
             </div>
 
-            <div className="form-group">
-              <label className="form-label">Contact Email</label>
-              <input
-                type="email"
-                className="form-input"
-                placeholder="client@company.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
+            <div className="form-row-2col">
+              <div className="form-group">
+                <label className="form-label">Client Login Email *</label>
+                <input
+                  type="email"
+                  className="form-input"
+                  placeholder="client@company.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Client Portal Password *</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  placeholder="Client login password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
             </div>
 
-            <div className="form-group">
-              <label className="form-label">Phone / WhatsApp</label>
-              <input
-                type="text"
-                className="form-input"
-                placeholder="+1 (555) 000-1234"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-              />
+            <div className="form-row-2col">
+              <div className="form-group">
+                <label className="form-label">Portal URL Access Slug</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  placeholder="e.g., acme-portal"
+                  value={portalToken}
+                  onChange={(e) => setPortalToken(e.target.value)}
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Phone / WhatsApp</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  placeholder="+1 (555) 000-1234"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                />
+              </div>
             </div>
           </div>
 
@@ -283,7 +323,7 @@ export function NewClientModal({ isOpen, onClose, onSubmit }) {
               Cancel
             </button>
             <button type="submit" className="btn btn-primary">
-              Generate Client Portal
+              Create Client Portal
             </button>
           </div>
         </form>

@@ -15,14 +15,51 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// Health check for Northflank deployment & monitoring
+// Health check for deployment & monitoring
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'healthy',
     timestamp: new Date().toISOString(),
     driver: db.getDriver(),
-    service: 'Vanguard Agency API'
+    service: 'ByteForge Agency API'
   });
+});
+
+// ==========================================
+// Authentication API (Admin & Client Portals)
+// ==========================================
+app.post('/api/auth/login', async (req, res) => {
+  try {
+    const { identifier, email, portalToken, password } = req.body;
+    const loginId = (identifier || email || portalToken || '').trim();
+    if (!loginId || !password) {
+      return res.status(400).json({ error: 'Please enter both your email or portal access ID and password.' });
+    }
+
+    const authUser = await db.authenticate(loginId, password);
+    if (!authUser) {
+      return res.status(401).json({ error: 'Invalid login credentials. Please check your email/ID and password.' });
+    }
+
+    const token = crypto.randomBytes(32).toString('hex');
+    res.json({
+      success: true,
+      user: authUser,
+      token
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Wipes demo data and resets to fresh state
+app.post('/api/auth/reset-data', async (req, res) => {
+  try {
+    const fresh = await db.resetDatabase();
+    res.json({ success: true, message: 'All demo data cleared and reset to fresh state.', data: fresh });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // Overview Stats (Admin Panel metrics)
@@ -105,18 +142,21 @@ app.get('/api/clients/:id', async (req, res) => {
 
 app.post('/api/clients', async (req, res) => {
   try {
-    const { name, company, email, phone, avatar } = req.body;
+    const { name, company, email, phone, password, portalToken, avatar } = req.body;
     if (!name || !company) {
       return res.status(400).json({ error: 'Name and company are required' });
     }
 
-    const tokenSlug = company.toLowerCase().replace(/[^a-z0-9]/g, '-') + '-access';
+    const tokenSlug = (portalToken || (company.toLowerCase().replace(/[^a-z0-9]/g, '-') + '-portal')).trim();
+    const clientPassword = (password || 'Client123!').trim();
+
     const newClient = {
       id: `client-${Date.now()}`,
       name,
       company,
-      email: email || '',
-      phone: phone || '',
+      email: (email || '').trim(),
+      phone: (phone || '').trim(),
+      password: clientPassword,
       portalToken: tokenSlug,
       avatar: avatar || `https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80`,
       createdAt: new Date().toISOString()
@@ -124,6 +164,15 @@ app.post('/api/clients', async (req, res) => {
 
     const saved = await db.addClient(newClient);
     res.status(201).json(saved);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.delete('/api/clients/:id', async (req, res) => {
+  try {
+    await db.deleteClient(req.params.id);
+    res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

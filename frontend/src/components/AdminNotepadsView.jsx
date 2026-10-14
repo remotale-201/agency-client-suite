@@ -14,9 +14,26 @@ export default function AdminNotepadsView({ projects, onSelectProject }) {
         </div>
       </div>
 
-      <div className="workspace-grid">
-        {/* Project Selector List */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+      {projects.length === 0 ? (
+        <div style={{
+          textAlign: 'center',
+          padding: '60px 24px',
+          background: 'var(--bg-surface)',
+          borderRadius: 'var(--radius-lg)',
+          border: '1px solid var(--border-subtle)',
+          color: 'var(--text-muted)'
+        }}>
+          <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '8px' }}>
+            No Project Notepads Yet
+          </h3>
+          <p style={{ fontSize: '13px', maxWidth: '420px', margin: '0 auto', lineHeight: 1.6 }}>
+            Create client portals and assign projects to access real-time cloud notepads, deliverable tracking, and revision changelogs.
+          </p>
+        </div>
+      ) : (
+        <div className="workspace-grid">
+          {/* Project Selector List */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           {projects.map(p => (
             <div
               key={p.id}
@@ -102,6 +119,7 @@ export default function AdminNotepadsView({ projects, onSelectProject }) {
           </div>
         )}
       </div>
+      )}
     </div>
   );
 }

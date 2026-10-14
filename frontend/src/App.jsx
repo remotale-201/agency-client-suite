@@ -8,6 +8,7 @@ import ProjectNotepadWorkspace from './components/ProjectNotepadWorkspace';
 import ClientsView from './components/ClientsView';
 import AdminNotepadsView from './components/AdminNotepadsView';
 import DeadlineCenter from './components/DeadlineCenter';
+import SignIn from './components/SignIn';
 import { NewProjectModal, NewClientModal, NewChangeModal } from './components/Modals';
 
 export default function App() {
@@ -26,9 +27,43 @@ export default function App() {
     localStorage.setItem('agency_theme', theme);
   }, [theme]);
 
+  // Auth User State: { type: 'admin', ... } or { type: 'client', ... }
+  const [authUser, setAuthUser] = useState(() => {
+    try {
+      const saved = localStorage.getItem('byteforge_auth_user');
+      return saved ? JSON.parse(saved) : null;
+    } catch (e) {
+      return null;
+    }
+  });
+
   // Persona State: { type: 'admin', id: 'admin' } or { type: 'client', id: 'client-1' }
-  const [currentPersona, setCurrentPersona] = useState({ type: 'admin', id: 'admin' });
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [currentPersona, setCurrentPersona] = useState(() => {
+    try {
+      const saved = localStorage.getItem('byteforge_auth_user');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.type === 'client') {
+          return { type: 'client', id: parsed.id };
+        }
+      }
+    } catch (e) {}
+    return { type: 'admin', id: 'admin' };
+  });
+
+  const [activeTab, setActiveTab] = useState(() => {
+    try {
+      const saved = localStorage.getItem('byteforge_auth_user');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.type === 'client') {
+          return 'client-projects';
+        }
+      }
+    } catch (e) {}
+    return 'dashboard';
+  });
+
   const [selectedProject, setSelectedProject] = useState(null);
   const [activeNotepad, setActiveNotepad] = useState(null);
 
@@ -65,17 +100,6 @@ export default function App() {
       setProjects(projectsData);
       setChanges(changesData);
       setDriver(healthData.driver);
-
-      // Check URL query parameters for ?portal=finflow-access
-      const params = new URLSearchParams(window.location.search);
-      const portalParam = params.get('portal');
-      if (portalParam && clientsData.length > 0) {
-        const found = clientsData.find(c => c.portalToken === portalParam || c.id === portalParam);
-        if (found) {
-          setCurrentPersona({ type: 'client', id: found.id });
-          setActiveTab('client-projects');
-        }
-      }
     } catch (err) {
       console.error('Failed to load application data:', err);
       showToast('Could not sync with backend server', 'error');
@@ -87,6 +111,59 @@ export default function App() {
   useEffect(() => {
     loadData();
   }, []);
+
+  const handleLogin = async (identifier, password) => {
+    const res = await api.login(identifier, password);
+    if (res && res.user) {
+      setAuthUser(res.user);
+      localStorage.setItem('byteforge_auth_user', JSON.stringify(res.user));
+      if (res.user.type === 'admin') {
+        setCurrentPersona({ type: 'admin', id: 'admin' });
+        setActiveTab('dashboard');
+      } else {
+        setCurrentPersona({ type: 'client', id: res.user.id });
+        setActiveTab('client-projects');
+      }
+      setSelectedProject(null);
+      showToast(`Welcome, ${res.user.name || res.user.company || 'User'}`);
+      loadData();
+      return res.user;
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('byteforge_auth_user');
+    setAuthUser(null);
+    setCurrentPersona({ type: 'admin', id: 'admin' });
+    setSelectedProject(null);
+    setActiveTab('dashboard');
+    showToast('Signed out successfully');
+  };
+
+  const handleDeleteClient = async (clientId) => {
+    try {
+      await api.deleteClient(clientId);
+      setClients(prev => prev.filter(c => c.id !== clientId));
+      setProjects(prev => prev.filter(p => p.clientId !== clientId));
+      setChanges(prev => prev.filter(c => c.clientId !== clientId));
+      const updatedStats = await api.getStats();
+      setStats(updatedStats);
+      showToast('Client portal and related projects removed');
+    } catch (err) {
+      showToast('Failed to delete client', 'error');
+    }
+  };
+
+  const handleResetData = async () => {
+    if (!window.confirm('Clean all data and reset the system to fresh state?')) return;
+    try {
+      await api.resetData();
+      await loadData();
+      showToast('All data cleared. Database ready for your custom inputs.');
+    } catch (err) {
+      showToast('Failed to reset data', 'error');
+    }
+  };
 
   // When switching persona
   const handlePersonaChange = (newPersona) => {
@@ -214,6 +291,34 @@ export default function App() {
   // Critical change notice
   const criticalPending = changes.find(c => c.urgency === 'critical' && c.status !== 'completed');
 
+  // Gate: Unauthenticated users must land directly on the Sign-In portal first
+  if (!authUser) {
+    const params = new URLSearchParams(window.location.search);
+    const portalParam = params.get('portal');
+
+    return (
+      <div className="app-container" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+        {toast && (
+          <div className="toast-container">
+            <div className={`toast ${toast.type}`}>
+              <span>{toast.message}</span>
+            </div>
+          </div>
+        )}
+        <div style={{ position: 'fixed', top: '16px', right: '16px', zIndex: 100 }}>
+          <button
+            className="theme-toggle-btn"
+            onClick={() => setTheme(prev => prev === 'dark' ? 'light' : 'dark')}
+            title="Switch theme"
+          >
+            {theme === 'dark' ? 'Neon Dark' : 'Light Mode'}
+          </button>
+        </div>
+        <SignIn onLogin={handleLogin} initialPortalToken={portalParam} />
+      </div>
+    );
+  }
+
   return (
     <div className="app-container">
       {/* Toast Notification */}
@@ -227,6 +332,8 @@ export default function App() {
 
       {/* Top Navbar & Persona Selector */}
       <Navbar
+        user={authUser}
+        onLogout={handleLogout}
         currentPersona={currentPersona}
         setCurrentPersona={handlePersonaChange}
         clients={clients}
@@ -239,6 +346,7 @@ export default function App() {
         onOpenNewProject={() => setIsNewProjectOpen(true)}
         onOpenNewChange={() => setIsNewChangeOpen(true)}
         onOpenNewClient={() => setIsNewClientOpen(true)}
+        onResetData={handleResetData}
         driver={driver}
         theme={theme}
         setTheme={setTheme}
@@ -322,46 +430,66 @@ export default function App() {
                       </button>
                     </div>
 
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                      {projects.slice(0, 4).map(proj => (
-                        <div 
-                          key={proj.id}
-                          className="project-card"
-                          style={{ padding: '16px' }}
+                    {projects.length === 0 ? (
+                      <div style={{
+                        padding: '32px 16px',
+                        textAlign: 'center',
+                        background: 'var(--bg-surface)',
+                        border: '1px solid var(--border-subtle)',
+                        borderRadius: 'var(--radius-lg)',
+                        color: 'var(--text-muted)',
+                        fontSize: '13px'
+                      }}>
+                        <p style={{ marginBottom: '8px' }}>No active projects yet.</p>
+                        <button 
+                          className="btn btn-primary btn-sm" 
+                          onClick={() => setIsNewProjectOpen(true)}
                         >
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
-                            <div>
-                              <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase' }}>
-                                {proj.companyName}
+                          + Create Project
+                        </button>
+                      </div>
+                    ) : (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        {projects.slice(0, 4).map(proj => (
+                          <div 
+                            key={proj.id}
+                            className="project-card"
+                            style={{ padding: '16px' }}
+                          >
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+                              <div>
+                                <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase' }}>
+                                  {proj.companyName}
+                                </div>
+                                <h4 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--text-primary)' }}>
+                                  {proj.title}
+                                </h4>
                               </div>
-                              <h4 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--text-primary)' }}>
-                                {proj.title}
-                              </h4>
+                              <span className={`badge-pill status-${proj.status}`}>
+                                {proj.status}
+                              </span>
                             </div>
-                            <span className={`badge-pill status-${proj.status}`}>
-                              {proj.status}
-                            </span>
-                          </div>
 
-                          <div className="progress-container" style={{ margin: '8px 0' }}>
-                            <div className="progress-track">
-                              <div className="progress-fill" style={{ width: `${proj.progress}%` }}></div>
+                            <div className="progress-container" style={{ margin: '8px 0' }}>
+                              <div className="progress-track">
+                                <div className="progress-fill" style={{ width: `${proj.progress}%` }}></div>
+                              </div>
+                            </div>
+
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '12px', color: 'var(--text-muted)' }}>
+                              <span>Deadline: <strong>{proj.deadline}</strong></span>
+                              <button 
+                                className="btn btn-secondary btn-sm"
+                                style={{ padding: '4px 10px', fontSize: '11px' }}
+                                onClick={() => handleSelectProject(proj)}
+                              >
+                                Open Notepad →
+                              </button>
                             </div>
                           </div>
-
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '12px', color: 'var(--text-muted)' }}>
-                            <span>Deadline: <strong>{proj.deadline}</strong></span>
-                            <button 
-                              className="btn btn-secondary btn-sm"
-                              style={{ padding: '4px 10px', fontSize: '11px' }}
-                              onClick={() => handleSelectProject(proj)}
-                            >
-                              Open Notepad →
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
 
                   {/* Right: Urgent Revisions Feed */}
@@ -376,42 +504,56 @@ export default function App() {
                       </button>
                     </div>
 
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                      {changes.slice(0, 4).map(c => (
-                        <div 
-                          key={c.id} 
-                          className={`change-item-card ${c.urgency === 'critical' ? 'is-critical' : ''}`}
-                          style={{ padding: '14px' }}
-                        >
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                            <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-primary)' }}>
-                              {c.title}
-                            </span>
-                            <span className={`badge-pill urgency-${c.urgency}`} style={{ fontSize: '10px' }}>
-                              {c.urgency}
-                            </span>
+                    {changes.length === 0 ? (
+                      <div style={{
+                        padding: '32px 16px',
+                        textAlign: 'center',
+                        background: 'var(--bg-surface)',
+                        border: '1px solid var(--border-subtle)',
+                        borderRadius: 'var(--radius-lg)',
+                        color: 'var(--text-muted)',
+                        fontSize: '13px'
+                      }}>
+                        <p>No revision requests logged yet.</p>
+                      </div>
+                    ) : (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        {changes.slice(0, 4).map(c => (
+                          <div 
+                            key={c.id} 
+                            className={`change-item-card ${c.urgency === 'critical' ? 'is-critical' : ''}`}
+                            style={{ padding: '14px' }}
+                          >
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                              <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-primary)' }}>
+                                {c.title}
+                              </span>
+                              <span className={`badge-pill urgency-${c.urgency}`} style={{ fontSize: '10px' }}>
+                                {c.urgency}
+                              </span>
+                            </div>
+                            <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+                              {c.companyName} • Target: {c.deadline || 'Flexible'}
+                            </p>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '6px' }}>
+                              <span className={`badge-pill status-${c.status}`} style={{ fontSize: '10px' }}>
+                                {c.status}
+                              </span>
+                              <button 
+                                className="btn btn-outline btn-sm"
+                                style={{ padding: '3px 8px', fontSize: '11px' }}
+                                onClick={() => {
+                                  const p = projects.find(proj => proj.id === c.projectId);
+                                  if (p) handleSelectProject(p);
+                                }}
+                              >
+                                Open Project
+                              </button>
+                            </div>
                           </div>
-                          <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
-                            {c.companyName} • Target: {c.deadline || 'Flexible'}
-                          </p>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '6px' }}>
-                            <span className={`badge-pill status-${c.status}`} style={{ fontSize: '10px' }}>
-                              {c.status}
-                            </span>
-                            <button 
-                              className="btn btn-outline btn-sm"
-                              style={{ padding: '3px 8px', fontSize: '11px' }}
-                              onClick={() => {
-                                const p = projects.find(proj => proj.id === c.projectId);
-                                if (p) handleSelectProject(p);
-                              }}
-                            >
-                              Open Project
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -458,6 +600,7 @@ export default function App() {
                 onOpenNewClient={() => setIsNewClientOpen(true)}
                 onSwitchToClient={(cId) => handlePersonaChange({ type: 'client', id: cId })}
                 onCopyPortalLink={handleCopyPortalLink}
+                onDeleteClient={handleDeleteClient}
                 copiedToken={copiedToken}
               />
             )}
@@ -481,7 +624,7 @@ export default function App() {
                 }}>
                   <div>
                     <h2 style={{ fontSize: '18px', fontWeight: 800, marginBottom: '4px' }}>
-                      Welcome, {currentClient?.name}
+                      Welcome, {currentClient?.name || authUser?.name}
                     </h2>
                     <p style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
                       Track deliverables, view live project notepads, and submit priority revisions directly to the engineering team.
@@ -518,30 +661,44 @@ export default function App() {
                   </div>
                 </div>
 
-                <div className="projects-grid">
-                  {visibleProjects.map(proj => (
-                    <div key={proj.id} className="project-card">
-                      <div>
-                        <div className="project-card-top">
-                          <span className="project-client-name">{currentClient?.company}</span>
-                          <span className={`badge-pill status-${proj.status}`}>{proj.status}</span>
+                {visibleProjects.length === 0 ? (
+                  <div style={{
+                    padding: '48px 24px',
+                    textAlign: 'center',
+                    background: 'var(--bg-surface)',
+                    border: '1px solid var(--border-subtle)',
+                    borderRadius: 'var(--radius-lg)',
+                    color: 'var(--text-muted)',
+                    fontSize: '13px'
+                  }}>
+                    <p>No projects assigned to your portal yet.</p>
+                  </div>
+                ) : (
+                  <div className="projects-grid">
+                    {visibleProjects.map(proj => (
+                      <div key={proj.id} className="project-card">
+                        <div>
+                          <div className="project-card-top">
+                            <span className="project-client-name">{currentClient?.company}</span>
+                            <span className={`badge-pill status-${proj.status}`}>{proj.status}</span>
+                          </div>
+                          <h3 className="project-card-title">{proj.title}</h3>
+                          <p className="project-card-desc">{proj.description}</p>
                         </div>
-                        <h3 className="project-card-title">{proj.title}</h3>
-                        <p className="project-card-desc">{proj.description}</p>
-                      </div>
 
-                      <div className="project-card-actions">
-                        <button 
-                          className="btn btn-primary btn-sm"
-                          style={{ width: '100%' }}
-                          onClick={() => handleSelectProject(proj)}
-                        >
-                          Open Project Notepad & Changes →
-                        </button>
+                        <div className="project-card-actions">
+                          <button 
+                            className="btn btn-primary btn-sm"
+                            style={{ width: '100%' }}
+                            onClick={() => handleSelectProject(proj)}
+                          >
+                            Open Project Notepad & Changes →
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
 

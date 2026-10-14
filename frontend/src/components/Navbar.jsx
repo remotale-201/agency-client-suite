@@ -1,6 +1,8 @@
 import React from 'react';
 
 export default function Navbar({ 
+  user,
+  onLogout,
   currentPersona, 
   setCurrentPersona, 
   clients, 
@@ -10,43 +12,66 @@ export default function Navbar({
   onOpenNewProject,
   onOpenNewChange,
   onOpenNewClient,
+  onResetData,
   driver,
   theme,
   setTheme
 }) {
-  const isClient = currentPersona.type === 'client';
-  const currentClient = isClient ? clients.find(c => c.id === currentPersona.id) : null;
+  const isActualAdmin = user?.type === 'admin';
+  const isPreviewingClient = isActualAdmin && currentPersona.type === 'client';
+  const isClientView = currentPersona.type === 'client';
+  const currentClient = isClientView 
+    ? (clients.find(c => c.id === currentPersona.id) || user) 
+    : null;
 
   return (
     <>
-      {/* Top Persona Switcher Bar (Zero green dots, zero clutter) */}
+      {/* Top User & Session Bar */}
       <div className="persona-bar">
         <div className="persona-left">
-          <span className="persona-label">View:</span>
-          <div className="persona-chips">
-            <button
-              className={`persona-chip ${currentPersona.type === 'admin' ? 'active' : ''}`}
-              onClick={() => setCurrentPersona({ type: 'admin', id: 'admin' })}
-            >
-              Agency Admin
-            </button>
-
-            {clients.map(client => (
+          {isPreviewingClient ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span className="badge-pill urgency-high" style={{ fontSize: '11px' }}>
+                Admin Preview Mode
+              </span>
+              <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-primary)' }}>
+                Viewing: {currentClient?.company || 'Client Portal'}
+              </span>
               <button
-                key={client.id}
-                className={`persona-chip ${currentPersona.type === 'client' && currentPersona.id === client.id ? 'active' : ''}`}
-                onClick={() => setCurrentPersona({ type: 'client', id: client.id })}
+                className="btn btn-outline btn-sm"
+                onClick={() => {
+                  setCurrentPersona({ type: 'admin', id: 'admin' });
+                  setActiveTab('dashboard');
+                }}
+                style={{ padding: '3px 8px', fontSize: '11px' }}
               >
-                {client.company}
+                ✕ Exit Preview
               </button>
-            ))}
-          </div>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div style={{
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                background: 'var(--accent-primary)',
+                boxShadow: '0 0 8px var(--accent-glow)'
+              }} />
+              <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-primary)' }}>
+                {isActualAdmin ? 'ByteForge Admin' : (user?.company || user?.name || 'Client')}
+              </span>
+              <span className={`badge-pill ${isActualAdmin ? 'status-in-progress' : 'status-completed'}`} style={{ fontSize: '10px' }}>
+                {isActualAdmin ? 'Owner OS' : 'Client Access'}
+              </span>
+            </div>
+          )}
         </div>
 
         <div className="persona-right">
           <div className="env-pill">
-            DB: {driver === 'neon-postgres' ? 'Neon Cloud DB' : 'Local DB'}
+            DB: {driver === 'neon-postgres' ? 'Neon Cloud' : 'Active'}
           </div>
+
           <button
             className="theme-toggle-btn"
             onClick={() => setTheme(prev => prev === 'dark' ? 'light' : 'dark')}
@@ -54,18 +79,24 @@ export default function Navbar({
           >
             {theme === 'dark' ? 'Neon Dark' : 'Light Mode'}
           </button>
-          {currentPersona.type === 'admin' ? (
+
+          {isActualAdmin && !isPreviewingClient && (
             <button 
               className="btn btn-secondary btn-sm"
               onClick={onOpenNewClient}
             >
-              + Add Client
+              + Create Client
             </button>
-          ) : (
-            <div className="env-pill">
-              Token: {currentClient?.portalToken}
-            </div>
           )}
+
+          <button
+            className="btn btn-outline btn-sm"
+            onClick={onLogout}
+            title="Sign out of portal"
+            style={{ borderColor: 'var(--border-subtle)', color: 'var(--text-secondary)' }}
+          >
+            Log Out
+          </button>
         </div>
       </div>
 
@@ -73,29 +104,29 @@ export default function Navbar({
       <header className="app-header">
         <div className="header-brand">
           <div className="brand-text-block">
-            {isClient ? (
+            {isClientView ? (
               <>
                 <h1>
                   {currentClient?.company || 'Client Portal'}
-                  <span className="badge-pill status-completed">Client Portal</span>
+                  <span className="badge-pill status-completed">Client Suite</span>
                 </h1>
-                <p>Welcome, {currentClient?.name || 'Client'} • Vanguard Agency Platform</p>
+                <p>Welcome, {currentClient?.name || 'Client'} • ByteForge Agency Platform</p>
               </>
             ) : (
               <>
                 <h1>
-                  Vanguard Studio
-                  <span className="badge-pill status-in-progress">Owner Panel</span>
+                  ByteForge Studio
+                  <span className="badge-pill status-in-progress">Admin OS</span>
                 </h1>
-                <p>Digital Agency Master Control • Multi-Client Operations</p>
+                <p>Agency Master Operations • Multi-Client Portals & Revisions</p>
               </>
             )}
           </div>
         </div>
 
-        {/* Dynamic Navigation Tabs (No icons) */}
+        {/* Dynamic Navigation Tabs */}
         <nav className="nav-tabs">
-          {currentPersona.type === 'admin' ? (
+          {!isClientView ? (
             <>
               <button 
                 className={`nav-tab-btn ${activeTab === 'dashboard' ? 'active' : ''}`}
@@ -135,7 +166,7 @@ export default function Navbar({
                 className={`nav-tab-btn ${activeTab === 'clients' ? 'active' : ''}`}
                 onClick={() => setActiveTab('clients')}
               >
-                Clients
+                Client Portals
                 <span className="badge-count">{stats?.totalClients || 0}</span>
               </button>
             </>
@@ -159,7 +190,7 @@ export default function Navbar({
                 className={`nav-tab-btn ${activeTab === 'client-changes' ? 'active' : ''}`}
                 onClick={() => setActiveTab('client-changes')}
               >
-                Track Changes
+                Track Revisions
               </button>
             </>
           )}
@@ -167,7 +198,7 @@ export default function Navbar({
 
         {/* Action Button */}
         <div className="header-actions">
-          {currentPersona.type === 'admin' ? (
+          {!isClientView ? (
             <button className="btn btn-primary" onClick={onOpenNewProject}>
               + New Project
             </button>
