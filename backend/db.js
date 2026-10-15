@@ -336,53 +336,7 @@ function ensureLocalStore() {
         }
       ],
       files: [],
-      invoices: [
-        {
-          id: 'inv-awais-1',
-          client_id: 'client-awais',
-          project_id: 'proj-awais-1',
-          title: 'Pak White Label Abdul Saboor - Phase 1',
-          invoice_number: 'INV-2026-001',
-          amount: 125000.00,
-          subtotal: 125000.00,
-          tax: 0,
-          discount: 0,
-          currency: 'PKR',
-          status: 'published',
-          published: true,
-          due_date: '25/10/2026',
-          issue_date: '15/10/2026',
-          notes: 'Full store development and responsive theme customization.',
-          payment_details: 'Bank: Meezan Bank | Title: Abdullah | Account: 0102-0103948291\nEasyPaisa / JazzCash: 0300-1234567',
-          items: [
-            { description: 'White Label E-commerce Store Development', qty: 1, rate: 85000, amount: 85000 },
-            { description: 'Custom Header & Product Cards UI Design', qty: 1, rate: 40000, amount: 40000 }
-          ],
-          created_at: new Date().toISOString()
-        },
-        {
-          id: 'inv-afshal-1',
-          client_id: 'client-afshal',
-          project_id: 'proj-afshal-2',
-          title: 'Distant Market Store Setup & Integration',
-          invoice_number: 'INV-2026-002',
-          amount: 85000.00,
-          subtotal: 85000.00,
-          tax: 0,
-          discount: 0,
-          currency: 'PKR',
-          status: 'draft',
-          published: false,
-          due_date: '28/10/2026',
-          issue_date: '15/10/2026',
-          notes: 'Draft invoice for upcoming launch of Distant Market store.',
-          payment_details: 'Bank: Meezan Bank | Title: Abdullah | Account: 0102-0103948291',
-          items: [
-            { description: 'Distant Market Store Setup & Domain Connection', qty: 1, rate: 85000, amount: 85000 }
-          ],
-          created_at: new Date().toISOString()
-        }
-      ]
+      invoices: []
     };
 
     fs.writeFileSync(STORE_PATH, JSON.stringify(cleanStore, null, 2), 'utf-8');
@@ -671,65 +625,8 @@ async function initPostgresTables() {
         ALTER TABLE invoices ADD COLUMN IF NOT EXISTS project_titles JSONB DEFAULT '[]';
       `);
 
-      // Seed initial sample invoices if empty
-      const invCountRes = await client.query('SELECT COUNT(*)::int as count FROM invoices');
-      if (invCountRes.rows[0].count === 0) {
-        await client.query(`
-          INSERT INTO invoices (
-            id, client_id, project_id, title, invoice_number, amount, status,
-            due_date, issue_date, currency, subtotal, tax, discount, notes,
-            payment_details, published, items
-          )
-          VALUES 
-          (
-            'inv-awais-1',
-            'client-awais',
-            'proj-awais-1',
-            'Pak White Label Abdul Saboor - Phase 1',
-            'INV-2026-001',
-            125000.00,
-            'published',
-            '25/10/2026',
-            '15/10/2026',
-            'PKR',
-            125000.00,
-            0,
-            0,
-            'Full store development and responsive theme customization.',
-            'Bank: Meezan Bank | Title: Abdullah | Account: 0102-0103948291\nEasyPaisa / JazzCash: 0300-1234567',
-            true,
-            $1::jsonb
-          ),
-          (
-            'inv-afshal-1',
-            'client-afshal',
-            'proj-afshal-2',
-            'Distant Market Store Setup & Integration',
-            'INV-2026-002',
-            85000.00,
-            'draft',
-            '28/10/2026',
-            '15/10/2026',
-            'PKR',
-            85000.00,
-            0,
-            0,
-            'Draft invoice for upcoming launch of Distant Market store.',
-            'Bank: Meezan Bank | Title: Abdullah | Account: 0102-0103948291',
-            false,
-            $2::jsonb
-          )
-          ON CONFLICT (id) DO NOTHING;
-        `, [
-          JSON.stringify([
-            { description: 'White Label E-commerce Store Development', qty: 1, rate: 85000, amount: 85000 },
-            { description: 'Custom Header & Product Cards UI Design', qty: 1, rate: 40000, amount: 40000 }
-          ]),
-          JSON.stringify([
-            { description: 'Distant Market Store Setup & Domain Connection', qty: 1, rate: 85000, amount: 85000 }
-          ])
-        ]);
-      }
+      // Clean up any remaining demo invoices
+      await client.query("DELETE FROM invoices WHERE id IN ('inv-awais-1', 'inv-afshal-1', 'inv-1792084489379')");
 
       console.log('[Neon DB] Tables verified with clean database state & credentials.');
     } finally {
