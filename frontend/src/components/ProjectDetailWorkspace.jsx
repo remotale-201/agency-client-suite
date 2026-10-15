@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import './ProjectDetailWorkspace.css';
 import { RemotaleLogo } from './RemotaleAuthFlow';
+import LetterAvatar from './LetterAvatar';
 
 // SVG Icons
 function ArrowLeftIcon({ size = 20, color = 'currentColor' }) {
@@ -265,37 +266,65 @@ export default function ProjectDetailWorkspace({
     setTimeout(() => setCopiedKey(null), 2000);
   };
 
-  // Safe credentials parser
-  let credentialsList = [];
-  try {
-    if (typeof project?.credentials === 'string') {
-      credentialsList = JSON.parse(project.credentials);
-    } else if (Array.isArray(project?.credentials)) {
-      credentialsList = project.credentials;
-    }
-  } catch (err) {
-    credentialsList = [];
-  }
+  // Safe credentials parser & reactive local state
+  const parseCreds = (input) => {
+    try {
+      if (typeof input === 'string') return JSON.parse(input);
+      if (Array.isArray(input)) return input;
+    } catch (e) {}
+    return [];
+  };
 
-  // Default rich fallback credentials matching Image 2
-  if (credentialsList.length === 0) {
-    credentialsList = [
-      {
-        id: 'cred-1',
-        platform: 'Shopify Admin',
-        subText: 'ali.store.myshopify.com',
-        username: 'ali.khan@remotale.com',
-        password: '••••••••'
-      },
-      {
-        id: 'cred-2',
-        platform: 'WordPress Hosting',
-        subText: 'example.com/wp-admin',
-        username: 'admin',
-        password: '••••••••'
+  const [localCredentials, setLocalCredentials] = useState(() => parseCreds(project?.credentials));
+  const [editingCredIdx, setEditingCredIdx] = useState(null);
+  const [editPlatform, setEditPlatform] = useState('');
+  const [editSubText, setEditSubText] = useState('');
+  const [editUsername, setEditUsername] = useState('');
+  const [editPw, setEditPw] = useState('');
+
+  useEffect(() => {
+    setLocalCredentials(parseCreds(project?.credentials));
+  }, [project?.credentials]);
+
+  const handleStartEditCred = (cred, idx) => {
+    setEditingCredIdx(idx);
+    setEditPlatform(cred.platform || '');
+    setEditSubText(cred.subText || cred.website || '');
+    setEditUsername(cred.username || '');
+    setEditPw(cred.password || '');
+  };
+
+  const handleSaveEditCred = async (e, idx) => {
+    e.preventDefault();
+    if (!editPlatform.trim()) return;
+    const updated = localCredentials.map((c, i) => {
+      if (i === idx) {
+        return {
+          ...c,
+          platform: editPlatform.trim(),
+          subText: editSubText.trim() || `${editPlatform.toLowerCase().replace(/\s+/g, '')}.com`,
+          username: editUsername.trim(),
+          password: editPw.trim() || '••••••••'
+        };
       }
-    ];
-  }
+      return c;
+    });
+    setLocalCredentials(updated);
+    setEditingCredIdx(null);
+    if (onUpdateProject && project?.id) {
+      await onUpdateProject(project.id, { credentials: updated });
+    }
+  };
+
+  const handleDeleteCred = async (idx) => {
+    if (!window.confirm('Delete this credential?')) return;
+    const updated = localCredentials.filter((_, i) => i !== idx);
+    setLocalCredentials(updated);
+    if (editingCredIdx !== null) setEditingCredIdx(null);
+    if (onUpdateProject && project?.id) {
+      await onUpdateProject(project.id, { credentials: updated });
+    }
+  };
 
   // Real tasks list directly with optimistic local state for instant tick responsiveness
   const [localTasks, setLocalTasks] = useState(() => (project?.tasks && project.tasks.length > 0) ? project.tasks : []);
@@ -305,6 +334,15 @@ export default function ProjectDetailWorkspace({
       setLocalTasks(project.tasks);
     }
   }, [project?.tasks]);
+
+  // Real-time calculated progress percentage based on completed tasks
+  const calculatedProgress = useMemo(() => {
+    if (localTasks && localTasks.length > 0) {
+      const done = localTasks.filter(t => t.completed).length;
+      return Math.round((done / localTasks.length) * 100);
+    }
+    return (project?.progress !== undefined && project?.progress !== null) ? Number(project.progress) : 0;
+  }, [localTasks, project?.progress]);
 
   const handleToggleTaskInternal = (taskId, currentCompleted) => {
     const nextCompleted = !currentCompleted;
@@ -324,40 +362,35 @@ export default function ProjectDetailWorkspace({
     { id: 'f-4', name: 'Reference Website.url', meta: 'URL Link', date: '16 Oct 2024', type: 'url' }
   ];
 
-  // Activities list matching Image 2
+  // Activities list matching project history
   const activityList = [
     {
       id: 'act-1',
-      author: 'Ahmed',
+      author: 'Abdullah',
       action: 'updated the design file',
       detail: 'Homepage Design.fig',
-      time: '2h ago',
-      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80'
+      time: '2h ago'
     },
     {
       id: 'act-2',
-      author: 'Sara',
+      author: 'Abdullah',
       action: 'marked a task complete',
       detail: 'Setup Shopify theme',
-      time: '5h ago',
-      avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80'
+      time: '5h ago'
     },
     {
       id: 'act-3',
-      author: 'You',
+      author: 'Abdullah',
       action: 'added a new note',
-      detail: 'Client wants a clean and modern...',
-      time: '1d ago',
-      isLetter: true,
-      letter: 'A'
+      detail: 'Client project requirements and credentials synced',
+      time: '1d ago'
     },
     {
       id: 'act-4',
-      author: 'Usman',
-      action: 'uploaded a file',
+      author: 'Abdullah',
+      action: 'uploaded project assets',
       detail: 'Product Banners.zip',
-      time: '1d ago',
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80'
+      time: '1d ago'
     }
   ];
 
@@ -391,22 +424,22 @@ export default function ProjectDetailWorkspace({
   const handleSaveNewCred = async (e) => {
     e.preventDefault();
     if (!newCredPlatform.trim()) return;
-    const updated = [
-      ...credentialsList,
-      {
-        platform: newCredPlatform.trim(),
-        subText: `${newCredPlatform.toLowerCase().replace(/\s+/g, '')}.com`,
-        username: newCredUser.trim(),
-        password: newCredPw.trim() || '••••••••'
-      }
-    ];
-    if (onUpdateProject && project?.id) {
-      await onUpdateProject(project.id, { credentials: updated });
-    }
+    const newEntry = {
+      id: `cred-${Date.now()}`,
+      platform: newCredPlatform.trim(),
+      subText: `${newCredPlatform.toLowerCase().replace(/\s+/g, '')}.com`,
+      username: newCredUser.trim(),
+      password: newCredPw.trim() || '••••••••'
+    };
+    const updated = [...localCredentials, newEntry];
+    setLocalCredentials(updated);
     setNewCredPlatform('');
     setNewCredUser('');
     setNewCredPw('');
     setIsAddingCred(false);
+    if (onUpdateProject && project?.id) {
+      await onUpdateProject(project.id, { credentials: updated });
+    }
   };
 
   return (
@@ -528,14 +561,14 @@ export default function ProjectDetailWorkspace({
 
         {/* 3-Column Stats Row */}
         <div className="pdw-stats-row">
-          {/* Col 1: Assigned Team */}
+          {/* Col 1: Assigned Admin */}
           <div className="pdw-stat-col">
-            <div className="pdw-stat-icon-circle">
-              <span>{currentUser?.name?.[0] || 'A'}</span>
+            <div className="pdw-stat-icon-circle" style={{ background: '#0f172a', color: '#ffffff' }}>
+              <span>A</span>
             </div>
             <div className="pdw-stat-texts">
-              <span className="pdw-stat-lbl">Assigned Team</span>
-              <span className="pdw-stat-val">3 Members</span>
+              <span className="pdw-stat-lbl">Admin Lead</span>
+              <span className="pdw-stat-val">Abdullah</span>
             </div>
           </div>
 
@@ -550,16 +583,19 @@ export default function ProjectDetailWorkspace({
             </div>
           </div>
 
-          {/* Col 3: Progress Bar */}
+          {/* Col 3: Real-Time Progress Bar */}
           <div className="pdw-stat-progress-col">
             <div className="pdw-stat-progress-header">
               <span className="pdw-stat-lbl">Progress</span>
-              <span className="pdw-stat-val">{project?.progress || 70}%</span>
+              <span className="pdw-stat-val">{calculatedProgress}%</span>
             </div>
             <div className="pdw-stat-progress-bar-track">
               <div
                 className="pdw-stat-progress-bar-fill"
-                style={{ width: `${project?.progress || 70}%` }}
+                style={{
+                  width: `${calculatedProgress}%`,
+                  transition: 'width 0.35s cubic-bezier(0.4, 0, 0.2, 1)'
+                }}
               />
             </div>
           </div>
@@ -739,61 +775,144 @@ export default function ProjectDetailWorkspace({
             )}
 
             <div className="pdw-creds-list">
-              {credentialsList.map((cred, idx) => (
-                <div key={idx} className="pdw-cred-card">
-                  <div className="pdw-cred-card-top">
-                    <div className="pdw-cred-platform-wrap">
-                      {cred.platform?.toLowerCase().includes('shopify') ? (
-                        <ShopifyBrandIcon />
-                      ) : cred.platform?.toLowerCase().includes('word') ? (
-                        <WordPressBrandIcon />
-                      ) : (
-                        <div className="pdw-cred-platform-icon" style={{ background: '#f5f3ff', color: '#6366f1' }}>
-                          🔑
+              {localCredentials.length === 0 ? (
+                <div style={{ padding: '24px 12px', textAlign: 'center', color: '#94a3b8', fontSize: '13px' }}>
+                  No credentials saved yet. Click <strong>+ Add</strong> above to add project credentials securely.
+                </div>
+              ) : (
+                localCredentials.map((cred, idx) => {
+                  const isEditingThis = editingCredIdx === idx;
+
+                  if (isEditingThis) {
+                    return (
+                      <form
+                        key={cred.id || idx}
+                        onSubmit={(e) => handleSaveEditCred(e, idx)}
+                        style={{ padding: '12px', background: '#f8fafc', borderRadius: '12px', border: '1.5px solid #6366f1', marginBottom: '10px' }}
+                      >
+                        <div style={{ fontWeight: 700, fontSize: '12.5px', marginBottom: '8px', color: '#4338ca' }}>Edit Credential</div>
+                        <input
+                          type="text"
+                          placeholder="Platform (e.g. Shopify Admin)"
+                          value={editPlatform}
+                          onChange={(e) => setEditPlatform(e.target.value)}
+                          style={{ width: '100%', padding: '7px 10px', borderRadius: '8px', border: '1px solid #cbd5e1', marginBottom: '6px', fontSize: '12.5px' }}
+                          required
+                        />
+                        <input
+                          type="text"
+                          placeholder="URL / Website Subtext (e.g. mystore.myshopify.com)"
+                          value={editSubText}
+                          onChange={(e) => setEditSubText(e.target.value)}
+                          style={{ width: '100%', padding: '7px 10px', borderRadius: '8px', border: '1px solid #cbd5e1', marginBottom: '6px', fontSize: '12.5px' }}
+                        />
+                        <input
+                          type="text"
+                          placeholder="Username / Email"
+                          value={editUsername}
+                          onChange={(e) => setEditUsername(e.target.value)}
+                          style={{ width: '100%', padding: '7px 10px', borderRadius: '8px', border: '1px solid #cbd5e1', marginBottom: '6px', fontSize: '12.5px' }}
+                        />
+                        <input
+                          type="text"
+                          placeholder="Password"
+                          value={editPw}
+                          onChange={(e) => setEditPw(e.target.value)}
+                          style={{ width: '100%', padding: '7px 10px', borderRadius: '8px', border: '1px solid #cbd5e1', marginBottom: '10px', fontSize: '12.5px' }}
+                        />
+                        <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                          <button
+                            type="button"
+                            onClick={() => setEditingCredIdx(null)}
+                            style={{ padding: '5px 12px', fontSize: '12px', borderRadius: '6px', border: '1px solid #cbd5e1', background: '#fff', cursor: 'pointer' }}
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="submit"
+                            style={{ padding: '5px 12px', fontSize: '12px', borderRadius: '6px', border: 'none', background: '#6366f1', color: '#fff', cursor: 'pointer', fontWeight: 600 }}
+                          >
+                            Save Changes
+                          </button>
                         </div>
-                      )}
-                      <div>
-                        <h4 className="pdw-cred-platform-title">{cred.platform || 'Platform Login'}</h4>
-                        <p className="pdw-cred-platform-sub">{cred.subText || cred.website || 'admin.portal.com'}</p>
+                      </form>
+                    );
+                  }
+
+                  return (
+                    <div key={cred.id || idx} className="pdw-cred-card">
+                      <div className="pdw-cred-card-top">
+                        <div className="pdw-cred-platform-wrap">
+                          {cred.platform?.toLowerCase().includes('shopify') ? (
+                            <ShopifyBrandIcon />
+                          ) : cred.platform?.toLowerCase().includes('word') ? (
+                            <WordPressBrandIcon />
+                          ) : (
+                            <div className="pdw-cred-platform-icon" style={{ background: '#f5f3ff', color: '#6366f1' }}>
+                              🔑
+                            </div>
+                          )}
+                          <div>
+                            <h4 className="pdw-cred-platform-title">{cred.platform || 'Platform Login'}</h4>
+                            <p className="pdw-cred-platform-sub">{cred.subText || cred.website || 'admin.portal.com'}</p>
+                          </div>
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <button
+                            type="button"
+                            className="pdw-btn-copy"
+                            title="Edit Credential"
+                            onClick={() => handleStartEditCred(cred, idx)}
+                            style={{ color: '#4338ca' }}
+                          >
+                            <PencilEditIcon size={14} />
+                          </button>
+                          <button
+                            type="button"
+                            className="pdw-btn-copy"
+                            title="Delete Credential"
+                            onClick={() => handleDeleteCred(idx)}
+                            style={{ color: '#ef4444' }}
+                          >
+                            <TrashIcon size={14} color="#ef4444" />
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="pdw-cred-field-row">
+                        <span className="pdw-cred-field-lbl">Username</span>
+                        <div className="pdw-cred-field-val-wrap">
+                          <span className="pdw-cred-field-val">{cred.username || 'user@example.com'}</span>
+                          <button
+                            type="button"
+                            className="pdw-btn-copy"
+                            title="Copy Username"
+                            onClick={() => handleCopy(cred.username, `user-${idx}`)}
+                          >
+                            {copiedKey === `user-${idx}` ? <CheckIcon size={13} /> : <CopyIcon size={13} />}
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="pdw-cred-field-row">
+                        <span className="pdw-cred-field-lbl">Password</span>
+                        <div className="pdw-cred-field-val-wrap">
+                          <span className="pdw-cred-field-val">{cred.password || '••••••••'}</span>
+                          <button
+                            type="button"
+                            className="pdw-btn-copy"
+                            title="Copy Password"
+                            onClick={() => handleCopy(cred.password, `pw-${idx}`)}
+                          >
+                            {copiedKey === `pw-${idx}` ? <CheckIcon size={13} /> : <CopyIcon size={13} />}
+                          </button>
+                        </div>
                       </div>
                     </div>
-
-                    <button type="button" className="pdw-btn-copy" title="Options">
-                      <MoreVerticalIcon size={16} />
-                    </button>
-                  </div>
-
-                  <div className="pdw-cred-field-row">
-                    <span className="pdw-cred-field-lbl">Username</span>
-                    <div className="pdw-cred-field-val-wrap">
-                      <span className="pdw-cred-field-val">{cred.username || 'user@example.com'}</span>
-                      <button
-                        type="button"
-                        className="pdw-btn-copy"
-                        title="Copy Username"
-                        onClick={() => handleCopy(cred.username, `user-${idx}`)}
-                      >
-                        {copiedKey === `user-${idx}` ? <CheckIcon size={13} /> : <CopyIcon size={13} />}
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="pdw-cred-field-row">
-                    <span className="pdw-cred-field-lbl">Password</span>
-                    <div className="pdw-cred-field-val-wrap">
-                      <span className="pdw-cred-field-val">{cred.password || '••••••••'}</span>
-                      <button
-                        type="button"
-                        className="pdw-btn-copy"
-                        title="Copy Password"
-                        onClick={() => handleCopy(cred.password, `pw-${idx}`)}
-                      >
-                        {copiedKey === `pw-${idx}` ? <CheckIcon size={13} /> : <CopyIcon size={13} />}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
+                  );
+                })
+              )}
             </div>
           </div>
         )}
@@ -946,11 +1065,7 @@ export default function ProjectDetailWorkspace({
 
                     <div className="pdw-task-right">
                       <span className="pdw-task-date">{t.due_date || t.dueDate || project?.deadline || '18/10/2026'}</span>
-                      <img
-                        src={t.assigned_avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80'}
-                        alt="Assignee"
-                        className="pdw-task-avatar"
-                      />
+                      <LetterAvatar name={t.assigned_name || 'Abdullah'} size={24} />
                       <button type="button" className="pdw-btn-copy">
                         <MoreVerticalIcon size={15} />
                       </button>
@@ -1044,11 +1159,7 @@ export default function ProjectDetailWorkspace({
                   <span className="pdw-activity-dot" />
 
                   <div className="pdw-activity-user-row">
-                    {act.isLetter ? (
-                      <div className="pdw-activity-avatar-letter">{act.letter}</div>
-                    ) : (
-                      <img src={act.avatar} alt={act.author} className="pdw-activity-avatar" />
-                    )}
+                    <LetterAvatar name={act.author || 'Abdullah'} size={28} />
 
                     <div className="pdw-activity-content">
                       <span className="pdw-activity-action-title">

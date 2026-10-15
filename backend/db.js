@@ -75,9 +75,7 @@ const seedUsers = [
 ];
 
 const seedAssignees = [
-  { name: 'Ahmed', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80' },
-  { name: 'Sara', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80' },
-  { name: 'Usman', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80' }
+  { name: 'Abdullah', avatar: '' }
 ];
 
 const realProjects = [
@@ -516,6 +514,17 @@ async function initPostgresTables() {
       await client.query(`
         ALTER TABLE tasks ADD COLUMN IF NOT EXISTS assigned_name VARCHAR(100);
         ALTER TABLE tasks ADD COLUMN IF NOT EXISTS assigned_avatar TEXT;
+      `);
+
+      // Ensure single Admin user in team_members table
+      await client.query(`
+        DELETE FROM team_members;
+        INSERT INTO team_members (id, name, role, email)
+        VALUES ('admin-1', 'Abdullah', 'Super Admin & Agency Lead', 'admin@remotale.com')
+        ON CONFLICT (id) DO UPDATE SET
+          name = EXCLUDED.name,
+          role = EXCLUDED.role,
+          email = EXCLUDED.email;
       `);
 
       // Remove old demo projects if any exist

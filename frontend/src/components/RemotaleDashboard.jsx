@@ -5,6 +5,7 @@ import { RemotaleLogo } from './RemotaleAuthFlow';
 import AddNewProjectModal from './AddNewProjectModal';
 import MyProjectsView from './MyProjectsView';
 import ProjectDetailWorkspace from './ProjectDetailWorkspace';
+import LetterAvatar from './LetterAvatar';
 
 // ==========================================
 // SVG ICONS
@@ -593,6 +594,153 @@ export default function RemotaleDashboard({ user, onLogout }) {
   };
 
   // ==========================================
+  // DEADLINE PARSER & NEAREST-TO-FARTHEST LOGIC
+  // ==========================================
+  const parseDeadlineDate = (dateStr) => {
+    if (!dateStr) return new Date(8640000000000000);
+    const trimmed = String(dateStr).trim();
+    // Handle DD/MM/YYYY or DD-MM-YYYY
+    const dmyMatch = trimmed.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+    if (dmyMatch) {
+      return new Date(Number(dmyMatch[3]), Number(dmyMatch[2]) - 1, Number(dmyMatch[1]));
+    }
+    const parsed = new Date(trimmed);
+    return isNaN(parsed.getTime()) ? new Date(8640000000000000) : parsed;
+  };
+
+  const getDaysRemainingBadge = (dateStr) => {
+    const d = parseDeadlineDate(dateStr);
+    if (d.getTime() >= 8640000000000000) return { text: 'No date', color: '#64748b', bg: '#f1f5f9' };
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+    const diffTime = d.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    if (diffDays < 0) return { text: `${Math.abs(diffDays)}d overdue`, color: '#dc2626', bg: '#fee2e2' };
+    if (diffDays === 0) return { text: 'Due today', color: '#ea580c', bg: '#ffedd5' };
+    if (diffDays === 1) return { text: 'Due tomorrow', color: '#d97706', bg: '#fef3c7' };
+    if (diffDays <= 7) return { text: `${diffDays} days left`, color: '#d97706', bg: '#fef3c7' };
+    return { text: `${diffDays} days left`, color: '#4338ca', bg: '#e0e7ff' };
+  };
+
+  // Projects strictly ordered from nearest to farthest deadline
+  const sortedDeadlines = useMemo(() => {
+    return [...visibleProjects].sort((a, b) => {
+      return parseDeadlineDate(a.deadline) - parseDeadlineDate(b.deadline);
+    });
+  }, [visibleProjects]);
+
+  // ==========================================
+  // RENDER: TEAM VIEW (1 Super Admin Abdullah with Universal Access)
+  // ==========================================
+  const renderTeamView = () => (
+    <div style={{ padding: '28px 32px', maxWidth: '1080px', margin: '0 auto' }}>
+      {/* Header */}
+      <div style={{ marginBottom: '24px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+          <span style={{ fontSize: '24px' }}>👥</span>
+          <h1 style={{ fontSize: '24px', fontWeight: 800, color: '#0f172a', margin: 0 }}>Agency Team & Administration</h1>
+        </div>
+        <p style={{ fontSize: '13.5px', color: '#64748b', margin: 0, lineHeight: 1.6 }}>
+          Remotale operates under centralized administrative leadership. There is <strong>1 Super Admin</strong> who oversees and has universal access to all projects, client workspaces, credentials, and deliverables.
+        </p>
+      </div>
+
+      {/* Admin Highlight Banner */}
+      <div style={{
+        background: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)',
+        color: '#ffffff',
+        borderRadius: '16px',
+        padding: '26px 30px',
+        boxShadow: '0 10px 25px -5px rgba(15, 23, 42, 0.25)',
+        marginBottom: '28px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        flexWrap: 'wrap',
+        gap: '20px'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '22px' }}>
+          <LetterAvatar name="Abdullah" size={68} />
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
+              <h2 style={{ fontSize: '22px', fontWeight: 800, margin: 0, color: '#ffffff' }}>Abdullah</h2>
+              <span style={{
+                background: '#4f46e5',
+                color: '#ffffff',
+                fontSize: '11px',
+                fontWeight: 700,
+                padding: '3px 12px',
+                borderRadius: '999px',
+                letterSpacing: '0.3px'
+              }}>
+                👑 Super Admin & Agency Lead
+              </span>
+            </div>
+            <p style={{ margin: '0 0 8px 0', fontSize: '13px', color: '#cbd5e1' }}>
+              ✉️ admin@remotale.com • 🌐 Universal Access for All Clients & Projects
+            </p>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+              <span style={{ background: 'rgba(255,255,255,0.12)', padding: '4px 10px', borderRadius: '6px', fontSize: '11.5px', color: '#e2e8f0', fontWeight: 500 }}>
+                Full System Administration
+              </span>
+              <span style={{ background: 'rgba(255,255,255,0.12)', padding: '4px 10px', borderRadius: '6px', fontSize: '11.5px', color: '#e2e8f0', fontWeight: 500 }}>
+                All 10 Client Projects
+              </span>
+              <span style={{ background: 'rgba(255,255,255,0.12)', padding: '4px 10px', borderRadius: '6px', fontSize: '11.5px', color: '#e2e8f0', fontWeight: 500 }}>
+                Credentials & Files Access
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div style={{
+          background: 'rgba(255, 255, 255, 0.08)',
+          border: '1px solid rgba(255, 255, 255, 0.15)',
+          borderRadius: '14px',
+          padding: '16px 24px',
+          textAlign: 'center'
+        }}>
+          <div style={{ fontSize: '28px', fontWeight: 800, color: '#38bdf8' }}>1</div>
+          <div style={{ fontSize: '12px', color: '#94a3b8', fontWeight: 600 }}>Active Admin User</div>
+        </div>
+      </div>
+
+      {/* Permissions & Security Grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '18px' }}>
+        <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+            <span style={{ fontSize: '20px' }}>🔐</span>
+            <h4 style={{ margin: 0, fontSize: '14px', fontWeight: 700, color: '#0f172a' }}>Universal Access</h4>
+          </div>
+          <p style={{ margin: 0, fontSize: '12.5px', color: '#64748b', lineHeight: 1.5 }}>
+            The Super Admin account has universal visibility across all client records, tasks, files, and project environments without restriction.
+          </p>
+        </div>
+
+        <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+            <span style={{ fontSize: '20px' }}>⚡</span>
+            <h4 style={{ margin: 0, fontSize: '14px', fontWeight: 700, color: '#0f172a' }}>Real-Time Synchronization</h4>
+          </div>
+          <p style={{ margin: 0, fontSize: '12.5px', color: '#64748b', lineHeight: 1.5 }}>
+            All task completions, credential changes, notes, and progress updates submitted by the Super Admin sync instantly with client dashboards.
+          </p>
+        </div>
+
+        <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+            <span style={{ fontSize: '20px' }}>🛡️</span>
+            <h4 style={{ margin: 0, fontSize: '14px', fontWeight: 700, color: '#0f172a' }}>Isolated Client Views</h4>
+          </div>
+          <p style={{ margin: 0, fontSize: '12.5px', color: '#64748b', lineHeight: 1.5 }}>
+            Clients only see their own assigned projects and nearest deadlines. Universal team management is retained solely by the Super Admin.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+
+  // ==========================================
   // RENDER: DESKTOP CLIENT HOMEPAGE (Image 1, Left)
   // ==========================================
   const renderDesktopClient = () => (
@@ -752,6 +900,8 @@ export default function RemotaleDashboard({ user, onLogout }) {
             currentUser={currentClientUser}
             onLogout={onLogout}
           />
+        ) : activeTab === 'team' ? (
+          renderTeamView()
         ) : (
           <>
         {/* Top Header */}
@@ -955,19 +1105,21 @@ export default function RemotaleDashboard({ user, onLogout }) {
 
                   <p className="remotale-proj-desc">{proj.description || 'Deliverables and custom client integration.'}</p>
 
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                    <span style={{ fontSize: '11px', color: '#64748b', fontWeight: 600 }}>Progress</span>
+                    <span style={{ fontSize: '12px', color: '#1e293b', fontWeight: 700 }}>{proj.progress || 0}%</span>
+                  </div>
                   <div className="remotale-progress-bar-wrap">
                     <div
                       className="remotale-progress-bar-fill"
-                      style={{ width: `${proj.progress || (proj.status === 'completed' ? 100 : 70)}%` }}
+                      style={{ width: `${proj.progress || 0}%`, transition: 'width 0.35s ease' }}
                     />
                   </div>
 
                   <div className="remotale-proj-footer">
-                    <div className="remotale-proj-avatars">
-                      <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&auto=format&fit=crop&q=80" alt="team" />
-                      <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80&auto=format&fit=crop&q=80" alt="team" />
-                      <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&auto=format&fit=crop&q=80" alt="team" />
-                      <span className="more-badge">+2</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <LetterAvatar name="Abdullah" size={24} />
+                      <span style={{ fontSize: '12px', fontWeight: 600, color: '#475569' }}>Admin: Abdullah</span>
                     </div>
 
                     <div className="remotale-proj-due">
@@ -980,57 +1132,92 @@ export default function RemotaleDashboard({ user, onLogout }) {
             )}
           </section>
 
-          {/* Right Column: Upcoming Tasks & Recent Messages */}
+          {/* Right Column: Project Deadlines (Nearest to Farthest) & Recent Messages */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            {/* Upcoming Tasks */}
+            {/* Project Deadlines Section */}
             <section className="remotale-card-container">
               <div className="remotale-card-header">
-                <h3>Upcoming Tasks</h3>
-                <button
-                  type="button"
-                  className="remotale-card-view-all"
-                  onClick={() => setIsAddingTask(!isAddingTask)}
-                >
-                  {isAddingTask ? 'Cancel' : '+ Add'}
-                </button>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 700, color: '#0f172a' }}>Project Deadlines</h3>
+                  <span style={{ fontSize: '11px', color: '#64748b', fontWeight: 500 }}>Nearest to farthest due dates</span>
+                </div>
+                <span style={{ fontSize: '11.5px', fontWeight: 700, color: '#4f46e5', background: '#eef2ff', padding: '3px 9px', borderRadius: '999px' }}>
+                  {sortedDeadlines.length} Active
+                </span>
               </div>
 
-              {isAddingTask && (
-                <form onSubmit={handleAddTask} style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
-                  <input
-                    type="text"
-                    className="remotale-input-box"
-                    placeholder="Task title..."
-                    value={newTaskTitle}
-                    onChange={(e) => setNewTaskTitle(e.target.value)}
-                    style={{ height: '36px', fontSize: '12px' }}
-                    autoFocus
-                  />
-                  <button type="submit" className="remotale-btn-new-project" style={{ padding: '0 12px', height: '36px' }}>
-                    Save
-                  </button>
-                </form>
-              )}
-
-              {visibleTasks.length === 0 ? (
-                <div className="remotale-empty-card" style={{ padding: '20px' }}>
-                  <p>No pending tasks.</p>
+              {sortedDeadlines.length === 0 ? (
+                <div className="remotale-empty-card" style={{ padding: '24px', textAlign: 'center' }}>
+                  <p style={{ margin: 0, color: '#94a3b8', fontSize: '13px' }}>No upcoming project deadlines.</p>
                 </div>
               ) : (
-                visibleTasks.slice(0, 4).map(task => (
-                  <div key={task.id} className="remotale-task-item">
-                    <div
-                      className={`remotale-task-checkbox ${task.completed ? 'completed' : ''}`}
-                      onClick={() => handleToggleTask(task.id, task.completed)}
-                    >
-                      {task.completed && <span>✓</span>}
-                    </div>
-                    <div className="remotale-task-content">
-                      <span className={`remotale-task-title ${task.completed ? 'done' : ''}`}>{task.title}</span>
-                      <span className="remotale-task-date">{task.due_date || 'Oct 22, 2024'}</span>
-                    </div>
-                  </div>
-                ))
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  {sortedDeadlines.map((p) => {
+                    const badge = getDaysRemainingBadge(p.deadline);
+                    const pct = (p.progress !== undefined && p.progress !== null) ? Number(p.progress) : (p.status === 'completed' ? 100 : 0);
+
+                    return (
+                      <div
+                        key={p.id}
+                        onClick={() => setSelectedProject(p)}
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: '6px',
+                          padding: '12px',
+                          background: '#f8fafc',
+                          border: '1px solid #e2e8f0',
+                          borderRadius: '10px',
+                          cursor: 'pointer',
+                          transition: 'all 0.15s ease'
+                        }}
+                        onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#c7d2fe'; e.currentTarget.style.background = '#f1f5f9'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.background = '#f8fafc'; }}
+                        title="Click to view project details"
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+                          <span style={{ fontWeight: 700, fontSize: '13px', color: '#1e293b', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            {p.title}
+                          </span>
+                          <span style={{
+                            padding: '2px 8px',
+                            borderRadius: '999px',
+                            fontSize: '11px',
+                            fontWeight: 700,
+                            background: badge.bg,
+                            color: badge.color,
+                            flexShrink: 0
+                          }}>
+                            {badge.text}
+                          </span>
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '11.5px', color: '#64748b' }}>
+                          <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <span>📅</span>
+                            <span>Due: <strong>{p.deadline || 'No deadline'}</strong></span>
+                          </span>
+                          <span style={{ fontWeight: 700, color: '#475569' }}>
+                            {pct}% done
+                          </span>
+                        </div>
+
+                        {/* Realtime Animated Progress bar track */}
+                        <div style={{ width: '100%', height: '5px', background: '#e2e8f0', borderRadius: '999px', overflow: 'hidden' }}>
+                          <div
+                            style={{
+                              width: `${pct}%`,
+                              height: '100%',
+                              background: pct === 100 ? '#10b981' : '#4f46e5',
+                              borderRadius: '999px',
+                              transition: 'width 0.35s ease'
+                            }}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               )}
             </section>
 
@@ -1054,11 +1241,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
               ) : (
                 visibleMessages.slice(0, 3).map(msg => (
                   <div key={msg.id} className="remotale-message-item">
-                    <img
-                      src={msg.sender_avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=80&auto=format&fit=crop&q=80'}
-                      alt={msg.sender_name}
-                      className="remotale-msg-avatar"
-                    />
+                    <LetterAvatar name={msg.sender_name || 'Admin'} size={32} />
                     <div className="remotale-msg-body">
                       <div className="remotale-msg-header">
                         <span className="remotale-msg-sender">{msg.sender_name}</span>
@@ -1265,6 +1448,8 @@ export default function RemotaleDashboard({ user, onLogout }) {
             currentUser={user}
             onLogout={onLogout}
           />
+        ) : activeTab === 'team' ? (
+          renderTeamView()
         ) : (
           <>
         {/* Top Header */}
@@ -1336,12 +1521,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
                 style={{ cursor: 'pointer' }}
                 title="Account Menu"
               >
-                <div className="remotale-header-avatar-circle">
-                  <img
-                    src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80"
-                    alt="Admin"
-                  />
-                </div>
+                <LetterAvatar name="Abdullah" size={34} />
                 <div className="remotale-header-admin-text">
                   <span className="remotale-header-admin-name">Admin</span>
                   <span className="remotale-header-admin-role">Super Admin ⌵</span>
@@ -1525,11 +1705,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
               clients.slice(0, 3).map(c => (
                 <div key={c.id} className="remotale-admin-list-item">
                   <div className="remotale-admin-item-left">
-                    <img
-                      src={c.avatar || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&auto=format&fit=crop&q=80'}
-                      alt={c.name}
-                      style={{ width: '34px', height: '34px', borderRadius: '50%', objectFit: 'cover' }}
-                    />
+                    <LetterAvatar name={c.name} size={34} />
                     <div className="remotale-admin-item-text">
                       <span className="remotale-admin-item-title">{c.name}</span>
                       <span className="remotale-admin-item-sub">{c.totalProjects || 1} Projects</span>
@@ -1554,11 +1730,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
               teamActivities.slice(0, 3).map(act => (
                 <div key={act.id} className="remotale-admin-list-item">
                   <div className="remotale-admin-item-left">
-                    <img
-                      src={act.member_avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80&auto=format&fit=crop&q=80'}
-                      alt={act.member_name}
-                      style={{ width: '34px', height: '34px', borderRadius: '50%', objectFit: 'cover' }}
-                    />
+                    <LetterAvatar name={act.member_name || 'Abdullah'} size={34} />
                     <div className="remotale-admin-item-text">
                       <span className="remotale-admin-item-title">{act.member_name} {act.action}</span>
                       <span className="remotale-admin-item-sub">{act.details}</span>
@@ -1668,11 +1840,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
                     style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
                     onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
                   >
-                    <img
-                      src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80&auto=format&fit=crop&q=80"
-                      alt="Admin"
-                      style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover' }}
-                    />
+                    <LetterAvatar name="Abdullah" size={32} />
                   </div>
                   {isProfileMenuOpen && (
                     <div className="remotale-user-dropdown-popover">
@@ -1767,6 +1935,71 @@ export default function RemotaleDashboard({ user, onLogout }) {
       );
     }
 
+    if (activeTab === 'team') {
+      return (
+        <div className="remotale-mobile-wrapper">
+          <div className="remotale-mobile-card">
+            <div className="remotale-mobile-header">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <RemotaleLogo size={22} />
+                <span style={{ fontWeight: 800, fontSize: '17px', color: '#0f172a' }}>Remotale</span>
+              </div>
+              <LetterAvatar name="Abdullah" size={32} />
+            </div>
+
+            {renderTeamView()}
+
+            <div className="remotale-mobile-bottom-nav">
+              <button
+                type="button"
+                className="remotale-bottom-nav-item"
+                onClick={() => {
+                  setSelectedProject(null);
+                  setActiveTab('home');
+                }}
+              >
+                <HomeIcon size={18} color="#64748B" />
+                <span>Home</span>
+              </button>
+              <button
+                type="button"
+                className="remotale-bottom-nav-item"
+                onClick={() => {
+                  setSelectedProject(null);
+                  setActiveTab('clients');
+                }}
+              >
+                <UsersIcon size={18} color="#64748B" />
+                <span>Clients</span>
+              </button>
+              <button
+                type="button"
+                className="remotale-bottom-nav-item"
+                onClick={() => {
+                  setSelectedProject(null);
+                  setActiveTab('projects');
+                }}
+              >
+                <FolderIcon size={18} color="#64748B" />
+                <span>Projects</span>
+              </button>
+              <button
+                type="button"
+                className="remotale-bottom-nav-item active"
+                onClick={() => {
+                  setSelectedProject(null);
+                  setActiveTab('team');
+                }}
+              >
+                <UsersIcon size={18} color="#4F46E5" />
+                <span>Team</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     return (
     <div className="remotale-mobile-wrapper">
       <div className="remotale-mobile-card">
@@ -1787,11 +2020,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
                 style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}
                 onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
               >
-                <img
-                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80&auto=format&fit=crop&q=80"
-                  alt="Admin"
-                  style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover' }}
-                />
+                <LetterAvatar name="Abdullah" size={32} />
                 <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }}>
                   <span style={{ fontSize: '11.5px', fontWeight: 700, color: '#0f172a' }}>Admin</span>
                   <span style={{ fontSize: '9.5px', color: '#64748b' }}>Super Admin ⌵</span>
@@ -2101,11 +2330,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
                 teamActivities.slice(0, 3).map((act, idx) => (
                   <div key={act.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 0', borderBottom: idx < 2 ? '1px solid #f8fafc' : 'none' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <img
-                        src={act.member_avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80&auto=format&fit=crop&q=80'}
-                        alt={act.member_name}
-                        style={{ width: '24px', height: '24px', borderRadius: '50%', objectFit: 'cover' }}
-                      />
+                      <LetterAvatar name={act.member_name || 'Abdullah'} size={24} />
                       <div>
                         <div style={{ fontSize: '10.5px', fontWeight: 700, color: '#0f172a' }}>{act.member_name} {act.action}</div>
                         <div style={{ fontSize: '8.5px', color: '#64748b' }}>{act.details}</div>
@@ -2546,15 +2771,17 @@ export default function RemotaleDashboard({ user, onLogout }) {
                       {renderProjectDotsMenu(proj)}
                     </div>
                     <p className="remotale-proj-desc" style={{ fontSize: '11px', marginBottom: '6px' }}>{proj.description}</p>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3px' }}>
+                      <span style={{ fontSize: '9.5px', color: '#64748b', fontWeight: 600 }}>Progress</span>
+                      <span style={{ fontSize: '10px', color: '#1e293b', fontWeight: 700 }}>{proj.progress || 0}%</span>
+                    </div>
                     <div className="remotale-progress-bar-wrap" style={{ height: '4px', marginBottom: '8px' }}>
-                      <div className="remotale-progress-bar-fill" style={{ width: `${proj.progress || 70}%` }} />
+                      <div className="remotale-progress-bar-fill" style={{ width: `${proj.progress || 0}%`, transition: 'width 0.35s ease' }} />
                     </div>
                     <div className="remotale-proj-footer">
-                      <div className="remotale-proj-avatars" style={{ transform: 'scale(0.85)', transformOrigin: 'left center' }}>
-                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&auto=format&fit=crop&q=80" alt="team" />
-                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80&auto=format&fit=crop&q=80" alt="team" />
-                        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&auto=format&fit=crop&q=80" alt="team" />
-                        <span className="more-badge" style={{ fontSize: '9px', padding: '1px 4px' }}>+{idx === 0 ? '2' : (idx === 1 ? '1' : '0')}</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                        <LetterAvatar name="Abdullah" size={18} />
+                        <span style={{ fontSize: '10.5px', fontWeight: 600, color: '#475569' }}>Admin: Abdullah</span>
                       </div>
                       <span style={{ fontSize: '10px', color: '#64748b' }}>📅 Due {proj.deadline || '25 Oct 2024'}</span>
                     </div>
@@ -2563,56 +2790,48 @@ export default function RemotaleDashboard({ user, onLogout }) {
               )}
             </section>
 
-            {/* Upcoming Tasks & Recent Messages 2-Column Split (Image 3) */}
+            {/* Project Deadlines & Recent Messages 2-Column Split (Image 3) */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-              {/* Upcoming Tasks */}
+              {/* Project Deadlines Section (Nearest to Farthest) */}
               <section className="remotale-card-container" style={{ padding: '12px' }}>
                 <div className="remotale-card-header" style={{ marginBottom: '8px' }}>
-                  <h3 style={{ fontSize: '12.5px' }}>Upcoming Tasks</h3>
-                  <button
-                    type="button"
-                    className="remotale-card-view-all"
-                    onClick={() => setIsAddingTask(!isAddingTask)}
-                  >
-                    {isAddingTask ? 'Cancel' : '+ Add'}
-                  </button>
+                  <h3 style={{ fontSize: '12px', margin: 0, fontWeight: 700 }}>Project Deadlines</h3>
+                  <span style={{ fontSize: '9px', fontWeight: 700, color: '#4f46e5', background: '#eef2ff', padding: '1px 5px', borderRadius: '999px' }}>
+                    Nearest
+                  </span>
                 </div>
 
-                {isAddingTask && (
-                  <form onSubmit={handleAddTask} style={{ display: 'flex', gap: '4px', marginBottom: '8px' }}>
-                    <input
-                      type="text"
-                      className="remotale-input-box"
-                      placeholder="Task..."
-                      value={newTaskTitle}
-                      onChange={(e) => setNewTaskTitle(e.target.value)}
-                      style={{ height: '28px', fontSize: '11px' }}
-                      autoFocus
-                    />
-                    <button type="submit" className="remotale-btn-new-project" style={{ padding: '0 8px', height: '28px', fontSize: '10px' }}>
-                      Save
-                    </button>
-                  </form>
-                )}
-
-                {tasks.length === 0 ? (
-                  <p style={{ fontSize: '11px', color: '#94a3b8', margin: 0 }}>No tasks due.</p>
+                {sortedDeadlines.length === 0 ? (
+                  <p style={{ fontSize: '11px', color: '#94a3b8', margin: 0 }}>No deadlines pending.</p>
                 ) : (
-                  tasks.slice(0, 3).map(t => (
-                    <div key={t.id} className="remotale-task-item" style={{ padding: '5px 0' }}>
+                  sortedDeadlines.slice(0, 3).map(p => {
+                    const badge = getDaysRemainingBadge(p.deadline);
+                    const pct = (p.progress !== undefined && p.progress !== null) ? Number(p.progress) : (p.status === 'completed' ? 100 : 0);
+
+                    return (
                       <div
-                        className={`remotale-task-checkbox ${t.completed ? 'completed' : ''}`}
-                        onClick={() => handleToggleTask(t.id, t.completed)}
-                        style={{ width: '15px', height: '15px' }}
+                        key={p.id}
+                        onClick={() => setSelectedProject(p)}
+                        style={{ padding: '6px 0', borderBottom: '1px solid #f8fafc', cursor: 'pointer' }}
                       >
-                        {t.completed && <span style={{ fontSize: '9px' }}>✓</span>}
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2px' }}>
+                          <span style={{ fontSize: '11px', fontWeight: 700, color: '#0f172a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '85px' }}>
+                            {p.title}
+                          </span>
+                          <span style={{ fontSize: '8px', fontWeight: 700, padding: '1px 4px', borderRadius: '999px', background: badge.bg, color: badge.color, flexShrink: 0 }}>
+                            {badge.text}
+                          </span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '9px', color: '#64748b', marginBottom: '3px' }}>
+                          <span>📅 {p.deadline}</span>
+                          <span style={{ fontWeight: 700 }}>{pct}%</span>
+                        </div>
+                        <div style={{ width: '100%', height: '3px', background: '#e2e8f0', borderRadius: '999px', overflow: 'hidden' }}>
+                          <div style={{ width: `${pct}%`, height: '100%', background: pct === 100 ? '#10b981' : '#4f46e5', transition: 'width 0.35s ease' }} />
+                        </div>
                       </div>
-                      <div className="remotale-task-content">
-                        <span className={`remotale-task-title ${t.completed ? 'done' : ''}`} style={{ fontSize: '11px' }}>{t.title}</span>
-                        <span className="remotale-task-date" style={{ fontSize: '9px' }}>{t.due_date || 'Oct 22, 2024'}</span>
-                      </div>
-                    </div>
-                  ))
+                    );
+                  })
                 )}
               </section>
 
@@ -2628,11 +2847,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
                 ) : (
                   messages.slice(0, 3).map(msg => (
                     <div key={msg.id} className="remotale-message-item" style={{ padding: '5px 0', gap: '8px' }}>
-                      <img
-                        src={msg.sender_avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=80&auto=format&fit=crop&q=80'}
-                        alt={msg.sender_name}
-                        style={{ width: '24px', height: '24px', borderRadius: '50%', objectFit: 'cover' }}
-                      />
+                      <LetterAvatar name={msg.sender_name || 'Admin'} size={24} />
                       <div className="remotale-msg-body">
                         <div className="remotale-msg-header">
                           <span className="remotale-msg-sender" style={{ fontSize: '10.5px' }}>{msg.sender_name}</span>

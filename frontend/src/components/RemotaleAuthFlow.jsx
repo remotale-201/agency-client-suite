@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './RemotaleAuth.css';
 import { api } from '../api';
+import LetterAvatar from './LetterAvatar';
 
 // ==========================================
 // SVG ICONS & BRANDING
@@ -348,24 +349,10 @@ export default function RemotaleAuthFlow({ onLogin, onRegister, initialPortalTok
 
             {/* Team Pill Card */}
             <div className="remotale-team-pill">
-              <span className="remotale-team-label">Team</span>
-              <div className="remotale-team-avatars">
-                <img
-                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80"
-                  alt="Team member 1"
-                  className="remotale-avatar-img"
-                />
-                <img
-                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80"
-                  alt="Team member 2"
-                  className="remotale-avatar-img"
-                />
-                <img
-                  src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80"
-                  alt="Team member 3"
-                  className="remotale-avatar-img"
-                />
-                <div className="remotale-avatar-more">+2</div>
+              <span className="remotale-team-label">Admin Lead</span>
+              <div className="remotale-team-avatars" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <LetterAvatar name="Abdullah" size={24} />
+                <span style={{ fontSize: '11.5px', fontWeight: 700, color: '#0f172a' }}>Abdullah</span>
               </div>
             </div>
           </div>

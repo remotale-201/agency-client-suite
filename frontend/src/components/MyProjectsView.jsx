@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './MyProjectsView.css';
+import LetterAvatar from './LetterAvatar';
 
 // SVG Icons
 function PlusIcon({ size = 16, color = 'currentColor' }) {
@@ -113,13 +114,6 @@ function BarChartIcon({ size = 20, color = 'currentColor' }) {
     </svg>
   );
 }
-
-// Sample Team Avatars
-const sampleTeamMembers = [
-  'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80'
-];
 
 export default function MyProjectsView({
   projects = [],
@@ -388,8 +382,6 @@ export default function MyProjectsView({
         <div className="my-projects-list" ref={menuRef}>
           {sortedProjects.map((proj) => {
             const meta = getCategoryMeta(proj.project_type || proj.projectType, proj.title);
-            const teamCount = proj.title?.includes('E-commerce') ? 3 : (proj.title?.includes('SEO') ? 1 : 2);
-            const avatars = sampleTeamMembers.slice(0, teamCount);
             const isMenuOpen = openMenuId === proj.id;
 
             return (
@@ -471,27 +463,18 @@ export default function MyProjectsView({
                   <div className="my-project-progress-track">
                     <div
                       className="my-project-progress-fill"
-                      style={{ width: `${proj.progress || 0}%` }}
+                      style={{ width: `${proj.progress || 0}%`, transition: 'width 0.35s ease' }}
                     />
                   </div>
                   <span className="my-project-progress-pct">{proj.progress || 0}%</span>
                 </div>
 
-                {/* Footer Row: Team Members + Deadline */}
+                {/* Footer Row: Admin Lead + Deadline */}
                 <div className="my-project-card-footer">
-                  <div className="my-project-team-row">
-                    <div className="my-project-avatar-stack">
-                      {avatars.map((av, idx) => (
-                        <img
-                          key={idx}
-                          src={av}
-                          alt="Team member"
-                          className="my-project-avatar-circle"
-                        />
-                      ))}
-                    </div>
-                    <span className="my-project-team-count">
-                      {teamCount} Team Member{teamCount > 1 ? 's' : ''}
+                  <div className="my-project-team-row" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <LetterAvatar name="Abdullah" size={24} />
+                    <span className="my-project-team-count" style={{ fontWeight: 600, color: '#475569', fontSize: '12px' }}>
+                      Admin: Abdullah
                     </span>
                   </div>
 
