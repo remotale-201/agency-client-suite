@@ -984,6 +984,14 @@
   box-sizing: border-box !important;
 }
 
+.remotale-mobile-card .my-projects-container {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  padding: 12px 14px 105px 14px !important;
+  overflow-x: hidden;
+}
+
 @media (max-width: 640px) {
   .remotale-mobile-wrapper {
     padding: 0 !important;

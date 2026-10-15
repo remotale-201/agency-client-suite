@@ -1874,7 +1874,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
             </div>
 
             <MyProjectsView
-              projects={projects}
+              projects={visibleProjects}
               onSelectProject={(proj) => setSelectedProject(proj)}
               onOpenAddProject={() => {
                 setProjectToEdit(null);

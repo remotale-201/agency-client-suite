@@ -237,6 +237,16 @@ export default function MyProjectsView({
     }
   };
 
+  // Client Name Resolver
+  const getClientName = (proj) => {
+    if (proj.clientName && proj.clientName !== 'Client') return proj.clientName;
+    const cid = proj.client_id || proj.clientId;
+    if (cid === 'client-awais') return 'Awais';
+    if (cid === 'client-afshal') return 'Afshal';
+    if (cid === 'client-1') return 'Ali Khan';
+    return 'Client';
+  };
+
   return (
     <div className="my-projects-container">
       {/* Top Header */}
@@ -246,25 +256,12 @@ export default function MyProjectsView({
           <p>Manage and track all your projects in one place.</p>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <div className="my-projects-header-actions">
           {onLogout && (
             <button
               type="button"
+              className="my-projects-btn-logout"
               onClick={onLogout}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                padding: '9px 15px',
-                borderRadius: '8px',
-                border: '1px solid #fecaca',
-                background: '#fee2e2',
-                color: '#dc2626',
-                fontSize: '13px',
-                fontWeight: 700,
-                cursor: 'pointer',
-                transition: 'all 0.15s ease'
-              }}
               title="Log Out of your account"
             >
               <span>🚪</span>
@@ -383,6 +380,7 @@ export default function MyProjectsView({
           {sortedProjects.map((proj) => {
             const meta = getCategoryMeta(proj.project_type || proj.projectType, proj.title);
             const isMenuOpen = openMenuId === proj.id;
+            const clientName = getClientName(proj);
 
             return (
               <div
@@ -390,18 +388,24 @@ export default function MyProjectsView({
                 className="my-project-card"
                 onClick={() => onSelectProject(proj)}
               >
-                {/* Top Row: Icon + Title + Status + 3-dots */}
+                {/* Top Row: Icon + Title + Meta + 3-dots */}
                 <div className="my-project-card-top">
                   <div className={`my-project-icon-box ${meta.className}`}>
                     {meta.icon}
                   </div>
 
                   <div className="my-project-card-info">
-                    <div className="my-project-card-title-row">
-                      <h3 className="my-project-title">{proj.title}</h3>
+                    <h3 className="my-project-title">{proj.title}</h3>
+                    <div className="my-project-card-meta-row">
                       <span className={`my-project-cat-badge ${meta.className}`}>
                         {meta.label}
                       </span>
+                      {renderStatusBadge(proj.status)}
+                      {clientName && (
+                        <span className="my-project-client-badge">
+                          👤 {clientName}
+                        </span>
+                      )}
                     </div>
                   </div>
 
@@ -409,8 +413,6 @@ export default function MyProjectsView({
                     className="my-project-card-top-right"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    {renderStatusBadge(proj.status)}
-
                     <button
                       type="button"
                       className="my-project-dots-btn"
