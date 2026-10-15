@@ -159,6 +159,22 @@ export const api = {
   getTeam: () => request('/api/team'),
   getTeamActivities: () => request('/api/team/activities'),
 
+  // Invoices
+  getInvoices: (params = {}) => {
+    const query = new URLSearchParams();
+    if (params.clientId) query.append('clientId', params.clientId);
+    if (params.projectId) query.append('projectId', params.projectId);
+    if (params.status) query.append('status', params.status);
+    const queryString = query.toString() ? `?${query.toString()}` : '';
+    return request(`/api/invoices${queryString}`);
+  },
+  getInvoice: (id) => request(`/api/invoices/${id}`),
+  createInvoice: (invoiceData) => request('/api/invoices', { method: 'POST', body: JSON.stringify(invoiceData) }),
+  updateInvoice: (id, updates) => request(`/api/invoices/${id}`, { method: 'PUT', body: JSON.stringify(updates) }),
+  publishInvoice: (id) => request(`/api/invoices/${id}/publish`, { method: 'PATCH' }),
+  updateInvoiceStatus: (id, status) => request(`/api/invoices/${id}/status`, { method: 'PATCH', body: JSON.stringify({ status }) }),
+  deleteInvoice: (id) => request(`/api/invoices/${id}`, { method: 'DELETE' }),
+
   // Health
   checkHealth: () => request('/api/health')
 };

@@ -5,8 +5,9 @@ import { RemotaleLogo } from './RemotaleAuthFlow';
 import AddNewProjectModal from './AddNewProjectModal';
 import MyProjectsView from './MyProjectsView';
 import ProjectDetailWorkspace from './ProjectDetailWorkspace';
+import InvoicesView from './InvoicesView';
 import LetterAvatar from './LetterAvatar';
-import { SEED_PROJECTS, SEED_CLIENTS, SEED_STATS } from '../seedData';
+import { SEED_PROJECTS, SEED_CLIENTS, SEED_STATS, SEED_INVOICES } from '../seedData';
 
 // ==========================================
 // SVG ICONS
@@ -191,6 +192,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
   const [messages, setMessages] = useState([]);
   const [clients, setClients] = useState(SEED_CLIENTS);
   const [teamActivities, setTeamActivities] = useState([]);
+  const [invoices, setInvoices] = useState(SEED_INVOICES);
   const [loading, setLoading] = useState(false);
 
   // Selected Project for Detail View (Image 2)
@@ -279,13 +281,14 @@ export default function RemotaleDashboard({ user, onLogout }) {
   // Fetch all real database data with real-time sync
   const loadData = async () => {
     try {
-      const [statsRes, projsRes, tasksRes, msgsRes, clientsRes, actsRes] = await Promise.all([
+      const [statsRes, projsRes, tasksRes, msgsRes, clientsRes, actsRes, invsRes] = await Promise.all([
         api.getStats().catch((e) => { console.warn('[Stats Sync]', e.message); return null; }),
         api.getProjects().catch((e) => { console.warn('[Projects Sync]', e.message); return null; }),
         api.getTasks().catch((e) => { console.warn('[Tasks Sync]', e.message); return null; }),
         api.getMessages().catch((e) => { console.warn('[Messages Sync]', e.message); return null; }),
         api.getClients().catch((e) => { console.warn('[Clients Sync]', e.message); return null; }),
-        api.getTeamActivities().catch((e) => { console.warn('[Activities Sync]', e.message); return null; })
+        api.getTeamActivities().catch((e) => { console.warn('[Activities Sync]', e.message); return null; }),
+        api.getInvoices().catch((e) => { console.warn('[Invoices Sync]', e.message); return null; })
       ]);
 
       if (statsRes && typeof statsRes.totalProjects === 'number') {
@@ -305,6 +308,9 @@ export default function RemotaleDashboard({ user, onLogout }) {
       }
       if (Array.isArray(actsRes)) {
         setTeamActivities(actsRes);
+      }
+      if (Array.isArray(invsRes)) {
+        setInvoices(invsRes);
       }
 
       // If a project is currently open in detail view, keep it synchronized in real-time
@@ -401,6 +407,66 @@ export default function RemotaleDashboard({ user, onLogout }) {
       setProjectToEdit(null);
     } catch (err) {
       console.error('Error saving project:', err);
+    }
+  };
+
+  // Invoices Management Handlers
+  const handleCreateInvoice = async (invoicePayload, publishImmediately) => {
+    const tempId = `inv-${Date.now()}`;
+    const optimisticInv = {
+      ...invoicePayload,
+      id: tempId,
+      status: publishImmediately ? 'published' : 'draft',
+      published: Boolean(publishImmediately)
+    };
+    setInvoices(prev => [optimisticInv, ...prev]);
+
+    try {
+      const created = await api.createInvoice(invoicePayload);
+      if (created) {
+        setInvoices(prev => [created, ...prev.filter(i => i.id !== tempId && i.id !== created.id)]);
+      }
+      await loadData();
+      return created;
+    } catch (err) {
+      console.error('[Create Invoice Error]', err);
+      return optimisticInv;
+    }
+  };
+
+  const handlePublishInvoice = async (invoiceId) => {
+    setInvoices(prev => prev.map(inv => inv.id === invoiceId ? { ...inv, status: 'published', published: true } : inv));
+    try {
+      const updated = await api.publishInvoice(invoiceId);
+      if (updated) {
+        setInvoices(prev => prev.map(inv => inv.id === invoiceId ? { ...inv, ...updated } : inv));
+      }
+      await loadData();
+    } catch (err) {
+      console.error('[Publish Invoice Error]', err);
+    }
+  };
+
+  const handleMarkPaidInvoice = async (invoiceId) => {
+    setInvoices(prev => prev.map(inv => inv.id === invoiceId ? { ...inv, status: 'paid' } : inv));
+    try {
+      const updated = await api.updateInvoiceStatus(invoiceId, 'paid');
+      if (updated) {
+        setInvoices(prev => prev.map(inv => inv.id === invoiceId ? { ...inv, ...updated } : inv));
+      }
+      await loadData();
+    } catch (err) {
+      console.error('[Mark Paid Invoice Error]', err);
+    }
+  };
+
+  const handleDeleteInvoice = async (invoiceId) => {
+    setInvoices(prev => prev.filter(inv => inv.id !== invoiceId));
+    try {
+      await api.deleteInvoice(invoiceId);
+      await loadData();
+    } catch (err) {
+      console.error('[Delete Invoice Error]', err);
     }
   };
 
@@ -833,14 +899,14 @@ export default function RemotaleDashboard({ user, onLogout }) {
 
             <button
               type="button"
-              className={`remotale-nav-item ${activeTab === 'billing' ? 'active' : ''}`}
+              className={`remotale-nav-item ${activeTab === 'billing' || activeTab === 'invoices' ? 'active' : ''}`}
               onClick={() => {
                 setSelectedProject(null);
-                setActiveTab('billing');
+                setActiveTab('invoices');
               }}
             >
-              <BillingIcon size={17} color={activeTab === 'billing' ? '#4F46E5' : '#64748B'} />
-              <span>Billing</span>
+              <BillingIcon size={17} color={activeTab === 'billing' || activeTab === 'invoices' ? '#4F46E5' : '#64748B'} />
+              <span>Invoices</span>
             </button>
           </nav>
         </div>
@@ -914,6 +980,18 @@ export default function RemotaleDashboard({ user, onLogout }) {
             onDeleteProject={handleDeleteProject}
             currentUser={currentClientUser}
             onLogout={onLogout}
+          />
+        ) : (activeTab === 'invoices' || activeTab === 'billing') ? (
+          <InvoicesView
+            invoices={invoices}
+            clients={clients}
+            projects={visibleProjects}
+            currentUser={currentClientUser}
+            isAdmin={false}
+            onCreateInvoice={handleCreateInvoice}
+            onPublishInvoice={handlePublishInvoice}
+            onMarkPaidInvoice={handleMarkPaidInvoice}
+            onDeleteInvoice={handleDeleteInvoice}
           />
         ) : activeTab === 'team' ? (
           renderTeamView()
@@ -1367,7 +1445,10 @@ export default function RemotaleDashboard({ user, onLogout }) {
             <button
               type="button"
               className={`remotale-nav-item ${activeTab === 'invoices' ? 'active' : ''}`}
-              onClick={() => setActiveTab('invoices')}
+              onClick={() => {
+                setSelectedProject(null);
+                setActiveTab('invoices');
+              }}
             >
               <BillingIcon size={17} color={activeTab === 'invoices' ? '#4F46E5' : '#64748B'} />
               <span>Invoices</span>
@@ -1462,6 +1543,18 @@ export default function RemotaleDashboard({ user, onLogout }) {
             onDeleteProject={handleDeleteProject}
             currentUser={user}
             onLogout={onLogout}
+          />
+        ) : activeTab === 'invoices' ? (
+          <InvoicesView
+            invoices={invoices}
+            clients={clients}
+            projects={projects}
+            currentUser={user}
+            isAdmin={true}
+            onCreateInvoice={handleCreateInvoice}
+            onPublishInvoice={handlePublishInvoice}
+            onMarkPaidInvoice={handleMarkPaidInvoice}
+            onDeleteInvoice={handleDeleteInvoice}
           />
         ) : activeTab === 'team' ? (
           renderTeamView()
@@ -1943,6 +2036,70 @@ export default function RemotaleDashboard({ user, onLogout }) {
               >
                 <UsersIcon size={18} color="#64748B" />
                 <span>Team</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    if (activeTab === 'invoices') {
+      return (
+        <div className="remotale-mobile-wrapper">
+          <div className="remotale-mobile-card">
+            <div className="remotale-mobile-header">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <RemotaleLogo size={22} />
+                <span style={{ fontWeight: 800, fontSize: '17px', color: '#0f172a' }}>Remotale</span>
+              </div>
+              <LetterAvatar name="Abdullah" size={32} />
+            </div>
+
+            <InvoicesView
+              invoices={invoices}
+              clients={clients}
+              projects={visibleProjects}
+              currentUser={user}
+              isAdmin={true}
+              onCreateInvoice={handleCreateInvoice}
+              onPublishInvoice={handlePublishInvoice}
+              onMarkPaidInvoice={handleMarkPaidInvoice}
+              onDeleteInvoice={handleDeleteInvoice}
+            />
+
+            <div className="remotale-mobile-bottom-nav">
+              <button
+                type="button"
+                className="remotale-bottom-nav-item"
+                onClick={() => {
+                  setSelectedProject(null);
+                  setActiveTab('home');
+                }}
+              >
+                <HomeIcon size={18} color="#64748B" />
+                <span>Home</span>
+              </button>
+              <button
+                type="button"
+                className="remotale-bottom-nav-item"
+                onClick={() => {
+                  setSelectedProject(null);
+                  setActiveTab('projects');
+                }}
+              >
+                <FolderIcon size={18} color="#64748B" />
+                <span>Projects</span>
+              </button>
+              <button
+                type="button"
+                className="remotale-bottom-nav-item active"
+                onClick={() => {
+                  setSelectedProject(null);
+                  setActiveTab('invoices');
+                }}
+              >
+                <BillingIcon size={18} color="#4F46E5" />
+                <span>Invoices</span>
               </button>
             </div>
           </div>
@@ -2601,6 +2758,78 @@ export default function RemotaleDashboard({ user, onLogout }) {
               >
                 <UsersIcon size={18} color={isProfileMenuOpen ? '#4F46E5' : '#64748B'} />
                 <span>Profile</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    if (activeTab === 'invoices' || activeTab === 'billing') {
+      return (
+        <div className="remotale-mobile-wrapper">
+          <div className="remotale-mobile-card">
+            <div className="remotale-mobile-header">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <RemotaleLogo size={22} />
+                <span style={{ fontWeight: 800, fontSize: '17px', color: '#0f172a' }}>Remotale</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <button type="button" className="remotale-bell-btn" style={{ width: '32px', height: '32px' }}>
+                  <BellIcon size={16} />
+                  <span className="remotale-bell-dot" />
+                </button>
+                <div className="remotale-header-avatar-circle" style={{ width: '32px', height: '32px', fontSize: '13px', background: '#EDE9FE', color: '#7C3AED' }}>
+                  <span>{currentClientUser?.name ? currentClientUser.name[0].toUpperCase() : 'C'}</span>
+                </div>
+              </div>
+            </div>
+
+            <InvoicesView
+              invoices={invoices}
+              clients={clients}
+              projects={visibleProjects}
+              currentUser={currentClientUser}
+              isAdmin={false}
+              onCreateInvoice={handleCreateInvoice}
+              onPublishInvoice={handlePublishInvoice}
+              onMarkPaidInvoice={handleMarkPaidInvoice}
+              onDeleteInvoice={handleDeleteInvoice}
+            />
+
+            <div className="remotale-mobile-bottom-nav">
+              <button
+                type="button"
+                className="remotale-bottom-nav-item"
+                onClick={() => {
+                  setSelectedProject(null);
+                  setActiveTab('home');
+                }}
+              >
+                <HomeIcon size={18} color="#64748B" />
+                <span>Home</span>
+              </button>
+              <button
+                type="button"
+                className="remotale-bottom-nav-item"
+                onClick={() => {
+                  setSelectedProject(null);
+                  setActiveTab('projects');
+                }}
+              >
+                <FolderIcon size={18} color="#64748B" />
+                <span>Projects</span>
+              </button>
+              <button
+                type="button"
+                className="remotale-bottom-nav-item active"
+                onClick={() => {
+                  setSelectedProject(null);
+                  setActiveTab('invoices');
+                }}
+              >
+                <BillingIcon size={18} color="#4F46E5" />
+                <span>Invoices</span>
               </button>
             </div>
           </div>

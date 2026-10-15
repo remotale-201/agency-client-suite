@@ -378,6 +378,78 @@ app.get('/api/team/activities', async (req, res) => {
 });
 
 // ==========================================
+// Invoices API
+// ==========================================
+app.get('/api/invoices', async (req, res) => {
+  try {
+    const { clientId, projectId, status } = req.query;
+    const invoices = await db.getInvoices(clientId, projectId, status);
+    res.json(invoices);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/invoices/:id', async (req, res) => {
+  try {
+    const invoice = await db.getInvoiceById(req.params.id);
+    if (!invoice) return res.status(404).json({ error: 'Invoice not found' });
+    res.json(invoice);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/invoices', async (req, res) => {
+  try {
+    const invoice = await db.createInvoice(req.body);
+    res.status(201).json(invoice);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.put('/api/invoices/:id', async (req, res) => {
+  try {
+    const updated = await db.updateInvoice(req.params.id, req.body);
+    if (!updated) return res.status(404).json({ error: 'Invoice not found' });
+    res.json(updated);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.patch('/api/invoices/:id/publish', async (req, res) => {
+  try {
+    const published = await db.publishInvoice(req.params.id);
+    if (!published) return res.status(404).json({ error: 'Invoice not found' });
+    res.json(published);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.patch('/api/invoices/:id/status', async (req, res) => {
+  try {
+    const { status } = req.body;
+    const updated = await db.updateInvoice(req.params.id, { status });
+    if (!updated) return res.status(404).json({ error: 'Invoice not found' });
+    res.json(updated);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.delete('/api/invoices/:id', async (req, res) => {
+  try {
+    await db.deleteInvoice(req.params.id);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ==========================================
 // Production Static Frontend Serving
 // ==========================================
 const distPath = path.join(__dirname, '../frontend/dist');

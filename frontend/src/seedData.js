@@ -239,3 +239,60 @@ export const SEED_STATS = {
   completed: 0,
   totalRevenue: 0
 };
+
+export const SEED_INVOICES = [
+  {
+    id: 'inv-awais-1',
+    client_id: 'client-awais',
+    client_name: 'Awais',
+    client_company: 'Awais Agency',
+    client_email: 'awais@remotale.com',
+    project_id: 'proj-awais-1',
+    project_title: 'Pak White Label Abdul Saboor',
+    title: 'Pak White Label Abdul Saboor - Phase 1',
+    invoice_number: 'INV-2026-001',
+    amount: 450.00,
+    subtotal: 450.00,
+    tax: 0,
+    discount: 0,
+    currency: '$',
+    status: 'published',
+    published: true,
+    due_date: '25/10/2026',
+    issue_date: '15/10/2026',
+    notes: 'Full store development and responsive theme customization.',
+    payment_details: 'Bank: Meezan Bank | Title: Abdullah | Account: 0102-0103948291\nWise / USDT (TRC-20): TXYZ981724918237918',
+    items: [
+      { description: 'White Label E-commerce Store Development', qty: 1, rate: 350, amount: 350 },
+      { description: 'Custom Header & Product Cards UI Design', qty: 1, rate: 100, amount: 100 }
+    ],
+    created_at: '2026-10-15T12:00:00.000Z'
+  },
+  {
+    id: 'inv-afshal-1',
+    client_id: 'client-afshal',
+    client_name: 'Afshal',
+    client_company: 'Afshal Brand',
+    client_email: 'afshal@remotale.com',
+    project_id: 'proj-afshal-2',
+    project_title: 'Distant Market',
+    title: 'Distant Market Store Setup & Integration',
+    invoice_number: 'INV-2026-002',
+    amount: 320.00,
+    subtotal: 320.00,
+    tax: 0,
+    discount: 0,
+    currency: '$',
+    status: 'draft',
+    published: false,
+    due_date: '28/10/2026',
+    issue_date: '15/10/2026',
+    notes: 'Draft invoice for upcoming launch of Distant Market store.',
+    payment_details: 'Bank: Meezan Bank | Title: Abdullah | Account: 0102-0103948291',
+    items: [
+      { description: 'Distant Market Store Setup & Domain Connection', qty: 1, rate: 320, amount: 320 }
+    ],
+    created_at: '2026-10-15T13:00:00.000Z'
+  }
+];
+

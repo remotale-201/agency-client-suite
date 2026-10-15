@@ -336,7 +336,53 @@ function ensureLocalStore() {
         }
       ],
       files: [],
-      invoices: []
+      invoices: [
+        {
+          id: 'inv-awais-1',
+          client_id: 'client-awais',
+          project_id: 'proj-awais-1',
+          title: 'Pak White Label Abdul Saboor - Phase 1',
+          invoice_number: 'INV-2026-001',
+          amount: 450.00,
+          subtotal: 450.00,
+          tax: 0,
+          discount: 0,
+          currency: '$',
+          status: 'published',
+          published: true,
+          due_date: '25/10/2026',
+          issue_date: '15/10/2026',
+          notes: 'Full store development and responsive theme customization.',
+          payment_details: 'Bank: Meezan Bank | Title: Abdullah | Account: 0102-0103948291\nWise / USDT (TRC-20): TXYZ981724918237918',
+          items: [
+            { description: 'White Label E-commerce Store Development', qty: 1, rate: 350, amount: 350 },
+            { description: 'Custom Header & Product Cards UI Design', qty: 1, rate: 100, amount: 100 }
+          ],
+          created_at: new Date().toISOString()
+        },
+        {
+          id: 'inv-afshal-1',
+          client_id: 'client-afshal',
+          project_id: 'proj-afshal-2',
+          title: 'Distant Market Store Setup & Integration',
+          invoice_number: 'INV-2026-002',
+          amount: 320.00,
+          subtotal: 320.00,
+          tax: 0,
+          discount: 0,
+          currency: '$',
+          status: 'draft',
+          published: false,
+          due_date: '28/10/2026',
+          issue_date: '15/10/2026',
+          notes: 'Draft invoice for upcoming launch of Distant Market store.',
+          payment_details: 'Bank: Meezan Bank | Title: Abdullah | Account: 0102-0103948291',
+          items: [
+            { description: 'Distant Market Store Setup & Domain Connection', qty: 1, rate: 320, amount: 320 }
+          ],
+          created_at: new Date().toISOString()
+        }
+      ]
     };
 
     fs.writeFileSync(STORE_PATH, JSON.stringify(cleanStore, null, 2), 'utf-8');
@@ -608,6 +654,80 @@ async function initPostgresTables() {
         VALUES ('general', '{"agencyName":"Remotale","ownerName":"Abdullah","ownerEmail":"admin@remotale.com","currency":"$"}')
         ON CONFLICT (key) DO NOTHING;
       `);
+
+      // Ensure invoices table has full billing metadata
+      await client.query(`
+        ALTER TABLE invoices ADD COLUMN IF NOT EXISTS invoice_number VARCHAR(100);
+        ALTER TABLE invoices ADD COLUMN IF NOT EXISTS currency VARCHAR(10) DEFAULT '$';
+        ALTER TABLE invoices ADD COLUMN IF NOT EXISTS items JSONB DEFAULT '[]';
+        ALTER TABLE invoices ADD COLUMN IF NOT EXISTS subtotal NUMERIC(12,2) DEFAULT 0;
+        ALTER TABLE invoices ADD COLUMN IF NOT EXISTS tax NUMERIC(12,2) DEFAULT 0;
+        ALTER TABLE invoices ADD COLUMN IF NOT EXISTS discount NUMERIC(12,2) DEFAULT 0;
+        ALTER TABLE invoices ADD COLUMN IF NOT EXISTS notes TEXT;
+        ALTER TABLE invoices ADD COLUMN IF NOT EXISTS issue_date VARCHAR(50);
+        ALTER TABLE invoices ADD COLUMN IF NOT EXISTS payment_details TEXT;
+        ALTER TABLE invoices ADD COLUMN IF NOT EXISTS published BOOLEAN DEFAULT true;
+      `);
+
+      // Seed initial sample invoices if empty
+      const invCountRes = await client.query('SELECT COUNT(*)::int as count FROM invoices');
+      if (invCountRes.rows[0].count === 0) {
+        await client.query(`
+          INSERT INTO invoices (
+            id, client_id, project_id, title, invoice_number, amount, status,
+            due_date, issue_date, currency, subtotal, tax, discount, notes,
+            payment_details, published, items
+          )
+          VALUES 
+          (
+            'inv-awais-1',
+            'client-awais',
+            'proj-awais-1',
+            'Pak White Label Abdul Saboor - Phase 1',
+            'INV-2026-001',
+            450.00,
+            'published',
+            '25/10/2026',
+            '15/10/2026',
+            '$',
+            450.00,
+            0,
+            0,
+            'Full store development and responsive theme customization.',
+            'Bank: Meezan Bank | Title: Abdullah | Account: 0102-0103948291\nWise / USDT (TRC-20): TXYZ981724918237918',
+            true,
+            $1::jsonb
+          ),
+          (
+            'inv-afshal-1',
+            'client-afshal',
+            'proj-afshal-2',
+            'Distant Market Store Setup & Integration',
+            'INV-2026-002',
+            320.00,
+            'draft',
+            '28/10/2026',
+            '15/10/2026',
+            '$',
+            320.00,
+            0,
+            0,
+            'Draft invoice for upcoming launch of Distant Market store.',
+            'Bank: Meezan Bank | Title: Abdullah | Account: 0102-0103948291',
+            false,
+            $2::jsonb
+          )
+          ON CONFLICT (id) DO NOTHING;
+        `, [
+          JSON.stringify([
+            { description: 'White Label E-commerce Store Development', qty: 1, rate: 350, amount: 350 },
+            { description: 'Custom Header & Product Cards UI Design', qty: 1, rate: 100, amount: 100 }
+          ]),
+          JSON.stringify([
+            { description: 'Distant Market Store Setup & Domain Connection', qty: 1, rate: 320, amount: 320 }
+          ])
+        ]);
+      }
 
       console.log('[Neon DB] Tables verified with clean database state & credentials.');
     } finally {
@@ -1299,6 +1419,259 @@ const db = {
       if (res.rows.length > 0) return res.rows[0].value;
     }
     return { agencyName: "Remotale", ownerName: "Abdullah", ownerEmail: "admin@remotale.com", currency: "$" };
+  },
+
+  // ==========================================
+  // Invoices Management
+  // ==========================================
+  async getInvoices(clientId, projectId, status) {
+    if (initPromise) await initPromise;
+    if (isPostgres && pgPool) {
+      const conditions = [];
+      const values = [];
+      let i = 1;
+
+      if (clientId) {
+        conditions.push(`i.client_id = $${i++}`);
+        values.push(clientId);
+      }
+      if (projectId) {
+        conditions.push(`i.project_id = $${i++}`);
+        values.push(projectId);
+      }
+      if (status) {
+        conditions.push(`i.status = $${i++}`);
+        values.push(status);
+      }
+
+      const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+      const query = `
+        SELECT i.*, 
+               u.name as client_name, u.company as client_company, u.email as client_email,
+               p.title as project_title
+        FROM invoices i
+        LEFT JOIN users u ON i.client_id = u.id
+        LEFT JOIN projects p ON i.project_id = p.id
+        ${whereClause}
+        ORDER BY i.created_at DESC
+      `;
+      const res = await pgPool.query(query, values);
+      return res.rows.map(inv => ({
+        ...inv,
+        amount: Number(inv.amount),
+        subtotal: Number(inv.subtotal || inv.amount),
+        tax: Number(inv.tax || 0),
+        discount: Number(inv.discount || 0),
+        items: typeof inv.items === 'string' ? JSON.parse(inv.items) : (inv.items || [])
+      }));
+    }
+
+    const local = readLocalStore();
+    let invoices = (local.invoices || []).map(inv => {
+      const client = (local.users || []).find(u => u.id === inv.client_id);
+      const project = (local.projects || []).find(p => p.id === inv.project_id);
+      return {
+        ...inv,
+        client_name: client?.name || 'Client',
+        client_company: client?.company || 'Agency Client',
+        client_email: client?.email || '',
+        project_title: project?.title || inv.title,
+        amount: Number(inv.amount),
+        subtotal: Number(inv.subtotal || inv.amount),
+        tax: Number(inv.tax || 0),
+        discount: Number(inv.discount || 0),
+        items: inv.items || []
+      };
+    });
+
+    if (clientId) {
+      invoices = invoices.filter(inv => inv.client_id === clientId);
+    }
+    if (projectId) {
+      invoices = invoices.filter(inv => inv.project_id === projectId);
+    }
+    if (status) {
+      invoices = invoices.filter(inv => inv.status === status);
+    }
+
+    return invoices;
+  },
+
+  async getInvoiceById(id) {
+    if (initPromise) await initPromise;
+    if (isPostgres && pgPool) {
+      const res = await pgPool.query(`
+        SELECT i.*, 
+               u.name as client_name, u.company as client_company, u.email as client_email,
+               p.title as project_title
+        FROM invoices i
+        LEFT JOIN users u ON i.client_id = u.id
+        LEFT JOIN projects p ON i.project_id = p.id
+        WHERE i.id = $1
+      `, [id]);
+      if (res.rows.length === 0) return null;
+      const inv = res.rows[0];
+      return {
+        ...inv,
+        amount: Number(inv.amount),
+        subtotal: Number(inv.subtotal || inv.amount),
+        tax: Number(inv.tax || 0),
+        discount: Number(inv.discount || 0),
+        items: typeof inv.items === 'string' ? JSON.parse(inv.items) : (inv.items || [])
+      };
+    }
+
+    const local = readLocalStore();
+    const inv = (local.invoices || []).find(i => i.id === id);
+    if (!inv) return null;
+    const client = (local.users || []).find(u => u.id === inv.client_id);
+    const project = (local.projects || []).find(p => p.id === inv.project_id);
+    return {
+      ...inv,
+      client_name: client?.name || 'Client',
+      client_company: client?.company || 'Agency Client',
+      client_email: client?.email || '',
+      project_title: project?.title || inv.title,
+      amount: Number(inv.amount),
+      subtotal: Number(inv.subtotal || inv.amount),
+      tax: Number(inv.tax || 0),
+      discount: Number(inv.discount || 0),
+      items: inv.items || []
+    };
+  },
+
+  async createInvoice(invoiceData) {
+    if (initPromise) await initPromise;
+    const id = invoiceData.id || `inv-${Date.now()}`;
+    const invoiceNumber = invoiceData.invoice_number || `INV-${new Date().getFullYear()}-${Math.floor(100 + Math.random() * 900)}`;
+    const items = Array.isArray(invoiceData.items) ? invoiceData.items : [];
+    const subtotal = Number(invoiceData.subtotal || invoiceData.amount || 0);
+    const tax = Number(invoiceData.tax || 0);
+    const discount = Number(invoiceData.discount || 0);
+    const amount = Number(invoiceData.amount || (subtotal + tax - discount));
+    const status = invoiceData.status || (invoiceData.published ? 'published' : 'draft');
+    const published = invoiceData.published !== undefined ? Boolean(invoiceData.published) : (status === 'published');
+
+    const cleanInvoice = {
+      id,
+      client_id: invoiceData.client_id || invoiceData.clientId,
+      project_id: invoiceData.project_id || invoiceData.projectId || null,
+      title: invoiceData.title || `Invoice ${invoiceNumber}`,
+      invoice_number: invoiceNumber,
+      amount,
+      subtotal,
+      tax,
+      discount,
+      currency: invoiceData.currency || '$',
+      status,
+      due_date: invoiceData.due_date || invoiceData.dueDate || '25/10/2026',
+      issue_date: invoiceData.issue_date || invoiceData.issueDate || '15/10/2026',
+      notes: invoiceData.notes || 'Thank you for your business!',
+      payment_details: invoiceData.payment_details || invoiceData.paymentDetails || 'Bank: Meezan Bank | Title: Abdullah | Account: 0102-0103948291',
+      published,
+      items,
+      created_at: new Date().toISOString()
+    };
+
+    if (isPostgres && pgPool) {
+      await pgPool.query(`
+        INSERT INTO invoices (
+          id, client_id, project_id, title, invoice_number, amount, status,
+          due_date, issue_date, currency, subtotal, tax, discount, notes,
+          payment_details, published, items
+        )
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17::jsonb)
+        ON CONFLICT (id) DO UPDATE SET
+          title = EXCLUDED.title,
+          amount = EXCLUDED.amount,
+          status = EXCLUDED.status,
+          due_date = EXCLUDED.due_date,
+          items = EXCLUDED.items;
+      `, [
+        cleanInvoice.id,
+        cleanInvoice.client_id,
+        cleanInvoice.project_id,
+        cleanInvoice.title,
+        cleanInvoice.invoice_number,
+        cleanInvoice.amount,
+        cleanInvoice.status,
+        cleanInvoice.due_date,
+        cleanInvoice.issue_date,
+        cleanInvoice.currency,
+        cleanInvoice.subtotal,
+        cleanInvoice.tax,
+        cleanInvoice.discount,
+        cleanInvoice.notes,
+        cleanInvoice.payment_details,
+        cleanInvoice.published,
+        JSON.stringify(cleanInvoice.items)
+      ]);
+    }
+
+    // Mirror to local store
+    const local = readLocalStore();
+    local.invoices = local.invoices || [];
+    local.invoices.unshift(cleanInvoice);
+    writeLocalStore(local);
+
+    return this.getInvoiceById(id);
+  },
+
+  async updateInvoice(id, updates) {
+    if (initPromise) await initPromise;
+    const existing = await this.getInvoiceById(id);
+    if (!existing) return null;
+
+    if (updates.status === 'published' || updates.published === true) {
+      updates.published = true;
+      updates.status = updates.status || 'published';
+    }
+
+    if (isPostgres && pgPool) {
+      await pgPool.query(`
+        UPDATE invoices SET
+          title = COALESCE($1, title),
+          amount = COALESCE($2, amount),
+          status = COALESCE($3, status),
+          due_date = COALESCE($4, due_date),
+          notes = COALESCE($5, notes),
+          payment_details = COALESCE($6, payment_details),
+          published = COALESCE($7, published),
+          items = COALESCE($8::jsonb, items)
+        WHERE id = $9
+      `, [
+        updates.title || null,
+        updates.amount ? Number(updates.amount) : null,
+        updates.status || null,
+        updates.due_date || updates.dueDate || null,
+        updates.notes || null,
+        updates.payment_details || updates.paymentDetails || null,
+        updates.published !== undefined ? Boolean(updates.published) : null,
+        updates.items ? JSON.stringify(updates.items) : null,
+        id
+      ]);
+    }
+
+    const local = readLocalStore();
+    local.invoices = (local.invoices || []).map(inv => inv.id === id ? { ...inv, ...updates } : inv);
+    writeLocalStore(local);
+
+    return this.getInvoiceById(id);
+  },
+
+  async publishInvoice(id) {
+    return this.updateInvoice(id, { status: 'published', published: true });
+  },
+
+  async deleteInvoice(id) {
+    if (initPromise) await initPromise;
+    if (isPostgres && pgPool) {
+      await pgPool.query('DELETE FROM invoices WHERE id = $1', [id]);
+    }
+    const local = readLocalStore();
+    local.invoices = (local.invoices || []).filter(inv => inv.id !== id);
+    writeLocalStore(local);
+    return { success: true };
   }
 };
 
