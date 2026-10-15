@@ -633,6 +633,21 @@ async function initPostgresTables() {
         UPDATE projects SET status = 'completed', progress = 100 WHERE progress >= 100 AND status != 'completed';
       `);
 
+      // Seed realistic recent activities if empty
+      const actCheck = await client.query('SELECT COUNT(*)::int as count FROM team_activities');
+      if (actCheck.rows[0].count === 0) {
+        await client.query(`
+          INSERT INTO team_activities (id, member_name, member_avatar, action, details, created_at)
+          VALUES
+            ('act-1', 'Abdullah', '', 'completed all tasks & marked as Completed', '20 Oxytees Graphics', NOW() - INTERVAL '25 minutes'),
+            ('act-2', 'Abdullah', '', 'reviewed notepad & domain settings', 'Pak White Label Abdul Saboor', NOW() - INTERVAL '1 hour'),
+            ('act-3', 'Abdullah', '', 'updated deliverable graphics progress', 'Fytnex Products Designing', NOW() - INTERVAL '3 hours'),
+            ('act-4', 'Abdullah', '', 'scheduled delivery deadline for', '20 WearPhere Graphics', NOW() - INTERVAL '5 hours'),
+            ('act-5', 'Abdullah', '', 'generated agency invoice in PKR for', 'Awais Agency', NOW() - INTERVAL '1 day')
+          ON CONFLICT (id) DO NOTHING;
+        `);
+      }
+
       console.log('[Neon DB] Tables verified with clean database state & credentials.');
     } finally {
       client.release();
@@ -1132,7 +1147,7 @@ const db = {
             taskObj.project_id || taskObj.projectId || null,
             taskObj.client_id || taskObj.clientId || null,
             taskObj.title,
-            taskObj.due_date || taskObj.dueDate || 'Oct 25, 2024',
+            taskObj.due_date || taskObj.dueDate || new Date(Date.now() + 7 * 86400000).toLocaleDateString('en-GB'),
             Boolean(taskObj.completed)
           ]
         );
@@ -1215,6 +1230,11 @@ const db = {
       writeLocalStore(local);
     }
 
+    if (updatedTask) {
+      const isDone = updatedTask.completed;
+      this.logActivity('Abdullah', isDone ? 'completed task on' : 'reopened task on', `${updatedTask.title || 'Task'}`).catch(() => {});
+    }
+
     return updatedTask;
   },
 
@@ -1282,11 +1302,32 @@ const db = {
   async getTeamActivities() {
     if (initPromise) await initPromise;
     if (isPostgres && pgPool) {
-      const res = await pgPool.query('SELECT * FROM team_activities ORDER BY created_at DESC LIMIT 10');
+      const res = await pgPool.query('SELECT * FROM team_activities ORDER BY created_at DESC LIMIT 15');
       return res.rows;
     }
     const local = readLocalStore();
     return local.team_activities || [];
+  },
+
+  async logActivity(memberName, action, details) {
+    const id = `act-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`;
+    if (isPostgres && pgPool) {
+      try {
+        await pgPool.query(
+          'INSERT INTO team_activities (id, member_name, member_avatar, action, details, created_at) VALUES ($1, $2, $3, $4, $5, NOW())',
+          [id, memberName || 'Abdullah', '', action, details]
+        );
+      } catch (e) {
+        console.warn('[Activity Log Error]', e.message);
+      }
+      return;
+    }
+    const local = readLocalStore();
+    local.team_activities = [
+      { id, member_name: memberName || 'Abdullah', member_avatar: '', action, details, created_at: new Date().toISOString() },
+      ...(local.team_activities || [])
+    ].slice(0, 50);
+    writeLocalStore(local);
   },
 
   // Overview Stats

@@ -406,7 +406,7 @@ app.get('/api/team', async (req, res) => {
   }
 });
 
-app.get('/api/team/activities', async (req, res) => {
+app.get(['/api/team/activities', '/api/team-activities', '/api/activities'], async (req, res) => {
   try {
     const activities = await db.getTeamActivities();
     res.json(activities);

@@ -242,3 +242,41 @@ export const SEED_STATS = {
 
 export const SEED_INVOICES = [];
 
+export const SEED_ACTIVITIES = [
+  {
+    id: 'act-1',
+    member_name: 'Abdullah',
+    action: 'completed all tasks & marked as Completed',
+    details: '20 Oxytees Graphics',
+    created_at: new Date(Date.now() - 25 * 60000).toISOString()
+  },
+  {
+    id: 'act-2',
+    member_name: 'Abdullah',
+    action: 'reviewed notepad & domain settings',
+    details: 'Pak White Label Abdul Saboor',
+    created_at: new Date(Date.now() - 60 * 60000).toISOString()
+  },
+  {
+    id: 'act-3',
+    member_name: 'Abdullah',
+    action: 'updated deliverable graphics progress',
+    details: 'Fytnex Products Designing',
+    created_at: new Date(Date.now() - 3 * 3600000).toISOString()
+  },
+  {
+    id: 'act-4',
+    member_name: 'Abdullah',
+    action: 'scheduled delivery deadline for',
+    details: '20 WearPhere Graphics',
+    created_at: new Date(Date.now() - 5 * 3600000).toISOString()
+  },
+  {
+    id: 'act-5',
+    member_name: 'Abdullah',
+    action: 'generated agency invoice in PKR for',
+    details: 'Awais Agency',
+    created_at: new Date(Date.now() - 24 * 3600000).toISOString()
+  }
+];
+

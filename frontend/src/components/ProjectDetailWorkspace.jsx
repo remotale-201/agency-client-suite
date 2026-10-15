@@ -362,37 +362,44 @@ export default function ProjectDetailWorkspace({
     { id: 'f-4', name: 'Reference Website.url', meta: 'URL Link', date: '16 Oct 2024', type: 'url' }
   ];
 
-  // Activities list matching project history
-  const activityList = [
-    {
-      id: 'act-1',
-      author: 'Abdullah',
-      action: 'updated the design file',
-      detail: 'Homepage Design.fig',
-      time: '2h ago'
-    },
-    {
-      id: 'act-2',
-      author: 'Abdullah',
-      action: 'marked a task complete',
-      detail: 'Setup Shopify theme',
-      time: '5h ago'
-    },
-    {
-      id: 'act-3',
-      author: 'Abdullah',
-      action: 'added a new note',
-      detail: 'Client project requirements and credentials synced',
-      time: '1d ago'
-    },
-    {
-      id: 'act-4',
-      author: 'Abdullah',
-      action: 'uploaded project assets',
-      detail: 'Product Banners.zip',
-      time: '1d ago'
+  // Dynamic project activity timeline
+  const activityList = useMemo(() => {
+    const list = [];
+    if (project?.status === 'completed' || calculatedProgress >= 100) {
+      list.push({
+        id: 'act-completed',
+        author: 'Abdullah',
+        action: 'marked project as Completed',
+        detail: `All deliverables and tasks 100% finished on ${project?.title || 'Project'}`,
+        time: 'Just now'
+      });
     }
-  ];
+    const lastDone = (localTasks || []).filter(t => t.completed).slice(-1)[0];
+    if (lastDone) {
+      list.push({
+        id: 'act-last-task',
+        author: 'Abdullah',
+        action: 'marked task completed',
+        detail: `${lastDone.title} (${calculatedProgress}% total progress)`,
+        time: '35m ago'
+      });
+    }
+    list.push({
+      id: 'act-notepad',
+      author: 'Abdullah',
+      action: 'reviewed & synced project details',
+      detail: `${project?.title || 'Project'} requirements & credentials verified`,
+      time: '2h ago'
+    });
+    list.push({
+      id: 'act-started',
+      author: 'Abdullah',
+      action: 'scheduled target deadline',
+      detail: `Due on ${project?.deadline || 'Upcoming'} • Lead: Abdullah`,
+      time: '1d ago'
+    });
+    return list;
+  }, [project, calculatedProgress, localTasks]);
 
   // Note bullet lines
   const noteBullets = notesContent
@@ -583,7 +590,7 @@ export default function ProjectDetailWorkspace({
             </div>
             <div className="pdw-stat-texts">
               <span className="pdw-stat-lbl">Deadline</span>
-              <span className="pdw-stat-val">{project?.deadline || '25 Oct 2024'}</span>
+              <span className="pdw-stat-val">{project?.deadline || 'Upcoming'}</span>
             </div>
           </div>
 
@@ -694,7 +701,7 @@ export default function ProjectDetailWorkspace({
                 <div className="pdw-info-lbl">Start Date</div>
                 <div className="pdw-info-icon-val">
                   <CalendarIcon size={14} color="#6366F1" />
-                  <span>{project?.start_date || project?.startDate || '10 Oct 2024'}</span>
+                  <span>{project?.start_date || project?.startDate || 'Recently Started'}</span>
                 </div>
               </div>
 
@@ -702,15 +709,15 @@ export default function ProjectDetailWorkspace({
                 <div className="pdw-info-lbl">Deadline</div>
                 <div className="pdw-info-icon-val">
                   <CalendarIcon size={14} color="#6366F1" />
-                  <span>{project?.deadline || '25 Oct 2024'}</span>
+                  <span>{project?.deadline || 'Upcoming'}</span>
                 </div>
               </div>
 
               <div>
                 <div className="pdw-info-lbl">Status</div>
                 <div className="pdw-info-icon-val">
-                  <span className="pdw-info-dot-status" />
-                  <span>In Progress</span>
+                  <span className={`pdw-info-dot-status ${calculatedProgress >= 100 || project?.status === 'completed' ? 'completed' : (project?.status || 'in-progress')}`} />
+                  <span>{calculatedProgress >= 100 || project?.status === 'completed' ? 'Completed' : (project?.status === 'under-review' ? 'Under Review' : 'In Progress')}</span>
                 </div>
               </div>
 

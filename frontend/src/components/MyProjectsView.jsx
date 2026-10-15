@@ -484,7 +484,7 @@ export default function MyProjectsView({
 
                   <div className="my-project-deadline-badge">
                     <CalendarIcon size={14} color="#94A3B8" />
-                    <span>{proj.deadline || '25 Oct 2024'}</span>
+                    <span>{proj.deadline || 'Upcoming'}</span>
                   </div>
                 </div>
               </div>

@@ -8,7 +8,20 @@ import ProjectDetailWorkspace from './ProjectDetailWorkspace';
 import InvoicesView from './InvoicesView';
 import ComingSoonView from './ComingSoonView';
 import LetterAvatar from './LetterAvatar';
-import { SEED_PROJECTS, SEED_CLIENTS, SEED_STATS, SEED_INVOICES } from '../seedData';
+import { SEED_PROJECTS, SEED_CLIENTS, SEED_STATS, SEED_INVOICES, SEED_ACTIVITIES } from '../seedData';
+
+// Helper for relative time formatting
+function formatTimeAgo(dateStr) {
+  if (!dateStr) return 'Recently';
+  const time = new Date(dateStr).getTime();
+  if (isNaN(time)) return dateStr;
+  const diffSec = Math.floor((Date.now() - time) / 1000);
+  if (diffSec < 60) return 'Just now';
+  if (diffSec < 3600) return `${Math.floor(diffSec / 60)}m ago`;
+  if (diffSec < 86400) return `${Math.floor(diffSec / 3600)}h ago`;
+  if (diffSec < 172800) return 'Yesterday';
+  return `${Math.floor(diffSec / 86400)}d ago`;
+}
 
 // ==========================================
 // SVG ICONS
@@ -192,7 +205,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
   const [tasks, setTasks] = useState(() => SEED_PROJECTS.flatMap(p => p.tasks || []));
   const [messages, setMessages] = useState([]);
   const [clients, setClients] = useState(SEED_CLIENTS);
-  const [teamActivities, setTeamActivities] = useState([]);
+  const [teamActivities, setTeamActivities] = useState(SEED_ACTIVITIES);
   const [invoices, setInvoices] = useState(SEED_INVOICES);
   const [loading, setLoading] = useState(false);
 
@@ -271,9 +284,49 @@ export default function RemotaleDashboard({ user, onLogout }) {
   const [newProjTitle, setNewProjTitle] = useState('');
   const [newProjDesc, setNewProjDesc] = useState('');
   const [newProjStatus, setNewProjStatus] = useState('in-progress');
-  const [newProjDeadline, setNewProjDeadline] = useState('25 Oct 2024');
+  const [newProjDeadline, setNewProjDeadline] = useState(() => new Date(Date.now() + 7 * 86400000).toLocaleDateString('en-GB'));
   const [newProjBudget, setNewProjBudget] = useState('1500');
   const [modalLoading, setModalLoading] = useState(false);
+
+  // Dynamic Date Filter State
+  const [dateFilterOption, setDateFilterOption] = useState('today');
+  const [customDate, setCustomDate] = useState(() => new Date().toISOString().split('T')[0]);
+  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
+  const datePickerRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (datePickerRef.current && !datePickerRef.current.contains(e.target)) {
+        setIsDatePickerOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const formattedCurrentDate = useMemo(() => {
+    return new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  }, []);
+
+  const dateFilterLabel = useMemo(() => {
+    if (dateFilterOption === 'today') {
+      return `📅 ${formattedCurrentDate} ⌵`;
+    }
+    if (dateFilterOption === 'this-week') {
+      return `📅 This Week ⌵`;
+    }
+    if (dateFilterOption === 'this-month') {
+      return `📅 This Month ⌵`;
+    }
+    if (dateFilterOption === 'custom' && customDate) {
+      const parts = customDate.split('-');
+      if (parts.length === 3) {
+        const d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+        return `📅 ${d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} ⌵`;
+      }
+    }
+    return `📅 ${formattedCurrentDate} ⌵`;
+  }, [dateFilterOption, customDate, formattedCurrentDate]);
 
   // New Task Quick State
   const [newTaskTitle, setNewTaskTitle] = useState('');
@@ -1254,7 +1307,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
 
                     <div className="remotale-proj-due">
                       <span>📅</span>
-                      <span>Due {proj.deadline || '25 Oct 2024'}</span>
+                      <span>Due {proj.deadline || formattedCurrentDate}</span>
                     </div>
                   </div>
                 </div>
@@ -1375,9 +1428,42 @@ export default function RemotaleDashboard({ user, onLogout }) {
                     <div className="remotale-msg-body">
                       <div className="remotale-msg-header">
                         <span className="remotale-msg-sender">{msg.sender_name}</span>
-                        <span className="remotale-msg-time">2h ago</span>
+                        <span className="remotale-msg-time">{formatTimeAgo(msg.created_at) || 'Recently'}</span>
                       </div>
                       <span className="remotale-msg-snippet">{msg.content}</span>
+                    </div>
+                  </div>
+                ))
+              )}
+            </section>
+
+            {/* Recent Activity Section for Client */}
+            <section className="remotale-card-container">
+              <div className="remotale-card-header">
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 700, color: '#0f172a' }}>Recent Activity</h3>
+                  <span style={{ fontSize: '11px', color: '#64748b' }}>Live project timeline by Admin</span>
+                </div>
+                <span style={{ fontSize: '11px', fontWeight: 700, color: '#16a34a', background: '#dcfce7', padding: '2px 8px', borderRadius: '999px' }}>
+                  Live Feed
+                </span>
+              </div>
+
+              {teamActivities.length === 0 ? (
+                <div className="remotale-empty-card" style={{ padding: '20px' }}>
+                  <p>No recent activity recorded yet.</p>
+                </div>
+              ) : (
+                teamActivities.slice(0, 4).map(act => (
+                  <div key={act.id} className="remotale-message-item" style={{ padding: '8px 0', borderBottom: '1px solid #f8fafc' }}>
+                    <LetterAvatar name={act.member_name || 'Abdullah'} size={32} />
+                    <div className="remotale-msg-body">
+                      <div className="remotale-msg-header">
+                        <span className="remotale-msg-sender">{act.member_name}</span>
+                        <span className="remotale-msg-time">{formatTimeAgo(act.created_at) || act.time || 'Recently'}</span>
+                      </div>
+                      <span style={{ fontSize: '12.5px', fontWeight: 600, color: '#1e293b' }}>{act.action}</span>
+                      <span style={{ fontSize: '11.5px', color: '#4f46e5', fontWeight: 600, marginTop: '2px' }}>{act.details}</span>
                     </div>
                   </div>
                 ))
@@ -1657,9 +1743,67 @@ export default function RemotaleDashboard({ user, onLogout }) {
               <span>+ New Project</span>
             </button>
 
-            <button type="button" className="remotale-date-filter-btn">
-              <span>📅 Oct 24, 2024 ⌵</span>
-            </button>
+            <div style={{ position: 'relative' }} ref={datePickerRef}>
+              <button
+                type="button"
+                className="remotale-date-filter-btn"
+                onClick={() => setIsDatePickerOpen(prev => !prev)}
+                title="Filter by Date"
+              >
+                <span>{dateFilterLabel}</span>
+              </button>
+
+              {isDatePickerOpen && (
+                <div className="remotale-datepicker-dropdown">
+                  <div className="remotale-datepicker-header">
+                    <span>Date Filter</span>
+                  </div>
+                  <button
+                    type="button"
+                    className={`remotale-datepicker-item ${dateFilterOption === 'today' ? 'active' : ''}`}
+                    onClick={() => {
+                      setDateFilterOption('today');
+                      setIsDatePickerOpen(false);
+                    }}
+                  >
+                    <span>📅 Today ({formattedCurrentDate})</span>
+                  </button>
+                  <button
+                    type="button"
+                    className={`remotale-datepicker-item ${dateFilterOption === 'this-week' ? 'active' : ''}`}
+                    onClick={() => {
+                      setDateFilterOption('this-week');
+                      setIsDatePickerOpen(false);
+                    }}
+                  >
+                    <span>🗓️ This Week</span>
+                  </button>
+                  <button
+                    type="button"
+                    className={`remotale-datepicker-item ${dateFilterOption === 'this-month' ? 'active' : ''}`}
+                    onClick={() => {
+                      setDateFilterOption('this-month');
+                      setIsDatePickerOpen(false);
+                    }}
+                  >
+                    <span>📆 This Month</span>
+                  </button>
+                  <div className="remotale-datepicker-divider" />
+                  <div className="remotale-datepicker-custom">
+                    <label>Pick Custom Date:</label>
+                    <input
+                      type="date"
+                      value={customDate}
+                      onChange={(e) => {
+                        setCustomDate(e.target.value);
+                        setDateFilterOption('custom');
+                        setIsDatePickerOpen(false);
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
 
             <button type="button" className="remotale-bell-btn" title="Notifications">
               <BellIcon size={18} />
@@ -1873,26 +2017,37 @@ export default function RemotaleDashboard({ user, onLogout }) {
           {/* 4. Team Activity */}
           <section className="remotale-card-container">
             <div className="remotale-card-header">
-              <h3>Team Activity</h3>
-              <button type="button" className="remotale-card-view-all">View All →</button>
+              <div>
+                <h3 style={{ margin: 0 }}>Team Activity</h3>
+                <span style={{ fontSize: '11px', color: '#64748b' }}>Recent actions by team & clients</span>
+              </div>
+              <span style={{ fontSize: '11px', fontWeight: 700, color: '#16a34a', background: '#dcfce7', padding: '2px 8px', borderRadius: '999px' }}>
+                Live Feed
+              </span>
             </div>
 
-            {(teamActivities.length > 0 ? teamActivities : [
-              { id: 'act-1', member_name: 'Abdullah', action: 'reviewed', details: 'Pak White Label Abdul Saboor', time: '1h ago' },
-              { id: 'act-2', member_name: 'Abdullah', action: 'updated progress on', details: 'Fytnex Products Designing', time: '2h ago' },
-              { id: 'act-3', member_name: 'Abdullah', action: 'scheduled deadline for', details: 'Distant Market', time: '3h ago' }
-            ]).slice(0, 3).map(act => (
-              <div key={act.id} className="remotale-admin-list-item">
-                <div className="remotale-admin-item-left">
-                  <LetterAvatar name={act.member_name || 'Abdullah'} size={34} />
-                  <div className="remotale-admin-item-text">
-                    <span className="remotale-admin-item-title">{act.member_name} {act.action}</span>
-                    <span className="remotale-admin-item-sub">{act.details}</span>
-                  </div>
-                </div>
-                <span style={{ fontSize: '11px', color: '#94a3b8' }}>{act.time || '2h ago'}</span>
+            {teamActivities.length === 0 ? (
+              <div className="remotale-empty-card" style={{ padding: '20px' }}>
+                <p>No activity recorded yet.</p>
               </div>
-            ))}
+            ) : (
+              teamActivities.slice(0, 5).map(act => (
+                <div key={act.id} className="remotale-admin-list-item" style={{ padding: '10px 0', borderBottom: '1px solid #f1f5f9' }}>
+                  <div className="remotale-admin-item-left">
+                    <LetterAvatar name={act.member_name || 'Abdullah'} size={34} />
+                    <div className="remotale-admin-item-text">
+                      <span className="remotale-admin-item-title">
+                        <strong>{act.member_name}</strong> {act.action}
+                      </span>
+                      <span className="remotale-admin-item-sub" style={{ color: '#4f46e5', fontWeight: 600 }}>{act.details}</span>
+                    </div>
+                  </div>
+                  <span style={{ fontSize: '11px', color: '#94a3b8', whiteSpace: 'nowrap' }}>
+                    {formatTimeAgo(act.created_at) || act.time || 'Recently'}
+                  </span>
+                </div>
+              ))
+            )}
           </section>
         </div>
           </>
@@ -2289,8 +2444,13 @@ export default function RemotaleDashboard({ user, onLogout }) {
               >
                 <span>+ Project</span>
               </button>
-              <button type="button" className="remotale-date-filter-btn" style={{ padding: '4px 8px', fontSize: '11px' }}>
-                <span>📅 Oct 24, 2024 ⌵</span>
+              <button
+                type="button"
+                className="remotale-date-filter-btn"
+                style={{ padding: '4px 8px', fontSize: '11px' }}
+                onClick={() => setIsDatePickerOpen(prev => !prev)}
+              >
+                <span>{dateFilterLabel}</span>
               </button>
             </div>
           </div>
@@ -2377,6 +2537,32 @@ export default function RemotaleDashboard({ user, onLogout }) {
               Revenue
             </button>
           </div>
+
+          {/* Team Activity Tab Content for Admin Mobile */}
+          {mobileSubTab === 'team-activity' && (
+            <section className="remotale-card-container" style={{ padding: '14px', marginBottom: '12px' }}>
+              <div className="remotale-card-header" style={{ marginBottom: '10px' }}>
+                <h3 style={{ fontSize: '13.5px' }}>Team Activity Feed</h3>
+                <span style={{ fontSize: '10px', color: '#16a34a', fontWeight: 700, background: '#dcfce7', padding: '2px 6px', borderRadius: '999px' }}>Live</span>
+              </div>
+              {teamActivities.length === 0 ? (
+                <div style={{ padding: '12px 0', textAlign: 'center', color: '#94a3b8', fontSize: '12px' }}>No activity recorded</div>
+              ) : (
+                teamActivities.map((act, idx) => (
+                  <div key={act.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 0', borderBottom: idx < teamActivities.length - 1 ? '1px solid #f1f5f9' : 'none' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <LetterAvatar name={act.member_name || 'Abdullah'} size={28} />
+                      <div>
+                        <div style={{ fontSize: '11.5px', fontWeight: 700, color: '#0f172a' }}>{act.member_name} {act.action}</div>
+                        <div style={{ fontSize: '9.5px', color: '#4f46e5', fontWeight: 600 }}>{act.details}</div>
+                      </div>
+                    </div>
+                    <span style={{ fontSize: '9.5px', color: '#94a3b8', whiteSpace: 'nowrap' }}>{formatTimeAgo(act.created_at) || act.time || 'Recently'}</span>
+                  </div>
+                ))
+              )}
+            </section>
+          )}
 
           {/* Recent Projects List */}
           <section className="remotale-card-container" style={{ padding: '14px' }}>
@@ -2553,7 +2739,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
                         <div style={{ fontSize: '8.5px', color: '#64748b' }}>{act.details}</div>
                       </div>
                     </div>
-                    <span style={{ fontSize: '8.5px', color: '#94a3b8' }}>2h ago</span>
+                    <span style={{ fontSize: '8.5px', color: '#94a3b8' }}>{formatTimeAgo(act.created_at) || act.time || 'Recently'}</span>
                   </div>
                 ))
               )}
@@ -3084,64 +3270,111 @@ export default function RemotaleDashboard({ user, onLogout }) {
               </button>
             </div>
 
-            {/* Projects List */}
-            <section className="remotale-card-container" style={{ padding: '14px' }}>
-              {visibleProjects.length === 0 ? (
-                <div className="remotale-empty-card" style={{ padding: '16px' }}>
-                  <p>No projects yet.</p>
-                  <button
-                    type="button"
-                    className="remotale-btn-new-project"
-                    style={{ margin: '8px auto 0', display: 'inline-flex', padding: '6px 12px', fontSize: '11px' }}
-                    onClick={() => {
-                      setProjectToEdit(null);
-                      setIsNewProjectModalOpen(true);
-                    }}
-                  >
-                    + Create Project
-                  </button>
-                </div>
-              ) : (
-                visibleProjects.slice(0, 3).map((proj, idx) => (
-                  <div
-                    key={proj.id}
-                    className="remotale-project-card"
-                    style={{ padding: '12px', marginBottom: '10px', cursor: 'pointer', position: 'relative' }}
-                    onClick={() => setSelectedProject(proj)}
-                  >
-                    <div className="remotale-proj-top" style={{ gap: '8px', marginBottom: '6px', justifyContent: 'space-between' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <div className={`remotale-proj-icon-box ${getProjectIconBg(idx)}`} style={{ width: '32px', height: '32px' }}>
-                          {getProjectIcon(idx)}
-                        </div>
-                        <div className="remotale-proj-title-row">
-                          <span className="remotale-proj-title" style={{ fontSize: '13px' }}>{proj.title}</span>
-                          <span className={`remotale-status-pill ${(proj.status === 'completed' || Number(proj.progress) >= 100) ? 'completed' : proj.status}`} style={{ fontSize: '9.5px', padding: '2px 6px' }}>
-                            {(proj.status === 'completed' || Number(proj.progress) >= 100) ? 'Completed' : (proj.status === 'under-review' ? 'Under Review' : 'In Progress')}
-                          </span>
-                        </div>
-                      </div>
-                      {renderProjectDotsMenu(proj)}
-                    </div>
-                    <p className="remotale-proj-desc" style={{ fontSize: '11px', marginBottom: '6px' }}>{proj.description}</p>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3px' }}>
-                      <span style={{ fontSize: '9.5px', color: '#64748b', fontWeight: 600 }}>Progress</span>
-                      <span style={{ fontSize: '10px', color: '#1e293b', fontWeight: 700 }}>{proj.progress || 0}%</span>
-                    </div>
-                    <div className="remotale-progress-bar-wrap" style={{ height: '4px', marginBottom: '8px' }}>
-                      <div className="remotale-progress-bar-fill" style={{ width: `${proj.progress || 0}%`, transition: 'width 0.35s ease' }} />
-                    </div>
-                    <div className="remotale-proj-footer">
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                        <LetterAvatar name="Abdullah" size={18} />
-                        <span style={{ fontSize: '10.5px', fontWeight: 600, color: '#475569' }}>Admin: Abdullah</span>
-                      </div>
-                      <span style={{ fontSize: '10px', color: '#64748b' }}>📅 Due {proj.deadline || '25 Oct 2024'}</span>
-                    </div>
+            {/* Subtab 1: Projects List */}
+            {mobileSubTab === 'my-projects' && (
+              <section className="remotale-card-container" style={{ padding: '14px' }}>
+                {visibleProjects.length === 0 ? (
+                  <div className="remotale-empty-card" style={{ padding: '16px' }}>
+                    <p>No projects yet.</p>
+                    <button
+                      type="button"
+                      className="remotale-btn-new-project"
+                      style={{ margin: '8px auto 0', display: 'inline-flex', padding: '6px 12px', fontSize: '11px' }}
+                      onClick={() => {
+                        setProjectToEdit(null);
+                        setIsNewProjectModalOpen(true);
+                      }}
+                    >
+                      + Create Project
+                    </button>
                   </div>
-                ))
-              )}
-            </section>
+                ) : (
+                  visibleProjects.slice(0, 3).map((proj, idx) => (
+                    <div
+                      key={proj.id}
+                      className="remotale-project-card"
+                      style={{ padding: '12px', marginBottom: '10px', cursor: 'pointer', position: 'relative' }}
+                      onClick={() => setSelectedProject(proj)}
+                    >
+                      <div className="remotale-proj-top" style={{ gap: '8px', marginBottom: '6px', justifyContent: 'space-between' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <div className={`remotale-proj-icon-box ${getProjectIconBg(idx)}`} style={{ width: '32px', height: '32px' }}>
+                            {getProjectIcon(idx)}
+                          </div>
+                          <div className="remotale-proj-title-row">
+                            <span className="remotale-proj-title" style={{ fontSize: '13px' }}>{proj.title}</span>
+                            <span className={`remotale-status-pill ${(proj.status === 'completed' || Number(proj.progress) >= 100) ? 'completed' : proj.status}`} style={{ fontSize: '9.5px', padding: '2px 6px' }}>
+                              {(proj.status === 'completed' || Number(proj.progress) >= 100) ? 'Completed' : (proj.status === 'under-review' ? 'Under Review' : 'In Progress')}
+                            </span>
+                          </div>
+                        </div>
+                        {renderProjectDotsMenu(proj)}
+                      </div>
+                      <p className="remotale-proj-desc" style={{ fontSize: '11px', marginBottom: '6px' }}>{proj.description}</p>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3px' }}>
+                        <span style={{ fontSize: '9.5px', color: '#64748b', fontWeight: 600 }}>Progress</span>
+                        <span style={{ fontSize: '10px', color: '#1e293b', fontWeight: 700 }}>{proj.progress || 0}%</span>
+                      </div>
+                      <div className="remotale-progress-bar-wrap" style={{ height: '4px', marginBottom: '8px' }}>
+                        <div className="remotale-progress-bar-fill" style={{ width: `${proj.progress || 0}%`, transition: 'width 0.35s ease' }} />
+                      </div>
+                      <div className="remotale-proj-footer">
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                          <LetterAvatar name="Abdullah" size={18} />
+                          <span style={{ fontSize: '10.5px', fontWeight: 600, color: '#475569' }}>Admin: Abdullah</span>
+                        </div>
+                        <span style={{ fontSize: '10px', color: '#64748b' }}>📅 Due {proj.deadline || formattedCurrentDate}</span>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </section>
+            )}
+
+            {/* Subtab 2: Recent Activity Feed */}
+            {mobileSubTab === 'recent-activity' && (
+              <section className="remotale-card-container" style={{ padding: '14px' }}>
+                <div className="remotale-card-header" style={{ marginBottom: '10px' }}>
+                  <h3 style={{ fontSize: '13px', margin: 0, fontWeight: 700 }}>Recent Activity</h3>
+                  <span style={{ fontSize: '10px', color: '#16a34a', fontWeight: 700, background: '#dcfce7', padding: '2px 6px', borderRadius: '999px' }}>
+                    Live Feed
+                  </span>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  {teamActivities.length === 0 ? (
+                    <div style={{ padding: '14px 0', textAlign: 'center', color: '#94a3b8', fontSize: '12px' }}>
+                      No recent activities recorded.
+                    </div>
+                  ) : (
+                    teamActivities.map((act, idx) => (
+                      <div
+                        key={act.id}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'flex-start',
+                          gap: '10px',
+                          padding: '8px 0',
+                          borderBottom: idx < teamActivities.length - 1 ? '1px solid #f1f5f9' : 'none'
+                        }}
+                      >
+                        <LetterAvatar name={act.member_name || 'Abdullah'} size={30} />
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <span style={{ fontSize: '12px', fontWeight: 700, color: '#0f172a' }}>{act.member_name}</span>
+                            <span style={{ fontSize: '9px', color: '#94a3b8', whiteSpace: 'nowrap' }}>
+                              {formatTimeAgo(act.created_at) || act.time || 'Recently'}
+                            </span>
+                          </div>
+                          <div style={{ fontSize: '11px', color: '#334155', fontWeight: 600, marginTop: '2px' }}>{act.action}</div>
+                          <div style={{ fontSize: '10px', color: '#4f46e5', fontWeight: 600, marginTop: '1px' }}>{act.details}</div>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </section>
+            )}
 
             {/* Project Deadlines & Recent Messages 2-Column Split (Image 3) */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>

@@ -107,9 +107,12 @@ export default function AddNewProjectModal({
     if (isAdmin && clients.length > 0) return clients[0].id;
     return currentUser?.id || 'client-1';
   });
+  const todayStr = useMemo(() => new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }), []);
+  const defaultDeadlineStr = useMemo(() => new Date(Date.now() + 7 * 86400000).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }), []);
+
   const [projectType, setProjectType] = useState(projectToEdit?.project_type || projectToEdit?.projectType || 'Web Development');
-  const [startDate, setStartDate] = useState(projectToEdit?.start_date || projectToEdit?.startDate || 'Oct 24, 2024');
-  const [deadline, setDeadline] = useState(projectToEdit?.deadline || 'Oct 31, 2024');
+  const [startDate, setStartDate] = useState(projectToEdit?.start_date || projectToEdit?.startDate || todayStr);
+  const [deadline, setDeadline] = useState(projectToEdit?.deadline || defaultDeadlineStr);
   const [priority, setPriority] = useState(projectToEdit?.priority || 'Medium');
   const [status, setStatus] = useState(projectToEdit?.status || 'in-progress');
   const [progress, setProgress] = useState(projectToEdit?.progress || (projectToEdit?.status === 'completed' ? 100 : 70));
@@ -140,8 +143,8 @@ export default function AddNewProjectModal({
       setDescription(projectToEdit.description || '');
       setSelectedClientId(projectToEdit.client_id || projectToEdit.clientId || (isAdmin && clients.length > 0 ? clients[0].id : currentUser?.id || 'client-1'));
       setProjectType(projectToEdit.project_type || projectToEdit.projectType || 'Web Development');
-      setStartDate(projectToEdit.start_date || projectToEdit.startDate || 'Oct 24, 2024');
-      setDeadline(projectToEdit.deadline || 'Oct 31, 2024');
+      setStartDate(projectToEdit.start_date || projectToEdit.startDate || todayStr);
+      setDeadline(projectToEdit.deadline || defaultDeadlineStr);
       setPriority(projectToEdit.priority || 'Medium');
       setStatus(projectToEdit.status || 'in-progress');
       setProgress(projectToEdit.progress ?? (projectToEdit.status === 'completed' ? 100 : 70));
@@ -167,8 +170,8 @@ export default function AddNewProjectModal({
       setDescription('');
       setSelectedClientId(isAdmin && clients.length > 0 ? clients[0].id : currentUser?.id || 'client-1');
       setProjectType('Web Development');
-      setStartDate('Oct 24, 2024');
-      setDeadline('Oct 31, 2024');
+      setStartDate(todayStr);
+      setDeadline(defaultDeadlineStr);
       setPriority('Medium');
       setStatus('in-progress');
       setProgress(70);
@@ -460,7 +463,7 @@ export default function AddNewProjectModal({
                     className="anp-input"
                     value={startDate}
                     onChange={(e) => setStartDate(e.target.value)}
-                    placeholder="Oct 24, 2024"
+                    placeholder={todayStr}
                     required
                   />
                 </div>
@@ -477,7 +480,7 @@ export default function AddNewProjectModal({
                     className="anp-input"
                     value={deadline}
                     onChange={(e) => setDeadline(e.target.value)}
-                    placeholder="Oct 31, 2024"
+                    placeholder={defaultDeadlineStr}
                     required
                   />
                 </div>
