@@ -2149,6 +2149,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
                 onClick={() => {
                   setSelectedProject(null);
                   setActiveTab('home');
+                  setMobileSubTab('my-projects');
                 }}
               >
                 <HomeIcon size={18} color="#64748B" />
@@ -2170,7 +2171,8 @@ export default function RemotaleDashboard({ user, onLogout }) {
                 className="remotale-bottom-nav-item"
                 onClick={() => {
                   setSelectedProject(null);
-                  setActiveTab('messages');
+                  setActiveTab('home');
+                  setMobileSubTab('messages');
                 }}
               >
                 <MessagesIcon size={18} color="#64748B" />
@@ -2178,13 +2180,12 @@ export default function RemotaleDashboard({ user, onLogout }) {
               </button>
               <button
                 type="button"
-                className="remotale-bottom-nav-item"
+                className={`remotale-bottom-nav-item ${isProfileMenuOpen ? 'active' : ''}`}
                 onClick={() => {
-                  setSelectedProject(null);
-                  setActiveTab('profile');
+                  setIsProfileMenuOpen(!isProfileMenuOpen);
                 }}
               >
-                <UsersIcon size={18} color="#64748B" />
+                <UsersIcon size={18} color={isProfileMenuOpen ? '#4F46E5' : '#64748B'} />
                 <span>Profile</span>
               </button>
             </div>
@@ -2270,6 +2271,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
                 onClick={() => {
                   setSelectedProject(null);
                   setActiveTab('home');
+                  setMobileSubTab('my-projects');
                 }}
               >
                 <HomeIcon size={18} color="#64748B" />
@@ -2291,7 +2293,8 @@ export default function RemotaleDashboard({ user, onLogout }) {
                 className="remotale-bottom-nav-item"
                 onClick={() => {
                   setSelectedProject(null);
-                  setActiveTab('messages');
+                  setActiveTab('home');
+                  setMobileSubTab('messages');
                 }}
               >
                 <MessagesIcon size={18} color="#64748B" />
@@ -2299,13 +2302,12 @@ export default function RemotaleDashboard({ user, onLogout }) {
               </button>
               <button
                 type="button"
-                className="remotale-bottom-nav-item"
+                className={`remotale-bottom-nav-item ${isProfileMenuOpen ? 'active' : ''}`}
                 onClick={() => {
-                  setSelectedProject(null);
-                  setActiveTab('profile');
+                  setIsProfileMenuOpen(!isProfileMenuOpen);
                 }}
               >
-                <UsersIcon size={18} color="#64748B" />
+                <UsersIcon size={18} color={isProfileMenuOpen ? '#4F46E5' : '#64748B'} />
                 <span>Profile</span>
               </button>
             </div>
@@ -2597,13 +2599,14 @@ export default function RemotaleDashboard({ user, onLogout }) {
           <div className="remotale-mobile-bottom-nav">
             <button
               type="button"
-              className={`remotale-bottom-nav-item ${activeTab === 'home' && !selectedProject ? 'active' : ''}`}
+              className={`remotale-bottom-nav-item ${activeTab === 'home' && !selectedProject && mobileSubTab !== 'messages' ? 'active' : ''}`}
               onClick={() => {
                 setSelectedProject(null);
                 setActiveTab('home');
+                setMobileSubTab('my-projects');
               }}
             >
-              <HomeIcon size={18} color={activeTab === 'home' && !selectedProject ? '#4F46E5' : '#64748B'} />
+              <HomeIcon size={18} color={activeTab === 'home' && !selectedProject && mobileSubTab !== 'messages' ? '#4F46E5' : '#64748B'} />
               <span>Home</span>
             </button>
             <button
@@ -2619,24 +2622,24 @@ export default function RemotaleDashboard({ user, onLogout }) {
             </button>
             <button
               type="button"
-              className={`remotale-bottom-nav-item ${activeTab === 'messages' ? 'active' : ''}`}
+              className={`remotale-bottom-nav-item ${mobileSubTab === 'messages' ? 'active' : ''}`}
               onClick={() => {
                 setSelectedProject(null);
-                setActiveTab('messages');
+                setActiveTab('home');
+                setMobileSubTab('messages');
               }}
             >
-              <MessagesIcon size={18} color={activeTab === 'messages' ? '#4F46E5' : '#64748B'} />
+              <MessagesIcon size={18} color={mobileSubTab === 'messages' ? '#4F46E5' : '#64748B'} />
               <span>Messages</span>
             </button>
             <button
               type="button"
-              className={`remotale-bottom-nav-item ${activeTab === 'profile' ? 'active' : ''}`}
+              className={`remotale-bottom-nav-item ${isProfileMenuOpen ? 'active' : ''}`}
               onClick={() => {
-                setSelectedProject(null);
-                setActiveTab('profile');
+                setIsProfileMenuOpen(!isProfileMenuOpen);
               }}
             >
-              <UsersIcon size={18} color={activeTab === 'profile' ? '#4F46E5' : '#64748B'} />
+              <UsersIcon size={18} color={isProfileMenuOpen ? '#4F46E5' : '#64748B'} />
               <span>Profile</span>
             </button>
           </div>
