@@ -801,6 +801,26 @@
   cursor: pointer;
 }
 
+.inv-btn-delete-modal {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.inv-btn-delete-modal:hover {
+  background: #ef4444;
+  color: #ffffff;
+}
+
 .inv-btn-print {
   display: inline-flex;
   align-items: center;
@@ -1704,6 +1724,420 @@
 }
 
 /* ==========================================================================
+   TERRACOTTA & CREAM LUXURY INVOICE THEME (EXACT MATCH TO REFERENCE)
+   ========================================================================== */
+
+.inv-terracotta-sheet {
+  background: #ffffff;
+  border-radius: 0 0 16px 16px;
+  padding: 30px 34px 26px;
+  box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25);
+  border: 1px solid #e2e8f0;
+  border-top: none;
+  color: #1f1d1a;
+  font-family: -apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', 'Segoe UI', Roboto, sans-serif;
+  box-sizing: border-box;
+}
+
+/* 1. Curved Terracotta Header Banner */
+.inv-tc-header {
+  background: #8D361E;
+  border-radius: 16px;
+  padding: 24px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #ffffff;
+}
+
+.inv-tc-header-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.inv-tc-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 34px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+  line-height: 1.1;
+  letter-spacing: -0.5px;
+}
+
+.inv-tc-subtitle {
+  margin: 6px 0 0;
+  font-size: 13.5px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.92);
+  letter-spacing: 0.2px;
+}
+
+.inv-tc-pill-badge {
+  border: 1.5px solid rgba(255, 255, 255, 0.85);
+  border-radius: 999px;
+  padding: 7px 24px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.4px;
+}
+
+/* 2. Soft Cream Meta Box */
+.inv-tc-meta-box {
+  background: #F8F5EE;
+  border-radius: 16px;
+  padding: 22px 28px;
+  margin: 18px 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.inv-tc-meta-left {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.inv-tc-label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  color: #766D67;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.inv-tc-label.right {
+  text-align: right;
+}
+
+.inv-tc-client-name {
+  font-size: 21px;
+  font-weight: 700;
+  color: #1E1B18;
+  margin-bottom: 2px;
+}
+
+.inv-tc-client-designation {
+  font-size: 13px;
+  color: #5E5650;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.inv-tc-contact-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-size: 12.5px;
+  color: #5E5650;
+}
+
+.inv-tc-contact-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.inv-tc-icon-phone {
+  color: #DC2626;
+  font-size: 12px;
+}
+
+.inv-tc-icon-email {
+  color: #5E5650;
+  font-size: 12px;
+}
+
+.inv-tc-icon-web {
+  color: #2563EB;
+  font-size: 12px;
+}
+
+.inv-tc-projects-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.inv-tc-project-pill {
+  background: rgba(141, 54, 30, 0.08);
+  color: #8D361E;
+  border: 1px solid rgba(141, 54, 30, 0.2);
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.inv-tc-meta-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  min-width: 170px;
+}
+
+.inv-tc-invoice-no {
+  font-size: 18px;
+  font-weight: 800;
+  color: #1E1B18;
+  margin-bottom: 3px;
+  letter-spacing: -0.2px;
+}
+
+.inv-tc-date-row {
+  display: flex;
+  gap: 6px;
+  font-size: 12.5px;
+  margin-bottom: 12px;
+}
+
+.inv-tc-date-lbl {
+  font-weight: 700;
+  color: #766D67;
+}
+
+.inv-tc-date-val {
+  font-weight: 600;
+  color: #1E1B18;
+}
+
+.inv-tc-amount-pill {
+  background: #8D361E;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 700;
+  padding: 8px 24px;
+  border-radius: 999px;
+  box-shadow: 0 4px 12px rgba(141, 54, 30, 0.25);
+  letter-spacing: 0.3px;
+}
+
+/* 3. Items Table */
+.inv-tc-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 10px 10px 0 0;
+}
+
+.inv-tc-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.inv-tc-table thead tr {
+  background: #272422;
+  color: #ffffff;
+}
+
+.inv-tc-table th {
+  padding: 13px 20px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.inv-tc-table th.th-desc {
+  text-align: left;
+}
+
+.inv-tc-table th.th-price {
+  text-align: center;
+  width: 140px;
+}
+
+.inv-tc-table th.th-qty {
+  text-align: center;
+  width: 90px;
+}
+
+.inv-tc-table th.th-amount {
+  text-align: right;
+  width: 140px;
+}
+
+.inv-tc-table tbody tr {
+  border-bottom: 1px solid #EBE6DC;
+  background: #ffffff;
+}
+
+.inv-tc-table tbody tr:last-child {
+  border-bottom: 1px solid #DCD5CA;
+}
+
+.inv-tc-table td {
+  padding: 14px 20px;
+  font-size: 13.5px;
+  color: #1F1B18;
+}
+
+.inv-tc-table td.td-desc {
+  text-align: left;
+}
+
+.inv-tc-item-name {
+  font-weight: 700;
+  color: #1F1B18;
+}
+
+.inv-tc-item-proj {
+  font-size: 11.5px;
+  color: #8D361E;
+  font-weight: 600;
+  margin-top: 3px;
+}
+
+.inv-tc-table td.td-price {
+  text-align: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: #332E2B;
+  font-weight: 500;
+}
+
+.inv-tc-table td.td-qty {
+  text-align: center;
+  font-weight: 600;
+  color: #332E2B;
+}
+
+.inv-tc-table td.td-amount {
+  text-align: right;
+  font-weight: 800;
+  color: #1F1B18;
+  font-size: 14px;
+}
+
+/* 4. Sub Total Row */
+.inv-tc-subtotal-row {
+  display: flex;
+  justify-content: flex-end;
+  padding: 14px 20px 18px;
+}
+
+.inv-tc-subtotal-text {
+  font-size: 15.5px;
+  font-weight: 800;
+  color: #1F1B18;
+  letter-spacing: -0.2px;
+}
+
+/* 5. Bottom Two-Column Grid */
+.inv-tc-bottom-grid {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 30px;
+  padding-top: 14px;
+  border-top: 1px solid #EFEAE1;
+  margin-bottom: 22px;
+}
+
+.inv-tc-payment-col {
+  flex: 1;
+}
+
+.inv-tc-bottom-heading {
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  color: #272422;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.inv-tc-payment-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12.5px;
+  color: #38332F;
+  margin-bottom: 12px;
+}
+
+.inv-tc-qr-card {
+  width: 78px;
+  height: 78px;
+  background: #ffffff;
+  border: 1px solid #DCD5CA;
+  border-radius: 10px;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+
+.inv-tc-author-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+}
+
+.inv-tc-author-name {
+  font-size: 17px;
+  font-weight: 800;
+  color: #1E1B18;
+}
+
+.inv-tc-author-role {
+  font-size: 12.5px;
+  color: #68605A;
+  margin: 2px 0 8px;
+  font-weight: 500;
+}
+
+.inv-tc-author-contact {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  font-size: 12.5px;
+  color: #4A443F;
+}
+
+/* 6. Terms & Conditions */
+.inv-tc-terms-section {
+  padding-top: 14px;
+  border-top: 1px solid #EFEAE1;
+}
+
+.inv-tc-terms-title {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  color: #5A534E;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.inv-tc-terms-list {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 12px;
+  color: #68605A;
+  line-height: 1.65;
+}
+
+/* 7. Bottom Stripe */
+.inv-tc-bottom-stripe {
+  height: 8px;
+  background: #8D361E;
+  border-radius: 6px;
+  width: 100%;
+  margin-top: 18px;
+}
+
+/* ==========================================================================
    PRINT MEDIA QUERY - STRICT CLEAN EXPORT
    ========================================================================== */
 
@@ -1735,35 +2169,43 @@
     max-width: 100% !important;
     margin: 0 !important;
     box-shadow: none !important;
+    border: none !important;
+    background: transparent !important;
   }
 
   .inv-theme-sheet,
-  .inv-theme-sheet * {
+  .inv-theme-sheet *,
+  .inv-terracotta-sheet,
+  .inv-terracotta-sheet * {
     visibility: visible !important;
   }
 
-  .inv-theme-sheet {
+  .inv-theme-sheet,
+  .inv-terracotta-sheet {
     position: absolute !important;
     left: 0 !important;
     top: 0 !important;
     width: 100% !important;
-    padding: 8mm 12mm 6mm !important;
+    padding: 8mm 10mm 6mm !important;
     box-shadow: none !important;
     border: none !important;
     border-radius: 0 !important;
     background: #ffffff !important;
-    color: #0f172a !important;
+    color: #1f1d1a !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
 
+  .inv-tc-header,
+  .inv-tc-meta-box,
+  .inv-tc-amount-pill,
+  .inv-tc-table thead,
+  .inv-tc-table thead tr,
+  .inv-tc-table tbody tr,
+  .inv-tc-qr-card,
+  .inv-tc-bottom-stripe,
   .inv-ambient-accent-top,
-  .inv-ambient-accent-bottom {
-    display: block !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-
+  .inv-ambient-accent-bottom,
   .inv-theme-card,
   .inv-theme-card.summary-card,
   .inv-theme-card.thank-you-card,
@@ -1780,6 +2222,8 @@
     break-inside: avoid;
   }
 
+  .inv-tc-bottom-grid,
+  .inv-tc-terms-section,
   .inv-theme-cards-grid,
   .inv-theme-cards-grid.bottom-grid,
   .inv-theme-cards-grid.signature-grid,

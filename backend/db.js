@@ -336,7 +336,7 @@ function ensureLocalStore() {
         }
       ],
       files: [],
-      invoices: []
+      invoices: (store && Array.isArray(store.invoices)) ? store.invoices : []
     };
 
     fs.writeFileSync(STORE_PATH, JSON.stringify(cleanStore, null, 2), 'utf-8');
@@ -623,10 +623,10 @@ async function initPostgresTables() {
         ALTER TABLE invoices ADD COLUMN IF NOT EXISTS published BOOLEAN DEFAULT true;
         ALTER TABLE invoices ADD COLUMN IF NOT EXISTS project_ids JSONB DEFAULT '[]';
         ALTER TABLE invoices ADD COLUMN IF NOT EXISTS project_titles JSONB DEFAULT '[]';
+        ALTER TABLE invoices ADD COLUMN IF NOT EXISTS client_name VARCHAR(255);
+        ALTER TABLE invoices ADD COLUMN IF NOT EXISTS client_company VARCHAR(255);
+        ALTER TABLE invoices ADD COLUMN IF NOT EXISTS client_email VARCHAR(255);
       `);
-
-      // Clean up any remaining demo invoices
-      await client.query("DELETE FROM invoices WHERE id IN ('inv-awais-1', 'inv-afshal-1', 'inv-1792084489379')");
 
       console.log('[Neon DB] Tables verified with clean database state & credentials.');
     } finally {
@@ -1346,7 +1346,9 @@ const db = {
       const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
       const query = `
         SELECT i.*, 
-               u.name as client_name, u.company as client_company, u.email as client_email,
+               COALESCE(i.client_name, u.name, 'Client') as client_name,
+               COALESCE(i.client_company, u.company, 'Agency Client') as client_company,
+               COALESCE(i.client_email, u.email, '') as client_email,
                p.title as project_title
         FROM invoices i
         LEFT JOIN users u ON i.client_id = u.id
@@ -1415,7 +1417,9 @@ const db = {
     if (isPostgres && pgPool) {
       const res = await pgPool.query(`
         SELECT i.*, 
-               u.name as client_name, u.company as client_company, u.email as client_email,
+               COALESCE(i.client_name, u.name, 'Client') as client_name,
+               COALESCE(i.client_company, u.company, 'Agency Client') as client_company,
+               COALESCE(i.client_email, u.email, '') as client_email,
                p.title as project_title
         FROM invoices i
         LEFT JOIN users u ON i.client_id = u.id
@@ -1487,6 +1491,9 @@ const db = {
     const cleanInvoice = {
       id,
       client_id: invoiceData.client_id || invoiceData.clientId,
+      client_name: invoiceData.client_name || null,
+      client_company: invoiceData.client_company || null,
+      client_email: invoiceData.client_email || null,
       project_id: invoiceData.project_id || (projectIds.length > 0 ? projectIds[0] : null),
       project_ids: projectIds,
       title: invoiceData.title || `Invoice ${invoiceNumber}`,
@@ -1513,9 +1520,10 @@ const db = {
         INSERT INTO invoices (
           id, client_id, project_id, title, invoice_number, amount, status,
           due_date, issue_date, currency, subtotal, tax, discount, notes,
-          payment_details, published, items, project_ids, project_titles
+          payment_details, published, items, project_ids, project_titles,
+          client_name, client_company, client_email
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17::jsonb, $18::jsonb, $19::jsonb)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17::jsonb, $18::jsonb, $19::jsonb, $20, $21, $22)
         ON CONFLICT (id) DO UPDATE SET
           title = EXCLUDED.title,
           amount = EXCLUDED.amount,
@@ -1523,7 +1531,10 @@ const db = {
           due_date = EXCLUDED.due_date,
           items = EXCLUDED.items,
           project_ids = EXCLUDED.project_ids,
-          project_titles = EXCLUDED.project_titles;
+          project_titles = EXCLUDED.project_titles,
+          client_name = EXCLUDED.client_name,
+          client_company = EXCLUDED.client_company,
+          client_email = EXCLUDED.client_email;
       `, [
         cleanInvoice.id,
         cleanInvoice.client_id,
@@ -1543,14 +1554,16 @@ const db = {
         cleanInvoice.published,
         JSON.stringify(cleanInvoice.items),
         JSON.stringify(cleanInvoice.project_ids),
-        JSON.stringify(cleanInvoice.project_titles)
+        JSON.stringify(cleanInvoice.project_titles),
+        cleanInvoice.client_name,
+        cleanInvoice.client_company,
+        cleanInvoice.client_email
       ]);
     }
 
-    // Mirror to local store
+    // Mirror to local store reliably
     const local = readLocalStore();
-    local.invoices = local.invoices || [];
-    local.invoices.unshift(cleanInvoice);
+    local.invoices = [cleanInvoice, ...(local.invoices || []).filter(i => i.id !== cleanInvoice.id)];
     writeLocalStore(local);
 
     return this.getInvoiceById(id);

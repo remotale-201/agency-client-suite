@@ -114,6 +114,9 @@ export default function InvoicesView({
     if (window.confirm('Are you sure you want to delete this invoice?')) {
       if (onDeleteInvoice) {
         await onDeleteInvoice(invoiceId);
+        if (selectedInvoice && selectedInvoice.id === invoiceId) {
+          setSelectedInvoice(null);
+        }
       }
     }
   };
@@ -375,7 +378,7 @@ export default function InvoicesView({
                       </button>
                     )}
 
-                    {isAdmin && isDraft && (
+                    {isAdmin && (
                       <button
                         type="button"
                         className="inv-action-btn delete-btn"
@@ -409,6 +412,7 @@ export default function InvoicesView({
           onClose={() => setSelectedInvoice(null)}
           onPublish={handlePublishClick}
           onMarkPaid={handlePaidClick}
+          onDelete={handleDeleteClick}
           isAdmin={isAdmin}
         />
       )}
