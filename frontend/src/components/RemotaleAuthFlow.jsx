@@ -29,33 +29,7 @@ export function RemotaleLogo({ size = 26 }) {
 }
 
 function StatusBar() {
-  return (
-    <div className="remotale-status-bar">
-      <span className="remotale-status-time">9:41</span>
-      <div className="remotale-status-icons">
-        {/* Signal Bars */}
-        <svg width="17" height="11" viewBox="0 0 17 11" fill="currentColor">
-          <rect x="0" y="8" width="3" height="3" rx="0.5" />
-          <rect x="4.5" y="5.5" width="3" height="5.5" rx="0.5" />
-          <rect x="9" y="3" width="3" height="8" rx="0.5" />
-          <rect x="13.5" y="0" width="3" height="11" rx="0.5" />
-        </svg>
-        {/* Wi-Fi Icon */}
-        <svg width="15" height="11" viewBox="0 0 15 11" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
-          <path d="M1 3C4.8 -0.8 10.2 -0.8 14 3" />
-          <path d="M3.5 5.8C5.8 3.5 9.2 3.5 11.5 5.8" />
-          <path d="M6 8.5C6.8 7.7 8.2 7.7 9 8.5" />
-          <circle cx="7.5" cy="10" r="0.8" fill="currentColor" />
-        </svg>
-        {/* Battery Icon */}
-        <svg width="22" height="11" viewBox="0 0 22 11" fill="none">
-          <rect x="0.5" y="0.5" width="18" height="10" rx="3" stroke="currentColor" />
-          <rect x="2" y="2" width="14" height="7" rx="1.5" fill="currentColor" />
-          <path d="M20 3.5C20.6 3.8 21 4.4 21 5.5C21 6.6 20.6 7.2 20 7.5" stroke="currentColor" strokeLinecap="round" />
-        </svg>
-      </div>
-    </div>
-  );
+  return null;
 }
 
 function UserIcon({ size = 18, color = 'currentColor' }) {
@@ -318,7 +292,6 @@ export default function RemotaleAuthFlow({ onLogin, onRegister, initialPortalTok
   // ==========================================
   const renderScreen1 = () => (
     <div className="remotale-phone-frame" id="remotale-screen-1">
-      <StatusBar />
       <div className="remotale-screen-body">
         <div className="remotale-welcome-screen">
           {/* Top Brand */}
@@ -454,7 +427,6 @@ export default function RemotaleAuthFlow({ onLogin, onRegister, initialPortalTok
   // ==========================================
   const renderScreen2 = () => (
     <div className="remotale-phone-frame" id="remotale-screen-2">
-      <StatusBar />
       <div className="remotale-screen-body">
         {/* Navigation Header */}
         <div className="remotale-top-nav-row">
@@ -675,7 +647,6 @@ export default function RemotaleAuthFlow({ onLogin, onRegister, initialPortalTok
   // ==========================================
   const renderScreen3 = () => (
     <div className="remotale-phone-frame" id="remotale-screen-3">
-      <StatusBar />
       <div className="remotale-screen-body">
         {/* Navigation Header */}
         <div className="remotale-top-nav-row">
@@ -817,70 +788,6 @@ export default function RemotaleAuthFlow({ onLogin, onRegister, initialPortalTok
           </button>
         </form>
 
-        {/* Published Accounts & Quick Access Directory */}
-        <div className="remotale-published-accounts-card">
-          <div className="remotale-published-header">
-            <span className="remotale-published-tag">🔑 Published Credentials</span>
-            <span className="remotale-published-sub">1-Click Auto-Fill & Test</span>
-          </div>
-          <div className="remotale-published-grid">
-            <button
-              type="button"
-              className={`remotale-account-chip ${loginEmail === 'admin' ? 'active' : ''}`}
-              onClick={() => handleQuickFill('admin')}
-              title="Super Admin • Sees All 10 Projects"
-            >
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-                <span className="remotale-chip-badge admin">👑 Admin</span>
-                <span style={{ fontSize: '9.5px', color: '#64748b' }}>All 10 Projs</span>
-              </div>
-              <span className="remotale-chip-name">Abdullah</span>
-              <span className="remotale-chip-cred">admin / admin</span>
-            </button>
-
-            <button
-              type="button"
-              className={`remotale-account-chip ${loginEmail === 'awais' ? 'active' : ''}`}
-              onClick={() => handleQuickFill('awais')}
-              title="Client Awais • Sees His 8 Projects Only"
-            >
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-                <span className="remotale-chip-badge client">👤 Client</span>
-                <span style={{ fontSize: '9.5px', color: '#64748b' }}>8 Projs Only</span>
-              </div>
-              <span className="remotale-chip-name">Awais</span>
-              <span className="remotale-chip-cred">awais / awais</span>
-            </button>
-
-            <button
-              type="button"
-              className={`remotale-account-chip ${loginEmail === 'afshal' ? 'active' : ''}`}
-              onClick={() => handleQuickFill('afshal')}
-              title="Client Afshal • Sees Her 2 Projects Only"
-            >
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-                <span className="remotale-chip-badge client">👤 Client</span>
-                <span style={{ fontSize: '9.5px', color: '#64748b' }}>2 Projs Only</span>
-              </div>
-              <span className="remotale-chip-name">Afshal</span>
-              <span className="remotale-chip-cred">afshal / afshal</span>
-            </button>
-
-            <button
-              type="button"
-              className={`remotale-account-chip ${loginEmail === 'ali' ? 'active' : ''}`}
-              onClick={() => handleQuickFill('ali')}
-              title="Client Ali Khan • Acme Brand"
-            >
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-                <span className="remotale-chip-badge client">👤 Client</span>
-                <span style={{ fontSize: '9.5px', color: '#64748b' }}>Client</span>
-              </div>
-              <span className="remotale-chip-name">Ali Khan</span>
-              <span className="remotale-chip-cred">ali / client123</span>
-            </button>
-          </div>
-        </div>
 
         {/* Switch to Sign Up Link */}
         <div className="remotale-bottom-footer-link">

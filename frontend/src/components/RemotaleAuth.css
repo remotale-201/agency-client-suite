@@ -173,14 +173,7 @@
 
 /* iOS Top Status Bar */
 .remotale-status-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 22px 4px 22px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #0f172a;
-  user-select: none;
+  display: none !important;
 }
 
 .remotale-status-time {
@@ -1033,12 +1026,7 @@
 
 /* Published Credentials Showcase */
 .remotale-published-accounts-card {
-  margin-top: 14px;
-  background: #f8faff;
-  border: 1px solid #e0e7ff;
-  border-radius: 14px;
-  padding: 12px 14px;
-  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.05);
+  display: none !important;
 }
 
 .remotale-published-header {
