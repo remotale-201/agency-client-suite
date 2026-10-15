@@ -133,7 +133,7 @@
    -------------------------------------------------------------------------- */
 .remotale-desktop-layout {
   display: flex;
-  min-height: calc(100vh - 53px);
+  min-height: 100vh;
   background: var(--rm-bg);
   color: var(--rm-text-primary);
 }

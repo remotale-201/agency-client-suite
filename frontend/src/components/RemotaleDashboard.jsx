@@ -153,8 +153,13 @@ export default function RemotaleDashboard({ user, onLogout }) {
   const [role, setRole] = useState(() => (isRealAdmin ? 'admin' : 'client'));
   const [previewClientId, setPreviewClientId] = useState('client-awais');
 
-  // View Mode: 'desktop' (Image 1 single layout), 'desktop-side-by-side' (Image 1 both layouts), or 'mobile' (Image 2/3)
-  const [viewMode, setViewMode] = useState(() => (window.innerWidth >= 1024 ? 'desktop' : 'mobile'));
+  const [isMobileScreen, setIsMobileScreen] = useState(() => (typeof window !== 'undefined' ? window.innerWidth < 1024 : false));
+
+  useEffect(() => {
+    const handleResize = () => setIsMobileScreen(window.innerWidth < 1024);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Active navigation tab
   const [activeTab, setActiveTab] = useState('home');
@@ -608,6 +613,17 @@ export default function RemotaleDashboard({ user, onLogout }) {
               <BillingIcon size={17} color={activeTab === 'billing' ? '#4F46E5' : '#64748B'} />
               <span>Billing</span>
             </button>
+
+            <button
+              type="button"
+              className="remotale-nav-item"
+              onClick={onLogout}
+              style={{ marginTop: '20px', color: '#ef4444' }}
+              title="Sign Out"
+            >
+              <span style={{ fontSize: '16px' }}>🚪</span>
+              <span>Sign Out</span>
+            </button>
           </nav>
         </div>
 
@@ -662,6 +678,29 @@ export default function RemotaleDashboard({ user, onLogout }) {
           </div>
 
           <div className="remotale-header-actions">
+            {isRealAdmin && (
+              <button
+                type="button"
+                onClick={() => {
+                  setRole('admin');
+                  setSelectedProject(null);
+                }}
+                style={{
+                  background: '#0f172a',
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: '999px',
+                  padding: '7px 14px',
+                  fontSize: '12px',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.1)'
+                }}
+              >
+                👑 Return to Admin View
+              </button>
+            )}
+
             <button type="button" className="remotale-bell-btn" title="Notifications">
               <BellIcon size={18} />
               <span className="remotale-bell-dot" />
@@ -677,6 +716,28 @@ export default function RemotaleDashboard({ user, onLogout }) {
               onClick={() => setIsNewProjectModalOpen(true)}
             >
               <span>+ New Project</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={onLogout}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '8px 14px',
+                borderRadius: '8px',
+                border: '1px solid #fee2e2',
+                background: '#fef2f2',
+                color: '#ef4444',
+                fontSize: '12.5px',
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'all 0.15s ease'
+              }}
+              title="Sign Out"
+            >
+              <span>🚪 Sign Out</span>
             </button>
           </div>
         </div>
@@ -1025,6 +1086,17 @@ export default function RemotaleDashboard({ user, onLogout }) {
               <SettingsIcon size={17} color={activeTab === 'settings' ? '#4F46E5' : '#64748B'} />
               <span>Settings</span>
             </button>
+
+            <button
+              type="button"
+              className="remotale-nav-item"
+              onClick={onLogout}
+              style={{ marginTop: '20px', color: '#ef4444' }}
+              title="Sign Out"
+            >
+              <span style={{ fontSize: '16px' }}>🚪</span>
+              <span>Sign Out</span>
+            </button>
           </nav>
         </div>
 
@@ -1079,6 +1151,41 @@ export default function RemotaleDashboard({ user, onLogout }) {
           </div>
 
           <div className="remotale-header-actions">
+            {isRealAdmin && (
+              <select
+                className="remotale-persona-select"
+                value={role === 'admin' ? 'admin' : previewClientId}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (val === 'admin') {
+                    setRole('admin');
+                  } else {
+                    setRole('client');
+                    setPreviewClientId(val);
+                  }
+                  setSelectedProject(null);
+                }}
+                style={{
+                  background: role === 'admin' ? '#0f172a' : '#4338ca',
+                  color: '#ffffff',
+                  border: '1px solid #cbd5e1',
+                  borderRadius: '999px',
+                  padding: '7px 14px',
+                  fontWeight: 700,
+                  fontSize: '12px',
+                  cursor: 'pointer',
+                  outline: 'none',
+                  boxShadow: '0 1px 4px rgba(0,0,0,0.06)'
+                }}
+                title="Switch between Super Admin and specific Client Portals"
+              >
+                <option value="admin" style={{ background: '#0f172a', color: '#ffffff' }}>👑 Super Admin (All 10 Projects)</option>
+                <option value="client-awais" style={{ background: '#0f172a', color: '#ffffff' }}>👤 Client Portal: Awais (8 Projects)</option>
+                <option value="client-afshal" style={{ background: '#0f172a', color: '#ffffff' }}>👤 Client Portal: Afshal (2 Projects)</option>
+                <option value="client-1" style={{ background: '#0f172a', color: '#ffffff' }}>👤 Client Portal: Ali Khan</option>
+              </select>
+            )}
+
             <button
               type="button"
               className="remotale-btn-new-project"
@@ -1097,17 +1204,26 @@ export default function RemotaleDashboard({ user, onLogout }) {
               <span className="remotale-bell-dot" />
             </button>
 
-            <button type="button" className="remotale-header-user-btn">
-              <div className="remotale-header-avatar-circle">
-                <img
-                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80"
-                  alt="Admin"
-                />
-              </div>
-              <div className="remotale-header-admin-text">
-                <span className="remotale-header-admin-name">Admin</span>
-                <span className="remotale-header-admin-role">Super Admin ⌵</span>
-              </div>
+            <button
+              type="button"
+              onClick={onLogout}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '7px 14px',
+                borderRadius: '8px',
+                border: '1px solid #fee2e2',
+                background: '#fef2f2',
+                color: '#ef4444',
+                fontSize: '12.5px',
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'all 0.15s ease'
+              }}
+              title="Sign Out"
+            >
+              <span>🚪 Sign Out</span>
             </button>
           </div>
         </div>
@@ -2333,127 +2449,10 @@ export default function RemotaleDashboard({ user, onLogout }) {
 
   return (
     <div style={{ minHeight: '100vh', background: '#f8fafc', display: 'flex', flexDirection: 'column' }}>
-      {/* Top Universal Toolbar for Previewing All Views */}
-      <header className="remotale-dashboard-toolbar">
-        <div className="remotale-toolbar-left">
-          <div className="remotale-toolbar-brand">
-            <RemotaleLogo size={22} />
-            <span>Remotale OS</span>
-          </div>
-
-          <div className="remotale-toolbar-pills">
-            <button
-              type="button"
-              className={`remotale-toolbar-pill ${viewMode === 'desktop' ? 'active' : ''}`}
-              onClick={() => setViewMode('desktop')}
-            >
-              <span>🖥️ Desktop View</span>
-            </button>
-
-            <button
-              type="button"
-              className={`remotale-toolbar-pill ${viewMode === 'mobile' ? 'active' : ''}`}
-              onClick={() => setViewMode('mobile')}
-            >
-              <span>📱 Mobile View</span>
-            </button>
-
-            <button
-              type="button"
-              className={`remotale-toolbar-pill ${viewMode === 'desktop-side-by-side' ? 'active' : ''}`}
-              onClick={() => setViewMode('desktop-side-by-side')}
-            >
-              <span>🖼️ Side-by-Side (Image 1 Mockup)</span>
-            </button>
-          </div>
-        </div>
-
-        <div className="remotale-toolbar-right">
-          {isRealAdmin ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <select
-                className="remotale-persona-select"
-                value={role === 'admin' ? 'admin' : previewClientId}
-                onChange={(e) => {
-                  const val = e.target.value;
-                  if (val === 'admin') {
-                    setRole('admin');
-                  } else {
-                    setRole('client');
-                    setPreviewClientId(val);
-                  }
-                  setSelectedProject(null);
-                }}
-                style={{
-                  background: role === 'admin' ? '#1e293b' : '#4338ca',
-                  color: '#ffffff',
-                  border: '1px solid rgba(255,255,255,0.2)',
-                  borderRadius: '999px',
-                  padding: '6px 14px',
-                  fontWeight: 700,
-                  fontSize: '12px',
-                  cursor: 'pointer',
-                  outline: 'none',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-                }}
-                title="Switch between Super Admin and specific Client Portals"
-              >
-                <option value="admin" style={{ background: '#0f172a', color: '#ffffff' }}>👑 Super Admin (All 10 Projects)</option>
-                <option value="client-awais" style={{ background: '#0f172a', color: '#ffffff' }}>👤 Client Portal: Awais (8 Projects)</option>
-                <option value="client-afshal" style={{ background: '#0f172a', color: '#ffffff' }}>👤 Client Portal: Afshal (2 Projects)</option>
-                <option value="client-1" style={{ background: '#0f172a', color: '#ffffff' }}>👤 Client Portal: Ali Khan</option>
-              </select>
-            </div>
-          ) : (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ fontSize: '12px', fontWeight: 700, color: '#4338ca', background: '#ede9fe', padding: '5px 12px', borderRadius: '999px', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
-                <span>👤</span>
-                <span>{user?.name} ({visibleProjects.length} Projects)</span>
-              </span>
-            </div>
-          )}
-
-          <button
-            type="button"
-            className="remotale-logout-link-btn"
-            onClick={onLogout}
-          >
-            Sign Out
-          </button>
-        </div>
-      </header>
-
-      {/* Main View Area */}
-      {viewMode === 'desktop-side-by-side' ? (
-        /* Image 1: Both Desktop Views Side-by-Side with Badges (1) and (2) */
-        <div className="remotale-side-by-side-desktop">
-          {/* Badge 1: Client Homepage */}
-          <div className="remotale-sbs-col">
-            <div className="remotale-sbs-badge-header">
-              <div className="remotale-sbs-badge-num">1</div>
-              <span className="remotale-sbs-badge-title">Client Homepage</span>
-            </div>
-            <div className="remotale-sbs-window">
-              {renderDesktopClient()}
-            </div>
-          </div>
-
-          {/* Badge 2: Admin Homepage */}
-          <div className="remotale-sbs-col">
-            <div className="remotale-sbs-badge-header">
-              <div className="remotale-sbs-badge-num">2</div>
-              <span className="remotale-sbs-badge-title">Admin Homepage</span>
-            </div>
-            <div className="remotale-sbs-window">
-              {renderDesktopAdmin()}
-            </div>
-          </div>
-        </div>
-      ) : viewMode === 'mobile' ? (
-        /* Mobile Views: Image 2 (Admin) or Image 3 (Client) */
+      {/* Main View Area - Clean production layout without preview headers */}
+      {isMobileScreen ? (
         role === 'admin' ? renderMobileAdmin() : renderMobileClient()
       ) : (
-        /* Single Desktop View: Client (Image 1 Left) or Admin (Image 1 Right) */
         role === 'admin' ? renderDesktopAdmin() : renderDesktopClient()
       )}
 
