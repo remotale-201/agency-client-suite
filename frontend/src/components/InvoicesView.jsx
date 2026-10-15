@@ -154,7 +154,7 @@ export default function InvoicesView({
         <div className="inv-stat-card">
           <div className="inv-stat-icon purple">💼</div>
           <div>
-            <div className="inv-stat-val">$ {stats.totalInv.toLocaleString()}</div>
+            <div className="inv-stat-val">PKR {stats.totalInv.toLocaleString()}</div>
             <div className="inv-stat-lbl">Total Invoiced</div>
           </div>
         </div>
@@ -162,7 +162,7 @@ export default function InvoicesView({
         <div className="inv-stat-card">
           <div className="inv-stat-icon green">✓</div>
           <div>
-            <div className="inv-stat-val">$ {stats.paidVal.toLocaleString()}</div>
+            <div className="inv-stat-val">PKR {stats.paidVal.toLocaleString()}</div>
             <div className="inv-stat-lbl">Paid & Settled</div>
           </div>
         </div>
@@ -170,7 +170,7 @@ export default function InvoicesView({
         <div className="inv-stat-card">
           <div className="inv-stat-icon amber">⏳</div>
           <div>
-            <div className="inv-stat-val">$ {stats.pendingVal.toLocaleString()}</div>
+            <div className="inv-stat-val">PKR {stats.pendingVal.toLocaleString()}</div>
             <div className="inv-stat-lbl">Pending / Published</div>
           </div>
         </div>
@@ -288,7 +288,7 @@ export default function InvoicesView({
             const isPaid = inv.status === 'paid';
             const isDraft = inv.status === 'draft';
             const isPub = inv.status === 'published' || inv.published;
-            const currency = inv.currency || '$';
+            const currency = inv.currency || 'PKR';
             const amount = Number(inv.amount || 0);
 
             return (

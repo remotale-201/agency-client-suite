@@ -10,19 +10,19 @@ export default function CreateInvoiceModal({
 }) {
   const [selectedClientId, setSelectedClientId] = useState('');
   const [selectedProjectId, setSelectedProjectId] = useState('');
-  const [currency, setCurrency] = useState('$');
+  const [currency, setCurrency] = useState('PKR');
   const [invoiceNumber, setInvoiceNumber] = useState('');
   const [issueDate, setIssueDate] = useState('');
   const [dueDate, setDueDate] = useState('');
   const [notes, setNotes] = useState('');
   const [paymentDetails, setPaymentDetails] = useState(
-    'Bank: Meezan Bank / HBL\nAccount Title: Abdullah\nAccount No: 0102-0103948291\nWise / USDT (TRC-20): TXYZ981724918237918'
+    'Bank: Meezan Bank / HBL\nAccount Title: Abdullah\nAccount No: 0102-0103948291\nEasyPaisa / JazzCash: 0300-1234567\nWise / USDT (TRC-20): TXYZ981724918237918'
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Line items state
   const [items, setItems] = useState([
-    { description: 'Project Development & Milestone Deliverable', qty: 1, rate: 350, amount: 350 }
+    { description: 'Project Development & Milestone Deliverable', qty: 1, rate: 85000, amount: 85000 }
   ]);
   const [discount, setDiscount] = useState(0);
   const [tax, setTax] = useState(0);
@@ -63,8 +63,8 @@ export default function CreateInvoiceModal({
         {
           description: `${proj.title} - Scope of Work & Milestones`,
           qty: 1,
-          rate: items[0]?.rate || 350,
-          amount: items[0]?.rate || 350
+          rate: items[0]?.rate || 85000,
+          amount: items[0]?.rate || 85000
         }
       ]);
     }
@@ -74,7 +74,7 @@ export default function CreateInvoiceModal({
   const handleAddItem = () => {
     setItems([
       ...items,
-      { description: 'Additional Project Service', qty: 1, rate: 100, amount: 100 }
+      { description: 'Additional Project Service', qty: 1, rate: 25000, amount: 25000 }
     ]);
   };
 
@@ -222,8 +222,8 @@ export default function CreateInvoiceModal({
                 value={currency}
                 onChange={(e) => setCurrency(e.target.value)}
               >
+                <option value="PKR">PKR (Rs.)</option>
                 <option value="$">USD ($)</option>
-                <option value="PKR">PKR (Rs)</option>
                 <option value="EUR">EUR (€)</option>
                 <option value="GBP">GBP (£)</option>
               </select>

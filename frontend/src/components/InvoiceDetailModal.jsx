@@ -12,7 +12,7 @@ export default function InvoiceDetailModal({
 
   if (!invoice) return null;
 
-  const currency = invoice.currency || '$';
+  const currency = invoice.currency || 'PKR';
   const subtotal = Number(invoice.subtotal || invoice.amount || 0);
   const tax = Number(invoice.tax || 0);
   const discount = Number(invoice.discount || 0);
@@ -202,6 +202,7 @@ export default function InvoiceDetailModal({
                 {invoice.payment_details || `Bank: Meezan Bank / HBL
 Account Title: Abdullah
 Account No: 0102-0103948291
+EasyPaisa / JazzCash: 0300-1234567
 Wise / USDT (TRC-20): TXYZ981724918237918`}
               </pre>
               {invoice.notes && (

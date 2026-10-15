@@ -343,20 +343,20 @@ function ensureLocalStore() {
           project_id: 'proj-awais-1',
           title: 'Pak White Label Abdul Saboor - Phase 1',
           invoice_number: 'INV-2026-001',
-          amount: 450.00,
-          subtotal: 450.00,
+          amount: 125000.00,
+          subtotal: 125000.00,
           tax: 0,
           discount: 0,
-          currency: '$',
+          currency: 'PKR',
           status: 'published',
           published: true,
           due_date: '25/10/2026',
           issue_date: '15/10/2026',
           notes: 'Full store development and responsive theme customization.',
-          payment_details: 'Bank: Meezan Bank | Title: Abdullah | Account: 0102-0103948291\nWise / USDT (TRC-20): TXYZ981724918237918',
+          payment_details: 'Bank: Meezan Bank | Title: Abdullah | Account: 0102-0103948291\nEasyPaisa / JazzCash: 0300-1234567',
           items: [
-            { description: 'White Label E-commerce Store Development', qty: 1, rate: 350, amount: 350 },
-            { description: 'Custom Header & Product Cards UI Design', qty: 1, rate: 100, amount: 100 }
+            { description: 'White Label E-commerce Store Development', qty: 1, rate: 85000, amount: 85000 },
+            { description: 'Custom Header & Product Cards UI Design', qty: 1, rate: 40000, amount: 40000 }
           ],
           created_at: new Date().toISOString()
         },
@@ -366,11 +366,11 @@ function ensureLocalStore() {
           project_id: 'proj-afshal-2',
           title: 'Distant Market Store Setup & Integration',
           invoice_number: 'INV-2026-002',
-          amount: 320.00,
-          subtotal: 320.00,
+          amount: 85000.00,
+          subtotal: 85000.00,
           tax: 0,
           discount: 0,
-          currency: '$',
+          currency: 'PKR',
           status: 'draft',
           published: false,
           due_date: '28/10/2026',
@@ -378,7 +378,7 @@ function ensureLocalStore() {
           notes: 'Draft invoice for upcoming launch of Distant Market store.',
           payment_details: 'Bank: Meezan Bank | Title: Abdullah | Account: 0102-0103948291',
           items: [
-            { description: 'Distant Market Store Setup & Domain Connection', qty: 1, rate: 320, amount: 320 }
+            { description: 'Distant Market Store Setup & Domain Connection', qty: 1, rate: 85000, amount: 85000 }
           ],
           created_at: new Date().toISOString()
         }
@@ -651,14 +651,14 @@ async function initPostgresTables() {
 
       await client.query(`
         INSERT INTO agency_settings (key, value)
-        VALUES ('general', '{"agencyName":"Remotale","ownerName":"Abdullah","ownerEmail":"admin@remotale.com","currency":"$"}')
+        VALUES ('general', '{"agencyName":"Remotale","ownerName":"Abdullah","ownerEmail":"admin@remotale.com","currency":"PKR"}')
         ON CONFLICT (key) DO NOTHING;
       `);
 
       // Ensure invoices table has full billing metadata
       await client.query(`
         ALTER TABLE invoices ADD COLUMN IF NOT EXISTS invoice_number VARCHAR(100);
-        ALTER TABLE invoices ADD COLUMN IF NOT EXISTS currency VARCHAR(10) DEFAULT '$';
+        ALTER TABLE invoices ADD COLUMN IF NOT EXISTS currency VARCHAR(10) DEFAULT 'PKR';
         ALTER TABLE invoices ADD COLUMN IF NOT EXISTS items JSONB DEFAULT '[]';
         ALTER TABLE invoices ADD COLUMN IF NOT EXISTS subtotal NUMERIC(12,2) DEFAULT 0;
         ALTER TABLE invoices ADD COLUMN IF NOT EXISTS tax NUMERIC(12,2) DEFAULT 0;
@@ -685,16 +685,16 @@ async function initPostgresTables() {
             'proj-awais-1',
             'Pak White Label Abdul Saboor - Phase 1',
             'INV-2026-001',
-            450.00,
+            125000.00,
             'published',
             '25/10/2026',
             '15/10/2026',
-            '$',
-            450.00,
+            'PKR',
+            125000.00,
             0,
             0,
             'Full store development and responsive theme customization.',
-            'Bank: Meezan Bank | Title: Abdullah | Account: 0102-0103948291\nWise / USDT (TRC-20): TXYZ981724918237918',
+            'Bank: Meezan Bank | Title: Abdullah | Account: 0102-0103948291\nEasyPaisa / JazzCash: 0300-1234567',
             true,
             $1::jsonb
           ),
@@ -704,12 +704,12 @@ async function initPostgresTables() {
             'proj-afshal-2',
             'Distant Market Store Setup & Integration',
             'INV-2026-002',
-            320.00,
+            85000.00,
             'draft',
             '28/10/2026',
             '15/10/2026',
-            '$',
-            320.00,
+            'PKR',
+            85000.00,
             0,
             0,
             'Draft invoice for upcoming launch of Distant Market store.',
@@ -720,11 +720,11 @@ async function initPostgresTables() {
           ON CONFLICT (id) DO NOTHING;
         `, [
           JSON.stringify([
-            { description: 'White Label E-commerce Store Development', qty: 1, rate: 350, amount: 350 },
-            { description: 'Custom Header & Product Cards UI Design', qty: 1, rate: 100, amount: 100 }
+            { description: 'White Label E-commerce Store Development', qty: 1, rate: 85000, amount: 85000 },
+            { description: 'Custom Header & Product Cards UI Design', qty: 1, rate: 40000, amount: 40000 }
           ]),
           JSON.stringify([
-            { description: 'Distant Market Store Setup & Domain Connection', qty: 1, rate: 320, amount: 320 }
+            { description: 'Distant Market Store Setup & Domain Connection', qty: 1, rate: 85000, amount: 85000 }
           ])
         ]);
       }
@@ -1562,7 +1562,7 @@ const db = {
       subtotal,
       tax,
       discount,
-      currency: invoiceData.currency || '$',
+      currency: invoiceData.currency || 'PKR',
       status,
       due_date: invoiceData.due_date || invoiceData.dueDate || '25/10/2026',
       issue_date: invoiceData.issue_date || invoiceData.issueDate || '15/10/2026',
