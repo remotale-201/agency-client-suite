@@ -238,8 +238,9 @@ export default function ProjectDetailWorkspace({
   // Parse notes
   useEffect(() => {
     setNotesContent(
-      project?.notes ||
-      `• Client wants a clean and modern design similar to Daraz.\n• Use brand colors and logo.\n• Add product categories: Earbuds, Watches, Accessories.\n• Optimize product pages for SEO.\n• Client may provide new banner images next week.\n• Need to confirm payment gateway details.`
+      (project?.notes !== undefined && project?.notes !== null)
+        ? project.notes
+        : (project?.description || '')
     );
   }, [project]);
 
@@ -293,17 +294,8 @@ export default function ProjectDetailWorkspace({
     ];
   }
 
-  // Tasks list (from project tasks or defaults matching Image 2)
-  const defaultTasks = [
-    { id: 't-1', title: 'Design homepage layout', due_date: '12 Oct 2024', completed: true, assigned_avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80' },
-    { id: 't-2', title: 'Setup Shopify theme', due_date: '15 Oct 2024', completed: true, assigned_avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80' },
-    { id: 't-3', title: 'Add initial products', due_date: '18 Oct 2024', completed: true, assigned_avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80' },
-    { id: 't-4', title: 'Integrate payment gateway', due_date: '20 Oct 2024', completed: false, assigned_avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80' },
-    { id: 't-5', title: 'Basic SEO setup', due_date: '22 Oct 2024', completed: false, assigned_avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80' },
-    { id: 't-6', title: 'Final testing & review', due_date: '24 Oct 2024', completed: false, assigned_avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80' }
-  ];
-
-  const currentTasks = (project?.tasks && project.tasks.length > 0) ? project.tasks : defaultTasks;
+  // Real tasks list directly from database project.tasks
+  const currentTasks = (project?.tasks && project.tasks.length > 0) ? project.tasks : [];
 
   // Safe files list matching Image 2
   const filesList = [
@@ -803,14 +795,20 @@ export default function ProjectDetailWorkspace({
                 </div>
               </div>
             ) : (
-              <ul className="pdw-notepad-list">
-                {noteBullets.map((bullet, idx) => (
-                  <li key={idx} className="pdw-notepad-item">
-                    <span className="pdw-notepad-bullet" />
-                    <span>{bullet}</span>
-                  </li>
-                ))}
-              </ul>
+              noteBullets.length === 0 ? (
+                <div style={{ padding: '16px 8px', color: '#94a3b8', fontSize: '13px' }}>
+                  No notes recorded. Click <strong>Edit</strong> above to add notes.
+                </div>
+              ) : (
+                <ul className="pdw-notepad-list">
+                  {noteBullets.map((bullet, idx) => (
+                    <li key={idx} className="pdw-notepad-item">
+                      <span className="pdw-notepad-bullet" />
+                      <span>{bullet}</span>
+                    </li>
+                  ))}
+                </ul>
+              )
             )}
           </div>
         )}
@@ -864,33 +862,39 @@ export default function ProjectDetailWorkspace({
             )}
 
             <div className="pdw-tasks-list">
-              {currentTasks.map((t) => (
-                <div key={t.id} className="pdw-task-row">
-                  <div className="pdw-task-left">
-                    <input
-                      type="checkbox"
-                      className="pdw-task-checkbox"
-                      checked={Boolean(t.completed)}
-                      onChange={() => onToggleTask && onToggleTask(t.id, !t.completed)}
-                    />
-                    <span className={`pdw-task-title ${t.completed ? 'completed' : ''}`}>
-                      {t.title}
-                    </span>
-                  </div>
-
-                  <div className="pdw-task-right">
-                    <span className="pdw-task-date">{t.due_date || t.dueDate || '15 Oct 2024'}</span>
-                    <img
-                      src={t.assigned_avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80'}
-                      alt="Assignee"
-                      className="pdw-task-avatar"
-                    />
-                    <button type="button" className="pdw-btn-copy">
-                      <MoreVerticalIcon size={15} />
-                    </button>
-                  </div>
+              {currentTasks.length === 0 ? (
+                <div style={{ padding: '24px 12px', textAlign: 'center', color: '#94a3b8', fontSize: '13px' }}>
+                  No tasks recorded for this project yet. Click <strong>+ Add Task</strong> above.
                 </div>
-              ))}
+              ) : (
+                currentTasks.map((t) => (
+                  <div key={t.id} className="pdw-task-row">
+                    <div className="pdw-task-left">
+                      <input
+                        type="checkbox"
+                        className="pdw-task-checkbox"
+                        checked={Boolean(t.completed)}
+                        onChange={() => onToggleTask && onToggleTask(t.id, t.completed)}
+                      />
+                      <span className={`pdw-task-title ${t.completed ? 'completed' : ''}`}>
+                        {t.title}
+                      </span>
+                    </div>
+
+                    <div className="pdw-task-right">
+                      <span className="pdw-task-date">{t.due_date || t.dueDate || project?.deadline || '18/10/2026'}</span>
+                      <img
+                        src={t.assigned_avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80'}
+                        alt="Assignee"
+                        className="pdw-task-avatar"
+                      />
+                      <button type="button" className="pdw-btn-copy">
+                        <MoreVerticalIcon size={15} />
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         )}
