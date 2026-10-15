@@ -19,6 +19,18 @@ async function request(endpoint, options = {}) {
     }
     return await response.json();
   } catch (error) {
+    // If running in development and relative call failed, retry direct to backend on port 5000
+    if (!BASE_URL && typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+      try {
+        const fallbackUrl = `http://localhost:5000${endpoint}`;
+        const fallbackRes = await fetch(fallbackUrl, config);
+        if (fallbackRes.ok) {
+          return await fallbackRes.json();
+        }
+      } catch (fbErr) {
+        // Fallback also failed
+      }
+    }
     console.error(`[API Error] ${options.method || 'GET'} ${url}:`, error.message);
     throw error;
   }
