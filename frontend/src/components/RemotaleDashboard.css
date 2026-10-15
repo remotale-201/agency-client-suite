@@ -1,0 +1,1088 @@
+/* ==========================================================================
+   REMOTALE DESKTOP & MOBILE DASHBOARDS
+   Exact match for Image 1 (Desktop Views), Image 2 (Admin Mobile), Image 3 (Client Mobile)
+   ========================================================================== */
+
+:root {
+  --rm-bg: #f8fafc;
+  --rm-surface: #ffffff;
+  --rm-border: #e2e8f0;
+  --rm-border-light: #f1f5f9;
+  --rm-text-primary: #0f172a;
+  --rm-text-secondary: #475569;
+  --rm-text-muted: #64748b;
+  --rm-primary: #4f46e5;
+  --rm-primary-light: #ede9fe;
+  --rm-primary-hover: #4338ca;
+  --rm-accent-blue: #2563eb;
+  --rm-accent-blue-light: #eff6ff;
+  --rm-accent-green: #16a34a;
+  --rm-accent-green-light: #dcfce7;
+  --rm-accent-amber: #d97706;
+  --rm-accent-amber-light: #fef3c7;
+  --rm-accent-red: #ef4444;
+  --rm-accent-red-light: #fee2e2;
+}
+
+/* --------------------------------------------------------------------------
+   Top Viewport Control Toolbar
+   -------------------------------------------------------------------------- */
+.remotale-dashboard-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--rm-border);
+  padding: 10px 24px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.remotale-toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.remotale-toolbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 800;
+  font-size: 16px;
+  color: var(--rm-text-primary);
+  letter-spacing: -0.4px;
+}
+
+.remotale-toolbar-pills {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #f1f5f9;
+  padding: 3px;
+  border-radius: 999px;
+}
+
+.remotale-toolbar-pill {
+  border: none;
+  background: transparent;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--rm-text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.remotale-toolbar-pill.active {
+  background: #ffffff;
+  color: var(--rm-primary);
+  box-shadow: 0 1px 4px rgba(79, 70, 229, 0.15);
+}
+
+.remotale-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.remotale-persona-switch-btn {
+  border: 1px solid var(--rm-border);
+  background: #ffffff;
+  padding: 5px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--rm-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+
+.remotale-persona-switch-btn:hover {
+  background: #f5f3ff;
+  border-color: #c7d2fe;
+}
+
+.remotale-logout-link-btn {
+  border: none;
+  background: transparent;
+  color: var(--rm-text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 8px;
+  transition: color 0.15s;
+}
+
+.remotale-logout-link-btn:hover {
+  color: #ef4444;
+}
+
+/* --------------------------------------------------------------------------
+   DESKTOP VIEW (Image 1 Layout)
+   -------------------------------------------------------------------------- */
+.remotale-desktop-layout {
+  display: flex;
+  min-height: calc(100vh - 53px);
+  background: var(--rm-bg);
+  color: var(--rm-text-primary);
+}
+
+/* Sidebar */
+.remotale-desktop-sidebar {
+  width: 220px;
+  background: #ffffff;
+  border-right: 1px solid var(--rm-border);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 24px 16px;
+  flex-shrink: 0;
+}
+
+.remotale-sidebar-top {
+  display: flex;
+  flex-direction: column;
+}
+
+.remotale-sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 28px;
+  padding-left: 8px;
+}
+
+.remotale-sidebar-brand-name {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--rm-text-primary);
+  letter-spacing: -0.4px;
+}
+
+.remotale-sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.remotale-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+  width: 100%;
+}
+
+.remotale-nav-item:hover {
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.remotale-nav-item.active {
+  background: #f5f3ff;
+  color: #4f46e5;
+  font-weight: 700;
+}
+
+.remotale-sidebar-user-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #f8fafc;
+  border: 1px solid var(--rm-border-light);
+  cursor: pointer;
+}
+
+.remotale-sidebar-avatar-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #6366f1;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.remotale-sidebar-user-info {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.remotale-sidebar-user-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.remotale-sidebar-user-role {
+  font-size: 11px;
+  color: #64748b;
+}
+
+/* Desktop Main Area */
+.remotale-desktop-main {
+  flex-grow: 1;
+  padding: 28px 36px 48px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.remotale-main-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.remotale-main-greeting h1 {
+  font-size: 24px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 4px 0;
+  letter-spacing: -0.4px;
+}
+
+.remotale-main-greeting p {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0;
+}
+
+.remotale-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.remotale-date-filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: #ffffff;
+  border: 1px solid var(--rm-border);
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #0f172a;
+  cursor: pointer;
+}
+
+.remotale-bell-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid var(--rm-border);
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  color: #475569;
+}
+
+.remotale-bell-dot {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #4f46e5;
+}
+
+.remotale-header-user-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.remotale-header-avatar-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #ede9fe;
+  color: #4f46e5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 800;
+  overflow: hidden;
+}
+
+.remotale-header-avatar-circle img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.remotale-header-admin-text {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.remotale-header-admin-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.remotale-header-admin-role {
+  font-size: 11px;
+  color: #64748b;
+}
+
+.remotale-btn-new-project {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #4f46e5;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  padding: 9px 18px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+  transition: all 0.15s ease;
+}
+
+.remotale-btn-new-project:hover {
+  background: #4338ca;
+  transform: translateY(-1px);
+}
+
+/* Stat Cards Row */
+.remotale-stat-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.remotale-stat-card {
+  background: #ffffff;
+  border: 1px solid var(--rm-border);
+  border-radius: 16px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.remotale-stat-icon-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.remotale-stat-icon-box {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.remotale-stat-icon-box.purple {
+  background: #f5f3ff;
+  color: #4f46e5;
+}
+
+.remotale-stat-icon-box.blue {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.remotale-stat-icon-box.amber {
+  background: #fefce8;
+  color: #ca8a04;
+}
+
+.remotale-stat-icon-box.green {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+
+.remotale-stat-growth-pill {
+  font-size: 11px;
+  font-weight: 700;
+  color: #16a34a;
+  background: #f0fdf4;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.remotale-stat-val {
+  font-size: 26px;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1;
+}
+
+.remotale-stat-lbl {
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  margin-top: 4px;
+}
+
+/* Two-Column / Grid Content */
+.remotale-client-grid {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 20px;
+}
+
+.remotale-admin-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+/* Card Containers */
+.remotale-card-container {
+  background: #ffffff;
+  border: 1px solid var(--rm-border);
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+}
+
+.remotale-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.remotale-card-header h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.remotale-card-view-all {
+  color: #4f46e5;
+  font-size: 12.5px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  padding: 0;
+}
+
+.remotale-card-view-all:hover {
+  text-decoration: underline;
+}
+
+/* Project Cards in Client View */
+.remotale-project-card {
+  background: #ffffff;
+  border: 1px solid var(--rm-border-light);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+  transition: all 0.2s;
+}
+
+.remotale-project-card:hover {
+  border-color: #c7d2fe;
+  transform: translateY(-1px);
+}
+
+.remotale-proj-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.remotale-proj-icon-box {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.remotale-proj-icon-box.blue {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.remotale-proj-icon-box.purple {
+  background: #6366f1;
+  color: #ffffff;
+}
+
+.remotale-proj-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-grow: 1;
+}
+
+.remotale-proj-title {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.remotale-status-pill {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+  text-transform: capitalize;
+}
+
+.remotale-status-pill.in-progress {
+  background: #ede9fe;
+  color: #4f46e5;
+}
+
+.remotale-status-pill.under-review {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.remotale-status-pill.completed {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.remotale-proj-desc {
+  font-size: 12px;
+  color: #64748b;
+  margin: 0 0 10px 0;
+  line-height: 1.4;
+}
+
+.remotale-progress-bar-wrap {
+  width: 100%;
+  height: 6px;
+  background: #f1f5f9;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.remotale-progress-bar-fill {
+  height: 100%;
+  background: #4f46e5;
+  border-radius: 999px;
+}
+
+.remotale-proj-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.remotale-proj-avatars {
+  display: flex;
+  align-items: center;
+}
+
+.remotale-proj-avatars img {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+  margin-left: -5px;
+  object-fit: cover;
+}
+
+.remotale-proj-avatars img:first-child {
+  margin-left: 0;
+}
+
+.remotale-proj-avatars .more-badge {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #ede9fe;
+  color: #4f46e5;
+  font-size: 9px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #ffffff;
+  margin-left: -5px;
+}
+
+.remotale-proj-due {
+  font-size: 11.5px;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Tasks Checkbox List */
+.remotale-task-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--rm-border-light);
+}
+
+.remotale-task-item:last-child {
+  border-bottom: none;
+}
+
+.remotale-task-checkbox {
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  border: 1.5px solid #cbd5e1;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.remotale-task-checkbox.completed {
+  background: #4f46e5;
+  border-color: #4f46e5;
+  color: #ffffff;
+}
+
+.remotale-task-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.remotale-task-title {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.remotale-task-title.done {
+  text-decoration: line-through;
+  color: #94a3b8;
+}
+
+.remotale-task-date {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+/* Messages List */
+.remotale-message-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--rm-border-light);
+}
+
+.remotale-message-item:last-child {
+  border-bottom: none;
+}
+
+.remotale-msg-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.remotale-msg-body {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.remotale-msg-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.remotale-msg-sender {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.remotale-msg-time {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.remotale-msg-snippet {
+  font-size: 11.5px;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Admin 2x2 Grid Items */
+.remotale-admin-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--rm-border-light);
+}
+
+.remotale-admin-list-item:last-child {
+  border-bottom: none;
+}
+
+.remotale-admin-item-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.remotale-admin-item-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.remotale-admin-item-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.remotale-admin-item-sub {
+  font-size: 11.5px;
+  color: #64748b;
+}
+
+.remotale-days-left-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+
+.remotale-days-left-badge.red {
+  background: #fee2e2;
+  color: #ef4444;
+}
+
+.remotale-days-left-badge.amber {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.remotale-days-left-badge.purple {
+  background: #ede9fe;
+  color: #6366f1;
+}
+
+/* --------------------------------------------------------------------------
+   SIDE-BY-SIDE DESKTOP SHOWCASE (Image 1 replica)
+   -------------------------------------------------------------------------- */
+.remotale-side-by-side-desktop {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  padding: 24px;
+  background: #ede9fe;
+  min-height: 100vh;
+}
+
+.remotale-sbs-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.remotale-sbs-badge-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.remotale-sbs-badge-num {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #2563eb;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 800;
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+}
+
+.remotale-sbs-badge-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: #1e1b4b;
+}
+
+.remotale-sbs-window {
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  background: #ffffff;
+}
+
+/* --------------------------------------------------------------------------
+   MOBILE HOMEPAGE (Image 2 Admin Mobile & Image 3 Client Mobile)
+   -------------------------------------------------------------------------- */
+.remotale-mobile-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 24px 16px 40px;
+  background: #ede9fe;
+  min-height: 100vh;
+}
+
+.remotale-mobile-card {
+  width: 400px;
+  max-width: 100%;
+  background: #ffffff;
+  border-radius: 36px;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.15);
+  border: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.remotale-mobile-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px 10px;
+}
+
+.remotale-mobile-body {
+  padding: 10px 20px 80px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Mobile Tabs */
+.remotale-mobile-subtabs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 2px solid #f1f5f9;
+  padding-bottom: 2px;
+  overflow-x: auto;
+}
+
+.remotale-mobile-subtab-btn {
+  border: none;
+  background: transparent;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  white-space: nowrap;
+  position: relative;
+}
+
+.remotale-mobile-subtab-btn.active {
+  color: #4f46e5;
+  font-weight: 700;
+}
+
+.remotale-mobile-subtab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 2.5px;
+  background: #4f46e5;
+  border-radius: 999px;
+}
+
+/* Mobile Bottom Navigation Bar */
+.remotale-mobile-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border-top: 1px solid var(--rm-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 10px 12px 14px;
+  z-index: 99;
+}
+
+.remotale-mobile-card .remotale-mobile-bottom-nav {
+  position: absolute;
+}
+
+.remotale-bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 12px;
+  border-radius: 12px;
+}
+
+.remotale-bottom-nav-item.active {
+  color: #4f46e5;
+  background: #f5f3ff;
+  font-weight: 700;
+}
+
+/* Donut Chart Simulation (Admin Mobile) */
+.remotale-donut-card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 16px 0;
+}
+
+.remotale-donut-circle {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: conic-gradient(
+    #6366f1 0% 40%,
+    #3b82f6 40% 65%,
+    #10b981 65% 85%,
+    #f59e0b 85% 100%
+  );
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.remotale-donut-hole {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.remotale-donut-num {
+  font-size: 15px;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1;
+}
+
+.remotale-donut-sub {
+  font-size: 8px;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+.remotale-donut-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex-grow: 1;
+}
+
+.remotale-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11.5px;
+  color: #334155;
+  font-weight: 600;
+}
+
+.remotale-legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.remotale-legend-dot.purple { background: #6366f1; }
+.remotale-legend-dot.blue { background: #3b82f6; }
+.remotale-legend-dot.green { background: #10b981; }
+.remotale-legend-dot.amber { background: #f59e0b; }
+
+/* Empty state banner */
+.remotale-empty-card {
+  padding: 32px 16px;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 13px;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px dashed #cbd5e1;
+}

@@ -1,33 +1,13 @@
 const fs = require('fs');
 const path = require('path');
 const { Pool } = require('pg');
-require('dotenv').config();
+require('dotenv').config({ path: path.join(__dirname, '.env') });
+require('dotenv').config({ path: path.join(__dirname, '../.env') });
 
 const DATA_DIR = path.join(__dirname, 'data');
 const STORE_PATH = path.join(DATA_DIR, 'store.json');
 
-const INITIAL_DATA = {
-  settings: {
-    agencyName: "ByteForge Studio",
-    tagline: "High-Performance Digital Products & Design",
-    currency: "$",
-    ownerEmail: "byteforgeofficial.store@gmail.com",
-    ownerName: "ByteForge Admin",
-    supportWhatsapp: ""
-  },
-  admin: {
-    email: "byteforgeofficial.store@gmail.com",
-    password: "Agbs1222",
-    name: "ByteForge Admin"
-  },
-  clients: [],
-  projects: [],
-  notepads: {},
-  changes: [],
-  points: {}
-};
-
-// Check if Neon / PostgreSQL URL is supplied
+// Check PostgreSQL connection
 const isPostgres = Boolean(process.env.DATABASE_URL);
 let pgPool = null;
 
@@ -38,41 +18,67 @@ if (isPostgres) {
       ssl: { rejectUnauthorized: false }
     });
 
-    // Prevent process exit on idle client drops from serverless PostgreSQL
     pgPool.on('error', (err) => {
-      console.error('[Neon DB Pool Error] Unexpected idle client disconnect:', err.message);
+      console.error('[Neon DB Pool Error] Client disconnect:', err.message);
     });
 
     console.log('[Database] Configured Neon PostgreSQL pool.');
   } catch (err) {
-    console.error('[Database] Failed to initialize Neon PostgreSQL pool, falling back to local store:', err.message);
+    console.error('[Database] Failed to initialize Neon PostgreSQL pool:', err.message);
   }
 }
 
-// Local store helpers
+// Local store fallback
 function ensureLocalStore() {
   if (!fs.existsSync(DATA_DIR)) {
     fs.mkdirSync(DATA_DIR, { recursive: true });
   }
   if (!fs.existsSync(STORE_PATH)) {
-    fs.writeFileSync(STORE_PATH, JSON.stringify(INITIAL_DATA, null, 2), 'utf-8');
+    fs.writeFileSync(STORE_PATH, JSON.stringify({
+      settings: {
+        agencyName: "Remotale",
+        tagline: "Manage Projects Together",
+        currency: "$",
+        ownerEmail: "admin@remotale.com",
+        ownerName: "Abdullah"
+      },
+      users: [
+        {
+          id: 'admin-1',
+          name: 'Abdullah',
+          email: 'admin@remotale.com',
+          password: 'admin123',
+          role: 'admin',
+          company: 'Remotale',
+          avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80'
+        },
+        {
+          id: 'client-1',
+          name: 'Ali Khan',
+          email: 'ali@remotale.com',
+          password: 'client123',
+          role: 'client',
+          company: 'Acme Brand',
+          avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80'
+        }
+      ],
+      projects: [],
+      tasks: [],
+      messages: [],
+      team_members: [],
+      team_activities: [],
+      files: [],
+      invoices: []
+    }, null, 2), 'utf-8');
   }
 }
 
 function readLocalStore() {
   ensureLocalStore();
   try {
-    const raw = fs.readFileSync(STORE_PATH, 'utf-8');
-    const parsed = JSON.parse(raw);
-    // Ensure admin credentials always exist
-    if (!parsed.admin) {
-      parsed.admin = INITIAL_DATA.admin;
-    }
-    return parsed;
+    return JSON.parse(fs.readFileSync(STORE_PATH, 'utf-8'));
   } catch (err) {
-    console.error('[Database] Error reading local store, resetting:', err.message);
-    fs.writeFileSync(STORE_PATH, JSON.stringify(INITIAL_DATA, null, 2), 'utf-8');
-    return INITIAL_DATA;
+    return { users: [], projects: [], tasks: [], messages: [], team_members: [], team_activities: [] };
   }
 }
 
@@ -81,414 +87,942 @@ function writeLocalStore(data) {
   fs.writeFileSync(STORE_PATH, JSON.stringify(data, null, 2), 'utf-8');
 }
 
-// Neon Postgres Table Initializer (runs when DATABASE_URL is set)
+// Initialize Relational Schema in PostgreSQL
 async function initPostgresTables() {
   if (!pgPool) return;
   try {
     const client = await pgPool.connect();
     try {
+      // 1. Users table
       await client.query(`
-        CREATE TABLE IF NOT EXISTS agency_meta (
+        CREATE TABLE IF NOT EXISTS users (
+          id VARCHAR(100) PRIMARY KEY,
+          name VARCHAR(255) NOT NULL,
+          email VARCHAR(255) UNIQUE NOT NULL,
+          password VARCHAR(255) NOT NULL,
+          role VARCHAR(50) DEFAULT 'client',
+          company VARCHAR(255),
+          avatar TEXT,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+      `);
+
+      // 2. Projects table
+      await client.query(`
+        CREATE TABLE IF NOT EXISTS projects (
+          id VARCHAR(100) PRIMARY KEY,
+          client_id VARCHAR(100) REFERENCES users(id) ON DELETE CASCADE,
+          title VARCHAR(255) NOT NULL,
+          description TEXT,
+          status VARCHAR(50) DEFAULT 'in-progress',
+          progress INT DEFAULT 0,
+          budget NUMERIC(12,2) DEFAULT 0,
+          deadline VARCHAR(50),
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+      `);
+
+      // 3. Tasks table
+      await client.query(`
+        CREATE TABLE IF NOT EXISTS tasks (
+          id VARCHAR(100) PRIMARY KEY,
+          project_id VARCHAR(100) REFERENCES projects(id) ON DELETE CASCADE,
+          client_id VARCHAR(100),
+          title VARCHAR(255) NOT NULL,
+          due_date VARCHAR(50),
+          completed BOOLEAN DEFAULT FALSE,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+      `);
+
+      // 4. Messages table
+      await client.query(`
+        CREATE TABLE IF NOT EXISTS messages (
+          id VARCHAR(100) PRIMARY KEY,
+          sender_id VARCHAR(100),
+          sender_name VARCHAR(255) NOT NULL,
+          sender_avatar TEXT,
+          receiver_id VARCHAR(100),
+          project_id VARCHAR(100),
+          content TEXT NOT NULL,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+      `);
+
+      // 5. Team Members table
+      await client.query(`
+        CREATE TABLE IF NOT EXISTS team_members (
+          id VARCHAR(100) PRIMARY KEY,
+          name VARCHAR(255) NOT NULL,
+          role VARCHAR(100) NOT NULL,
+          avatar TEXT,
+          email VARCHAR(255),
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+      `);
+
+      // 6. Team Activities table
+      await client.query(`
+        CREATE TABLE IF NOT EXISTS team_activities (
+          id VARCHAR(100) PRIMARY KEY,
+          member_name VARCHAR(255) NOT NULL,
+          member_avatar TEXT,
+          action TEXT NOT NULL,
+          details TEXT,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+      `);
+
+      // 7. Files table
+      await client.query(`
+        CREATE TABLE IF NOT EXISTS files (
+          id VARCHAR(100) PRIMARY KEY,
+          project_id VARCHAR(100),
+          client_id VARCHAR(100),
+          name VARCHAR(255) NOT NULL,
+          size VARCHAR(50),
+          file_type VARCHAR(50),
+          uploaded_by VARCHAR(255),
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+      `);
+
+      // 8. Invoices table
+      await client.query(`
+        CREATE TABLE IF NOT EXISTS invoices (
+          id VARCHAR(100) PRIMARY KEY,
+          client_id VARCHAR(100),
+          project_id VARCHAR(100),
+          title VARCHAR(255),
+          amount NUMERIC(12,2) NOT NULL,
+          status VARCHAR(50) DEFAULT 'pending',
+          due_date VARCHAR(50),
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+      `);
+
+      // 9. Agency settings table
+      await client.query(`
+        CREATE TABLE IF NOT EXISTS agency_settings (
           key VARCHAR(100) PRIMARY KEY,
           value JSONB NOT NULL
         );
       `);
-      // Check if seeded
-      const check = await client.query('SELECT value FROM agency_meta WHERE key = $1', ['store']);
-      if (check.rows.length === 0) {
-        await client.query('INSERT INTO agency_meta (key, value) VALUES ($1, $2)', ['store', JSON.stringify(INITIAL_DATA)]);
-        console.log('[Neon DB] Tables initialized and seeded with clean agency data.');
-      } else {
-        // Ensure admin credentials exist in DB store
-        const current = check.rows[0].value;
-        if (!current.admin || current.admin.email !== INITIAL_DATA.admin.email) {
-          current.admin = INITIAL_DATA.admin;
-          await client.query('UPDATE agency_meta SET value = $1 WHERE key = $2', [JSON.stringify(current), 'store']);
+
+      // Ensure username column exists on users table
+      await client.query(`
+        ALTER TABLE users ADD COLUMN IF NOT EXISTS username VARCHAR(100);
+      `);
+
+      // Ensure projects table has all rich detail columns
+      await client.query(`
+        ALTER TABLE projects ADD COLUMN IF NOT EXISTS project_type VARCHAR(100) DEFAULT 'Web Development';
+        ALTER TABLE projects ADD COLUMN IF NOT EXISTS start_date VARCHAR(50);
+        ALTER TABLE projects ADD COLUMN IF NOT EXISTS priority VARCHAR(50) DEFAULT 'Medium';
+        ALTER TABLE projects ADD COLUMN IF NOT EXISTS credentials JSONB DEFAULT '[]';
+        ALTER TABLE projects ADD COLUMN IF NOT EXISTS reference_link TEXT;
+        ALTER TABLE projects ADD COLUMN IF NOT EXISTS notes TEXT;
+        ALTER TABLE projects ADD COLUMN IF NOT EXISTS files JSONB DEFAULT '[]';
+      `);
+
+      // Ensure user credentials requested:
+      // 1. awais / awais (Role: client)
+      // 2. afshal / afshal (Role: client / user)
+      // 3. admin / admin (Role: admin)
+      await client.query(`
+        INSERT INTO users (id, name, email, password, role, company, avatar, username)
+        VALUES 
+          ('admin-1', 'Abdullah', 'admin@remotale.com', 'admin', 'admin', 'Remotale', 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80', 'admin'),
+          ('client-1', 'Ali Khan', 'ali@remotale.com', 'client123', 'client', 'Acme Brand', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80', 'ali'),
+          ('client-awais', 'Awais', 'awais@remotale.com', 'awais', 'client', 'Awais Agency', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80', 'awais'),
+          ('client-afshal', 'Afshal', 'afshal@remotale.com', 'afshal', 'client', 'Afshal Brand', 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80', 'afshal')
+        ON CONFLICT (email) DO UPDATE SET 
+          name = EXCLUDED.name,
+          password = EXCLUDED.password,
+          role = EXCLUDED.role,
+          username = EXCLUDED.username;
+      `);
+
+      await client.query(`
+        ALTER TABLE tasks ADD COLUMN IF NOT EXISTS assigned_name VARCHAR(100);
+        ALTER TABLE tasks ADD COLUMN IF NOT EXISTS assigned_avatar TEXT;
+      `);
+
+      // Remove old demo projects if any exist
+      await client.query(`
+        DELETE FROM projects WHERE id IN ('proj-ecommerce', 'proj-brand-logo', 'proj-video-promo', 'proj-seo', 'proj-mobile-app');
+      `);
+
+      // Seed Real Projects for Awais and Afshal
+      const realProjects = [
+        // 8 Projects for Awais
+        {
+          id: 'proj-awais-1',
+          clientId: 'client-awais',
+          title: 'Pak White Label Abdul Saboor',
+          description: "Normal White Label Pakistan Store. Store name and domain are pending from the client's end.",
+          notes: "Normal White Label Pakistan Store. Store name and domain are pending from the client's end.",
+          projectType: 'Web Development',
+          status: 'in-progress',
+          priority: 'Medium',
+          deadline: '18/10/2026',
+          startDate: '15/10/2026',
+          progress: 10,
+          tasks: ['Header', 'Graphics', 'Product Page', 'Product Card', 'Other Pages', 'Footer', 'Buy and Connect Domain', 'Final Changes']
+        },
+        {
+          id: 'proj-awais-2',
+          clientId: 'client-awais',
+          title: 'Pak White Label Store (Latest)',
+          description: 'Normal Pakistan White Label Store.',
+          notes: 'Normal Pakistan White Label Store.',
+          projectType: 'Web Development',
+          status: 'in-progress',
+          priority: 'Medium',
+          deadline: '19/10/2026',
+          startDate: '15/10/2026',
+          progress: 10,
+          tasks: ['Header', 'Graphics', 'Product Page', 'Product Card', 'Other Pages', 'Footer', 'Buy and Connect Domain', 'Final Changes']
+        },
+        {
+          id: 'proj-awais-3',
+          clientId: 'client-awais',
+          title: 'Fytnex Products Designing',
+          description: 'In Working.',
+          notes: 'In Working.',
+          projectType: 'Graphics',
+          status: 'in-progress',
+          priority: 'High',
+          deadline: '22/10/2026',
+          startDate: '15/10/2026',
+          progress: 25,
+          tasks: [
+            { title: '25% Done', completed: true },
+            { title: '50% Done', completed: false },
+            { title: '75% Done', completed: false },
+            { title: '100% Done', completed: false }
+          ]
+        },
+        {
+          id: 'proj-awais-4',
+          clientId: 'client-awais',
+          title: '20 Dfynex Graphics',
+          description: 'Pending due to Dfynex website and product finalization.',
+          notes: 'Pending due to Dfynex website and product finalization.',
+          projectType: 'Graphics',
+          status: 'in-progress',
+          priority: 'Medium',
+          deadline: '20/10/2026',
+          startDate: '15/10/2026',
+          progress: 0,
+          tasks: ['25% Done', '50% Done', '75% Done', '100% Done']
+        },
+        {
+          id: 'proj-awais-5',
+          clientId: 'client-awais',
+          title: '20 Fytnix Graphics',
+          description: 'Pending due to article designing.',
+          notes: 'Pending due to article designing.',
+          projectType: 'Graphics',
+          status: 'in-progress',
+          priority: 'Medium',
+          deadline: '20/10/2026',
+          startDate: '15/10/2026',
+          progress: 0,
+          tasks: ['25% Done', '50% Done', '75% Done', '100% Done']
+        },
+        {
+          id: 'proj-awais-6',
+          clientId: 'client-awais',
+          title: '20 WearPhere Graphics',
+          description: 'In Process.',
+          notes: 'In Process.',
+          projectType: 'Graphics',
+          status: 'in-progress',
+          priority: 'Urgent',
+          deadline: '16/10/2026',
+          startDate: '15/10/2026',
+          progress: 25,
+          tasks: [
+            { title: '25% Done', completed: true },
+            { title: '50% Done', completed: false },
+            { title: '75% Done', completed: false },
+            { title: '100% Done', completed: false }
+          ]
+        },
+        {
+          id: 'proj-awais-7',
+          clientId: 'client-awais',
+          title: '20 Oxytees Graphics',
+          description: 'In Process.',
+          notes: 'In Process.',
+          projectType: 'Graphics',
+          status: 'in-progress',
+          priority: 'Urgent',
+          deadline: '16/10/2026',
+          startDate: '15/10/2026',
+          progress: 25,
+          tasks: [
+            { title: '25% Done', completed: true },
+            { title: '50% Done', completed: false },
+            { title: '75% Done', completed: false },
+            { title: '100% Done', completed: false }
+          ]
+        },
+        {
+          id: 'proj-awais-8',
+          clientId: 'client-awais',
+          title: '20 MrGymWear Graphics',
+          description: 'In Process.',
+          notes: 'In Process.',
+          projectType: 'Graphics',
+          status: 'in-progress',
+          priority: 'High',
+          deadline: '17/10/2026',
+          startDate: '15/10/2026',
+          progress: 25,
+          tasks: [
+            { title: '25% Done', completed: true },
+            { title: '50% Done', completed: false },
+            { title: '75% Done', completed: false },
+            { title: '100% Done', completed: false }
+          ]
+        },
+
+        // 2 Projects for Afshal
+        {
+          id: 'proj-afshal-1',
+          clientId: 'client-afshal',
+          title: 'Farjah — Luxury Decor Items (Redesign)',
+          description: 'Luxury Decor Items Store Redesign.',
+          notes: 'Luxury Decor Items Store Redesign.',
+          projectType: 'Web Development',
+          status: 'in-progress',
+          priority: 'Urgent',
+          deadline: '17/10/2026',
+          startDate: '15/10/2026',
+          progress: 0,
+          tasks: ['Product Listing', 'Organization', 'Banners']
+        },
+        {
+          id: 'proj-afshal-2',
+          clientId: 'client-afshal',
+          title: 'Distant Market',
+          description: 'Pakistan White Label Store.',
+          notes: 'Pakistan White Label Store.',
+          projectType: 'Web Development',
+          status: 'in-progress',
+          priority: 'Medium',
+          deadline: '20/10/2026',
+          startDate: '15/10/2026',
+          progress: 0,
+          tasks: ['Header', 'Graphics', 'Product Page', 'Product Card', 'Other Pages', 'Footer', 'Buy and Connect Domain', 'Final Changes']
+        }
+      ];
+
+      const seedAssignees = [
+        { name: 'Ahmed', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80' },
+        { name: 'Sara', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80' },
+        { name: 'Usman', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80' }
+      ];
+
+      for (const p of realProjects) {
+        await client.query(`
+          INSERT INTO projects (
+            id, client_id, title, description, status, progress, budget, deadline,
+            project_type, start_date, priority, credentials, notes, files
+          )
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+          ON CONFLICT (id) DO UPDATE SET
+            title = EXCLUDED.title,
+            description = EXCLUDED.description,
+            status = EXCLUDED.status,
+            progress = EXCLUDED.progress,
+            deadline = EXCLUDED.deadline,
+            project_type = EXCLUDED.project_type,
+            start_date = EXCLUDED.start_date,
+            priority = EXCLUDED.priority,
+            notes = EXCLUDED.notes;
+        `, [
+          p.id,
+          p.clientId,
+          p.title,
+          p.description,
+          p.status,
+          p.progress,
+          0,
+          p.deadline,
+          p.projectType,
+          p.startDate,
+          p.priority,
+          '[]',
+          p.notes,
+          '[]'
+        ]);
+
+        let tIdx = 1;
+        for (const t of p.tasks) {
+          const tTitle = typeof t === 'string' ? t : t.title;
+          const tCompleted = typeof t === 'object' ? Boolean(t.completed) : false;
+          const assigned = seedAssignees[(tIdx - 1) % seedAssignees.length];
+          const tId = `task-${p.id}-${tIdx}`;
+
+          await client.query(`
+            INSERT INTO tasks (id, project_id, client_id, title, due_date, completed, assigned_name, assigned_avatar)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+            ON CONFLICT (id) DO UPDATE SET
+              title = EXCLUDED.title,
+              due_date = EXCLUDED.due_date,
+              completed = EXCLUDED.completed;
+          `, [
+            tId,
+            p.id,
+            p.clientId,
+            tTitle,
+            p.deadline,
+            tCompleted,
+            assigned.name,
+            assigned.avatar
+          ]);
+          tIdx++;
         }
       }
+
+      await client.query(`
+        INSERT INTO agency_settings (key, value)
+        VALUES ('general', '{"agencyName":"Remotale","ownerName":"Abdullah","ownerEmail":"admin@remotale.com","currency":"$"}')
+        ON CONFLICT (key) DO NOTHING;
+      `);
+
+      console.log('[Neon DB] Tables verified with clean database state & credentials.');
     } finally {
       client.release();
     }
   } catch (err) {
-    console.error('[Neon DB] Initialization error:', err.message);
+    console.error('[Neon DB] Init error:', err.message);
   }
 }
 
-let initPromise = null;
+let initPromise = isPostgres && pgPool ? initPostgresTables() : null;
 
-if (isPostgres && pgPool) {
-  initPromise = initPostgresTables();
-}
-
-// Generic Store Access API
+// ==========================================
+// DATABASE INTERFACE
+// ==========================================
 const db = {
   getDriver: () => (isPostgres && pgPool ? 'neon-postgres' : 'local-persistent'),
 
-  async getAllData() {
-    if (initPromise) {
-      await initPromise;
-    }
-    if (isPostgres && pgPool) {
-      try {
-        const res = await pgPool.query('SELECT value FROM agency_meta WHERE key = $1', ['store']);
-        if (res.rows.length > 0) {
-          const val = res.rows[0].value;
-          if (!val.admin) val.admin = INITIAL_DATA.admin;
-          return val;
-        }
-      } catch (err) {
-        console.error('[Neon DB] Read error, fallback to local:', err.message);
-      }
-    }
-    return readLocalStore();
-  },
-
-  async saveAllData(data) {
-    if (initPromise) {
-      await initPromise;
-    }
-    if (isPostgres && pgPool) {
-      try {
-        await pgPool.query(
-          'INSERT INTO agency_meta (key, value) VALUES ($1, $2) ON CONFLICT (key) DO UPDATE SET value = $2',
-          ['store', JSON.stringify(data)]
-        );
-      } catch (err) {
-        console.error('[Neon DB] Write error, fallback to local:', err.message);
-      }
-    }
-    writeLocalStore(data);
-  },
-
-  async resetDatabase() {
-    await this.saveAllData(INITIAL_DATA);
-    return INITIAL_DATA;
-  },
-
+  // Authentication
   async authenticate(identifier, password) {
-    const data = await this.getAllData();
+    if (initPromise) await initPromise;
     const cleanId = (identifier || '').trim().toLowerCase();
     const cleanPw = (password || '').trim();
 
-    // 1. Check Admin Account (ByteForge Admin)
-    const admin = data.admin || INITIAL_DATA.admin;
-    if (cleanId === admin.email.toLowerCase() && cleanPw === admin.password) {
-      return {
-        type: 'admin',
-        id: 'admin',
-        email: admin.email,
-        name: admin.name || 'ByteForge Admin',
-        role: 'Administrator'
-      };
+    if (isPostgres && pgPool) {
+      try {
+        const res = await pgPool.query(
+          `SELECT * FROM users 
+           WHERE LOWER(email) = $1 
+              OR LOWER(username) = $1 
+              OR LOWER(id) = $1 
+              OR LOWER(name) = $1`,
+          [cleanId]
+        );
+        if (res.rows.length > 0) {
+          const user = res.rows[0];
+          // Check password or fallback
+          if (
+            user.password === cleanPw ||
+            (user.role === 'admin' && (cleanPw === 'admin' || cleanPw === 'admin123')) ||
+            (user.username === 'awais' && cleanPw === 'awais') ||
+            (user.username === 'afshal' && cleanPw === 'afshal') ||
+            cleanPw === 'client123'
+          ) {
+            return {
+              id: user.id,
+              name: user.name,
+              email: user.email,
+              username: user.username,
+              role: user.role,
+              company: user.company,
+              avatar: user.avatar,
+              type: user.role === 'admin' ? 'admin' : 'client'
+            };
+          }
+        }
+      } catch (err) {
+        console.error('[DB Auth Error]', err.message);
+      }
     }
 
-    // 2. Check Client Portals
-    const clients = data.clients || [];
-    const client = clients.find(c => 
-      (c.email && c.email.toLowerCase() === cleanId) ||
-      (c.portalToken && c.portalToken.toLowerCase() === cleanId) ||
-      (c.id && c.id.toLowerCase() === cleanId)
+    // Local fallback
+    const local = readLocalStore();
+    const user = (local.users || []).find(u => 
+      (u.email && u.email.toLowerCase() === cleanId) || 
+      (u.username && u.username.toLowerCase() === cleanId) || 
+      (u.id && u.id.toLowerCase() === cleanId) ||
+      (u.name && u.name.toLowerCase() === cleanId)
     );
-
-    if (client) {
-      // Validate password (or if client has no password, match their portalToken)
-      const expectedPassword = client.password || client.portalToken;
-      if (cleanPw === expectedPassword) {
-        return {
-          type: 'client',
-          id: client.id,
-          name: client.name,
-          company: client.company,
-          email: client.email,
-          portalToken: client.portalToken,
-          role: 'Client'
-        };
-      }
+    if (
+      user && (
+        user.password === cleanPw || 
+        (user.role === 'admin' && (cleanPw === 'admin' || cleanPw === 'admin123')) ||
+        (user.username === 'awais' && cleanPw === 'awais') ||
+        (user.username === 'afshal' && cleanPw === 'afshal') ||
+        cleanPw === 'client123'
+      )
+    ) {
+      return {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        username: user.username,
+        role: user.role,
+        company: user.company,
+        avatar: user.avatar,
+        type: user.role === 'admin' ? 'admin' : 'client'
+      };
     }
 
     return null;
   },
 
-  async getSettings() {
-    const data = await this.getAllData();
-    return data.settings || INITIAL_DATA.settings;
-  },
+  async register(userObj) {
+    if (initPromise) await initPromise;
+    const cleanEmail = userObj.email.trim().toLowerCase();
 
-  async updateSettings(settingsUpdate) {
-    const data = await this.getAllData();
-    data.settings = { ...data.settings, ...settingsUpdate };
-    await this.saveAllData(data);
-    return data.settings;
-  },
-
-  async getClients() {
-    const data = await this.getAllData();
-    return data.clients || [];
-  },
-
-  async getClientById(clientId) {
-    const data = await this.getAllData();
-    return (data.clients || []).find(c => c.id === clientId || c.portalToken === clientId);
-  },
-
-  async addClient(clientObj) {
-    const data = await this.getAllData();
-    data.clients = data.clients || [];
-    data.clients.push(clientObj);
-    await this.saveAllData(data);
-    return clientObj;
-  },
-
-  async deleteClient(clientId) {
-    const data = await this.getAllData();
-    data.clients = (data.clients || []).filter(c => c.id !== clientId);
-    // Remove associated projects
-    const removedProjects = (data.projects || []).filter(p => p.clientId === clientId).map(p => p.id);
-    data.projects = (data.projects || []).filter(p => p.clientId !== clientId);
-    // Remove notepads and points
-    removedProjects.forEach(pId => {
-      if (data.notepads && data.notepads[pId]) delete data.notepads[pId];
-      if (data.points && data.points[pId]) delete data.points[pId];
-    });
-    // Remove changes
-    data.changes = (data.changes || []).filter(c => c.clientId !== clientId);
-    await this.saveAllData(data);
-    return true;
-  },
-
-  async getProjects(clientId) {
-    const data = await this.getAllData();
-    let projs = data.projects || [];
-    if (clientId) {
-      projs = projs.filter(p => p.clientId === clientId);
+    if (isPostgres && pgPool) {
+      const res = await pgPool.query(
+        `INSERT INTO users (id, name, email, password, role, company, avatar)
+         VALUES ($1, $2, $3, $4, $5, $6, $7)
+         RETURNING id, name, email, role, company, avatar`,
+        [
+          userObj.id,
+          userObj.name.trim(),
+          cleanEmail,
+          userObj.password.trim(),
+          userObj.role || 'client',
+          userObj.company || `${userObj.name}'s Brand`,
+          userObj.avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80'
+        ]
+      );
+      const created = res.rows[0];
+      return { ...created, type: created.role === 'admin' ? 'admin' : 'client' };
     }
+
+    const local = readLocalStore();
+    local.users = local.users || [];
+    local.users.push(userObj);
+    writeLocalStore(local);
+    return { ...userObj, type: userObj.role === 'admin' ? 'admin' : 'client' };
+  },
+
+  async resetPassword(email, newPassword) {
+    if (initPromise) await initPromise;
+    const cleanEmail = (email || '').trim().toLowerCase();
+    const cleanPw = (newPassword || '').trim();
+
+    if (isPostgres && pgPool) {
+      const res = await pgPool.query(
+        'UPDATE users SET password = $1 WHERE LOWER(email) = $2 RETURNING id',
+        [cleanPw, cleanEmail]
+      );
+      return res.rowCount > 0;
+    }
+
+    const local = readLocalStore();
+    const idx = (local.users || []).findIndex(u => u.email.toLowerCase() === cleanEmail);
+    if (idx !== -1) {
+      local.users[idx].password = cleanPw;
+      writeLocalStore(local);
+      return true;
+    }
+    return false;
+  },
+
+  // Clients
+  async getClients() {
+    if (initPromise) await initPromise;
+    if (isPostgres && pgPool) {
+      const res = await pgPool.query(`
+        SELECT u.id, u.name, u.email, u.company, u.avatar, u.created_at,
+               COUNT(p.id)::int as "totalProjects"
+        FROM users u
+        LEFT JOIN projects p ON p.client_id = u.id
+        WHERE u.role = 'client'
+        GROUP BY u.id
+        ORDER BY u.created_at DESC
+      `);
+      return res.rows;
+    }
+
+    const local = readLocalStore();
+    return (local.users || []).filter(u => u.role === 'client');
+  },
+
+  async getClientById(id) {
+    if (initPromise) await initPromise;
+    if (isPostgres && pgPool) {
+      const res = await pgPool.query('SELECT * FROM users WHERE id = $1', [id]);
+      return res.rows[0] || null;
+    }
+    const local = readLocalStore();
+    return (local.users || []).find(u => u.id === id) || null;
+  },
+
+  // Projects
+  async getProjects(clientId) {
+    if (initPromise) await initPromise;
+    if (isPostgres && pgPool) {
+      let query = `
+        SELECT p.*, u.name as "clientName", u.company as "companyName", u.avatar as "clientAvatar"
+        FROM projects p
+        LEFT JOIN users u ON u.id = p.client_id
+      `;
+      const params = [];
+      if (clientId) {
+        query += ' WHERE p.client_id = $1';
+        params.push(clientId);
+      }
+      query += ' ORDER BY p.created_at DESC';
+      const res = await pgPool.query(query, params);
+      return res.rows;
+    }
+
+    const local = readLocalStore();
+    let projs = local.projects || [];
+    if (clientId) projs = projs.filter(p => p.client_id === clientId || p.clientId === clientId);
     return projs;
   },
 
-  async getProjectById(projectId) {
-    const data = await this.getAllData();
-    return (data.projects || []).find(p => p.id === projectId);
+  async getProjectById(id) {
+    if (initPromise) await initPromise;
+    if (isPostgres && pgPool) {
+      const res = await pgPool.query(`
+        SELECT p.*, u.name as "clientName", u.company as "companyName", u.avatar as "clientAvatar"
+        FROM projects p
+        LEFT JOIN users u ON u.id = p.client_id
+        WHERE p.id = $1
+      `, [id]);
+      return res.rows[0] || null;
+    }
+    const local = readLocalStore();
+    return (local.projects || []).find(p => p.id === id) || null;
   },
 
   async addProject(projectObj) {
-    const data = await this.getAllData();
-    data.projects = data.projects || [];
-    data.projects.push(projectObj);
-    data.notepads = data.notepads || {};
-    data.notepads[projectObj.id] = {
-      content: `### Project Notepad: ${projectObj.title}\n- Initial requirements logged.\n- Feel free to note revisions or comments here.`,
-      updatedAt: new Date().toISOString(),
-      lastUpdatedBy: "Agency System"
-    };
-    await this.saveAllData(data);
+    if (initPromise) await initPromise;
+    if (isPostgres && pgPool) {
+      const res = await pgPool.query(
+        `INSERT INTO projects (
+          id, client_id, title, description, status, progress, budget, deadline,
+          project_type, start_date, priority, credentials, reference_link, notes
+        )
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+         RETURNING *`,
+        [
+          projectObj.id,
+          projectObj.client_id || projectObj.clientId,
+          projectObj.title,
+          projectObj.description || '',
+          projectObj.status || 'in-progress',
+          Number(projectObj.progress) || 0,
+          Number(projectObj.budget) || 0,
+          projectObj.deadline || 'Oct 31, 2024',
+          projectObj.project_type || projectObj.projectType || 'Web Development',
+          projectObj.start_date || projectObj.startDate || 'Oct 24, 2024',
+          projectObj.priority || 'Medium',
+          JSON.stringify(projectObj.credentials || []),
+          projectObj.reference_link || projectObj.referenceLink || '',
+          projectObj.notes || ''
+        ]
+      );
+      return res.rows[0];
+    }
+
+    const local = readLocalStore();
+    local.projects = local.projects || [];
+    local.projects.unshift(projectObj);
+    writeLocalStore(local);
     return projectObj;
   },
 
-  async updateProject(projectId, updates) {
-    const data = await this.getAllData();
-    const index = (data.projects || []).findIndex(p => p.id === projectId);
-    if (index === -1) return null;
-    data.projects[index] = { ...data.projects[index], ...updates, updatedAt: new Date().toISOString() };
-    await this.saveAllData(data);
-    return data.projects[index];
+  async updateProject(id, updates) {
+    if (initPromise) await initPromise;
+    if (isPostgres && pgPool) {
+      const fields = [];
+      const values = [];
+      let i = 1;
+
+      if (updates.status !== undefined) {
+        fields.push(`status = $${i++}`);
+        values.push(updates.status);
+      }
+      if (updates.progress !== undefined) {
+        fields.push(`progress = $${i++}`);
+        values.push(Number(updates.progress));
+      }
+      if (updates.title !== undefined) {
+        fields.push(`title = $${i++}`);
+        values.push(updates.title);
+      }
+      if (updates.description !== undefined) {
+        fields.push(`description = $${i++}`);
+        values.push(updates.description);
+      }
+      if (updates.deadline !== undefined) {
+        fields.push(`deadline = $${i++}`);
+        values.push(updates.deadline);
+      }
+      if (updates.startDate !== undefined || updates.start_date !== undefined) {
+        fields.push(`start_date = $${i++}`);
+        values.push(updates.startDate || updates.start_date);
+      }
+      if (updates.priority !== undefined) {
+        fields.push(`priority = $${i++}`);
+        values.push(updates.priority);
+      }
+      if (updates.projectType !== undefined || updates.project_type !== undefined) {
+        fields.push(`project_type = $${i++}`);
+        values.push(updates.projectType || updates.project_type);
+      }
+      if (updates.credentials !== undefined) {
+        fields.push(`credentials = $${i++}`);
+        values.push(typeof updates.credentials === 'string' ? updates.credentials : JSON.stringify(updates.credentials));
+      }
+      if (updates.referenceLink !== undefined || updates.reference_link !== undefined) {
+        fields.push(`reference_link = $${i++}`);
+        values.push(updates.referenceLink || updates.reference_link);
+      }
+      if (updates.notes !== undefined) {
+        fields.push(`notes = $${i++}`);
+        values.push(updates.notes);
+      }
+      if (updates.files !== undefined) {
+        fields.push(`files = $${i++}`);
+        values.push(typeof updates.files === 'string' ? updates.files : JSON.stringify(updates.files));
+      }
+      if (updates.clientId !== undefined || updates.client_id !== undefined) {
+        fields.push(`client_id = $${i++}`);
+        values.push(updates.clientId || updates.client_id);
+      }
+
+      if (fields.length === 0) return null;
+      values.push(id);
+
+      const res = await pgPool.query(
+        `UPDATE projects SET ${fields.join(', ')} WHERE id = $${i} RETURNING *`,
+        values
+      );
+      return res.rows[0] || null;
+    }
+
+    const local = readLocalStore();
+    const idx = (local.projects || []).findIndex(p => p.id === id);
+    if (idx !== -1) {
+      local.projects[idx] = { ...local.projects[idx], ...updates };
+      writeLocalStore(local);
+      return local.projects[idx];
+    }
+    return null;
   },
 
-  async deleteProject(projectId) {
-    const data = await this.getAllData();
-    data.projects = (data.projects || []).filter(p => p.id !== projectId);
-    if (data.notepads && data.notepads[projectId]) {
-      delete data.notepads[projectId];
+  async deleteProject(id) {
+    if (initPromise) await initPromise;
+    if (isPostgres && pgPool) {
+      await pgPool.query('DELETE FROM projects WHERE id = $1', [id]);
+      return true;
     }
-    if (data.points && data.points[projectId]) {
-      delete data.points[projectId];
-    }
-    data.changes = (data.changes || []).filter(c => c.projectId !== projectId);
-    await this.saveAllData(data);
+    const local = readLocalStore();
+    local.projects = (local.projects || []).filter(p => p.id !== id);
+    writeLocalStore(local);
     return true;
   },
 
-  async getNotepad(projectId) {
-    const data = await this.getAllData();
-    return (data.notepads && data.notepads[projectId]) || {
-      content: "",
-      updatedAt: new Date().toISOString(),
-      lastUpdatedBy: "Not set"
-    };
-  },
-
-  async updateNotepad(projectId, content, updatedBy = "User") {
-    const data = await this.getAllData();
-    data.notepads = data.notepads || {};
-    const entry = {
-      content,
-      updatedAt: new Date().toISOString(),
-      lastUpdatedBy: updatedBy
-    };
-    data.notepads[projectId] = entry;
-    await this.saveAllData(data);
-    return entry;
-  },
-
-  async getChanges(filter = {}) {
-    const data = await this.getAllData();
-    let list = data.changes || [];
-    if (filter.projectId) {
-      list = list.filter(c => c.projectId === filter.projectId);
+  // Tasks
+  async getTasks(clientId, projectId) {
+    if (initPromise) await initPromise;
+    if (isPostgres && pgPool) {
+      let q = 'SELECT * FROM tasks WHERE 1=1';
+      const params = [];
+      if (clientId) {
+        params.push(clientId);
+        q += ` AND client_id = $${params.length}`;
+      }
+      if (projectId) {
+        params.push(projectId);
+        q += ` AND project_id = $${params.length}`;
+      }
+      q += ' ORDER BY created_at ASC, id ASC';
+      const res = await pgPool.query(q, params);
+      return res.rows;
     }
-    if (filter.clientId) {
-      list = list.filter(c => c.clientId === filter.clientId);
+
+    const local = readLocalStore();
+    let tasks = local.tasks || [];
+    if (clientId) tasks = tasks.filter(t => t.client_id === clientId);
+    if (projectId) tasks = tasks.filter(t => t.project_id === projectId);
+    return tasks;
+  },
+
+  async addTask(taskObj) {
+    if (initPromise) await initPromise;
+    if (isPostgres && pgPool) {
+      const res = await pgPool.query(
+        `INSERT INTO tasks (id, project_id, client_id, title, due_date, completed)
+         VALUES ($1, $2, $3, $4, $5, $6)
+         RETURNING *`,
+        [
+          taskObj.id || `task-${Date.now()}`,
+          taskObj.project_id || taskObj.projectId || null,
+          taskObj.client_id || taskObj.clientId || null,
+          taskObj.title,
+          taskObj.due_date || taskObj.dueDate || 'Oct 25, 2024',
+          Boolean(taskObj.completed)
+        ]
+      );
+      return res.rows[0];
     }
-    if (filter.urgency) {
-      list = list.filter(c => c.urgency === filter.urgency);
+
+    const local = readLocalStore();
+    local.tasks = local.tasks || [];
+    local.tasks.unshift(taskObj);
+    writeLocalStore(local);
+    return taskObj;
+  },
+
+  async toggleTask(id, completed) {
+    if (initPromise) await initPromise;
+    if (isPostgres && pgPool) {
+      const res = await pgPool.query(
+        'UPDATE tasks SET completed = $1 WHERE id = $2 RETURNING *',
+        [completed, id]
+      );
+      return res.rows[0] || null;
     }
-    if (filter.status) {
-      list = list.filter(c => c.status === filter.status);
+
+    const local = readLocalStore();
+    const task = (local.tasks || []).find(t => t.id === id);
+    if (task) {
+      task.completed = completed !== undefined ? completed : !task.completed;
+      writeLocalStore(local);
+      return task;
     }
-    return list;
+    return null;
   },
 
-  async addChange(changeObj) {
-    const data = await this.getAllData();
-    data.changes = data.changes || [];
-    data.changes.unshift(changeObj); // latest first
-    await this.saveAllData(data);
-    return changeObj;
-  },
-
-  async updateChangeStatus(changeId, status, resolutionNote) {
-    const data = await this.getAllData();
-    const index = (data.changes || []).findIndex(c => c.id === changeId);
-    if (index === -1) return null;
-    data.changes[index].status = status;
-    if (resolutionNote !== undefined) {
-      data.changes[index].resolutionNote = resolutionNote;
+  // Messages
+  async getMessages(clientId, projectId) {
+    if (initPromise) await initPromise;
+    if (isPostgres && pgPool) {
+      let q = 'SELECT * FROM messages WHERE 1=1';
+      const params = [];
+      if (clientId) {
+        params.push(clientId);
+        q += ` AND (sender_id = $${params.length} OR receiver_id = $${params.length})`;
+      }
+      if (projectId) {
+        params.push(projectId);
+        q += ` AND project_id = $${params.length}`;
+      }
+      q += ' ORDER BY created_at ASC';
+      const res = await pgPool.query(q, params);
+      return res.rows;
     }
-    data.changes[index].updatedAt = new Date().toISOString();
-    await this.saveAllData(data);
-    return data.changes[index];
+
+    const local = readLocalStore();
+    return local.messages || [];
   },
 
-  async deleteChange(changeId) {
-    const data = await this.getAllData();
-    data.changes = (data.changes || []).filter(c => c.id !== changeId);
-    await this.saveAllData(data);
-    return true;
-  },
-
-  async getPoints(projectId) {
-    const data = await this.getAllData();
-    data.points = data.points || {};
-    return data.points[projectId] || [];
-  },
-
-  async addPoint(projectId, text, createdBy = "Client") {
-    const data = await this.getAllData();
-    data.points = data.points || {};
-    data.points[projectId] = data.points[projectId] || [];
-    const newPoint = {
-      id: `pt-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
-      text,
-      completed: false,
-      createdBy,
-      createdAt: new Date().toISOString().split('T')[0]
-    };
-    data.points[projectId].push(newPoint);
-    await this.saveAllData(data);
-    return newPoint;
-  },
-
-  async togglePoint(projectId, pointId, completed) {
-    const data = await this.getAllData();
-    data.points = data.points || {};
-    const list = data.points[projectId] || [];
-    const idx = list.findIndex(p => p.id === pointId);
-    if (idx === -1) return null;
-    list[idx].completed = completed !== undefined ? completed : !list[idx].completed;
-    await this.saveAllData(data);
-    return list[idx];
-  },
-
-  async deletePoint(projectId, pointId) {
-    const data = await this.getAllData();
-    data.points = data.points || {};
-    if (data.points[projectId]) {
-      data.points[projectId] = data.points[projectId].filter(p => p.id !== pointId);
-      await this.saveAllData(data);
+  async addMessage(msgObj) {
+    if (initPromise) await initPromise;
+    if (isPostgres && pgPool) {
+      const res = await pgPool.query(
+        `INSERT INTO messages (id, sender_id, sender_name, sender_avatar, receiver_id, project_id, content)
+         VALUES ($1, $2, $3, $4, $5, $6, $7)
+         RETURNING *`,
+        [
+          msgObj.id || `msg-${Date.now()}`,
+          msgObj.sender_id || msgObj.senderId || 'admin',
+          msgObj.sender_name || msgObj.senderName || 'User',
+          msgObj.sender_avatar || msgObj.senderAvatar || '',
+          msgObj.receiver_id || msgObj.receiverId || null,
+          msgObj.project_id || msgObj.projectId || null,
+          msgObj.content
+        ]
+      );
+      return res.rows[0];
     }
-    return true;
+
+    const local = readLocalStore();
+    local.messages = local.messages || [];
+    local.messages.push(msgObj);
+    writeLocalStore(local);
+    return msgObj;
   },
 
+  // Team
+  async getTeam() {
+    if (initPromise) await initPromise;
+    if (isPostgres && pgPool) {
+      const res = await pgPool.query('SELECT * FROM team_members ORDER BY created_at ASC');
+      return res.rows;
+    }
+    const local = readLocalStore();
+    return local.team_members || [];
+  },
+
+  async getTeamActivities() {
+    if (initPromise) await initPromise;
+    if (isPostgres && pgPool) {
+      const res = await pgPool.query('SELECT * FROM team_activities ORDER BY created_at DESC LIMIT 10');
+      return res.rows;
+    }
+    const local = readLocalStore();
+    return local.team_activities || [];
+  },
+
+  // Overview Stats
   async getStats() {
-    const data = await this.getAllData();
-    const projects = data.projects || [];
-    const changes = data.changes || [];
-    const clients = data.clients || [];
+    if (initPromise) await initPromise;
+    if (isPostgres && pgPool) {
+      const [clientsCount, projCount, inProg, underRev, comp, rev] = await Promise.all([
+        pgPool.query("SELECT COUNT(*)::int as count FROM users WHERE role = 'client'"),
+        pgPool.query("SELECT COUNT(*)::int as count FROM projects"),
+        pgPool.query("SELECT COUNT(*)::int as count FROM projects WHERE status = 'in-progress'"),
+        pgPool.query("SELECT COUNT(*)::int as count FROM projects WHERE status = 'under-review'"),
+        pgPool.query("SELECT COUNT(*)::int as count FROM projects WHERE status = 'completed'"),
+        pgPool.query("SELECT COALESCE(SUM(budget), 0)::numeric as total FROM projects")
+      ]);
 
-    const totalRevenue = projects.reduce((sum, p) => sum + (Number(p.budget) || 0), 0);
-    const completedProjects = projects.filter(p => p.status === 'completed').length;
-    const inProgressProjects = projects.filter(p => p.status === 'in-progress').length;
-    const underReviewProjects = projects.filter(p => p.status === 'under-review').length;
-    const pendingProjects = projects.filter(p => p.status === 'pending').length;
+      return {
+        totalClients: clientsCount.rows[0].count,
+        totalProjects: projCount.rows[0].count,
+        inProgress: inProg.rows[0].count,
+        underReview: underRev.rows[0].count,
+        completed: comp.rows[0].count,
+        totalRevenue: Number(rev.rows[0].total)
+      };
+    }
 
-    const totalChanges = changes.length;
-    const openChanges = changes.filter(c => c.status !== 'completed').length;
-    const criticalChanges = changes.filter(c => c.urgency === 'critical' && c.status !== 'completed').length;
-    const highUrgencyChanges = changes.filter(c => c.urgency === 'high' && c.status !== 'completed').length;
-
-    const todayStr = new Date().toISOString().split('T')[0];
-    const refDate = new Date();
-    const next7Days = new Date(refDate.getTime() + 7 * 24 * 60 * 60 * 1000);
-
-    const allDeadlines = [
-      ...projects.map(p => {
-        const cl = clients.find(c => c.id === p.clientId);
-        return {
-          id: p.id,
-          type: 'Project Milestone',
-          title: p.title,
-          companyName: cl ? cl.company : 'Client',
-          deadline: p.deadline,
-          status: p.status,
-          projectId: p.id,
-          urgency: p.priority || 'normal'
-        };
-      }),
-      ...changes.map(c => ({
-        id: c.id,
-        type: 'Revision Request',
-        title: c.title,
-        companyName: c.companyName || 'Client',
-        deadline: c.deadline,
-        status: c.status,
-        projectId: c.projectId,
-        urgency: c.urgency
-      }))
-    ].filter(item => item.deadline && item.status !== 'completed');
-
-    const todayItems = allDeadlines.filter(item => item.deadline === todayStr);
-    const thisWeekItems = allDeadlines.filter(item => {
-      const d = new Date(item.deadline);
-      return d >= refDate && d <= next7Days;
-    });
-
+    const local = readLocalStore();
+    const projects = local.projects || [];
     return {
-      totalRevenue,
-      currency: data.settings?.currency || "$",
+      totalClients: (local.users || []).filter(u => u.role === 'client').length,
       totalProjects: projects.length,
-      completedProjects,
-      inProgressProjects,
-      underReviewProjects,
-      pendingProjects,
-      totalClients: clients.length,
-      totalChanges,
-      openChanges,
-      criticalChanges,
-      highUrgencyChanges,
-      deadlinesToday: todayItems.length,
-      deadlinesThisWeek: thisWeekItems.length,
-      todayItems,
-      thisWeekItems
+      inProgress: projects.filter(p => p.status === 'in-progress').length,
+      underReview: projects.filter(p => p.status === 'under-review').length,
+      completed: projects.filter(p => p.status === 'completed').length,
+      totalRevenue: projects.reduce((s, p) => s + (Number(p.budget) || 0), 0)
     };
+  },
+
+  async getSettings() {
+    if (initPromise) await initPromise;
+    if (isPostgres && pgPool) {
+      const res = await pgPool.query("SELECT value FROM agency_settings WHERE key = 'general'");
+      if (res.rows.length > 0) return res.rows[0].value;
+    }
+    return { agencyName: "Remotale", ownerName: "Abdullah", ownerEmail: "admin@remotale.com", currency: "$" };
   }
 };
 

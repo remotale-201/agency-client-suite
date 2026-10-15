@@ -8,7 +8,8 @@ import ProjectNotepadWorkspace from './components/ProjectNotepadWorkspace';
 import ClientsView from './components/ClientsView';
 import AdminNotepadsView from './components/AdminNotepadsView';
 import DeadlineCenter from './components/DeadlineCenter';
-import SignIn from './components/SignIn';
+import RemotaleAuthFlow from './components/RemotaleAuthFlow';
+import RemotaleDashboard from './components/RemotaleDashboard';
 import { NewProjectModal, NewClientModal, NewChangeModal } from './components/Modals';
 
 export default function App() {
@@ -17,6 +18,7 @@ export default function App() {
   const [clients, setClients] = useState([]);
   const [projects, setProjects] = useState([]);
   const [changes, setChanges] = useState([]);
+  const [notifications, setNotifications] = useState([]);
   const [driver, setDriver] = useState('local');
 
   // Theme State: 'dark' (Neon.tech signature) or 'light' (Dribbble clean)
@@ -87,11 +89,12 @@ export default function App() {
   const loadData = async () => {
     try {
       setLoading(true);
-      const [statsData, clientsData, projectsData, changesData, healthData] = await Promise.all([
+      const [statsData, clientsData, projectsData, changesData, notifsData, healthData] = await Promise.all([
         api.getStats().catch(() => null),
         api.getClients().catch(() => []),
         api.getProjects().catch(() => []),
         api.getChanges().catch(() => []),
+        api.getNotifications().catch(() => []),
         api.checkHealth().catch(() => ({ driver: 'local' }))
       ]);
 
@@ -99,6 +102,7 @@ export default function App() {
       setClients(clientsData);
       setProjects(projectsData);
       setChanges(changesData);
+      setNotifications(notifsData);
       setDriver(healthData.driver);
     } catch (err) {
       console.error('Failed to load application data:', err);
@@ -110,6 +114,14 @@ export default function App() {
 
   useEffect(() => {
     loadData();
+
+    // Auto-sync notifications & stats every 8 seconds for real-time responsiveness
+    const timer = setInterval(() => {
+      api.getNotifications().then(setNotifications).catch(() => {});
+      api.getStats().then(setStats).catch(() => {});
+    }, 8000);
+
+    return () => clearInterval(timer);
   }, []);
 
   const handleLogin = async (identifier, password) => {
@@ -142,6 +154,25 @@ export default function App() {
       showToast(`Account created! Welcome, ${res.user.name || res.user.company}`);
       loadData();
       return res.user;
+    }
+  };
+
+  const handleMarkNotificationRead = async (id) => {
+    try {
+      await api.markNotificationRead(id);
+      setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
+    } catch (err) {
+      console.error('Failed to mark notification read:', err);
+    }
+  };
+
+  const handleClearNotifications = async () => {
+    try {
+      await api.clearNotifications();
+      setNotifications([]);
+      showToast('Notifications cleared');
+    } catch (err) {
+      console.error('Failed to clear notifications:', err);
     }
   };
 
@@ -305,13 +336,13 @@ export default function App() {
   // Critical change notice
   const criticalPending = changes.find(c => c.urgency === 'critical' && c.status !== 'completed');
 
-  // Gate: Unauthenticated users must land directly on the Sign-In portal first
+  // Gate: Unauthenticated users land directly on the Remotale Auth Flow
   if (!authUser) {
     const params = new URLSearchParams(window.location.search);
     const portalParam = params.get('portal');
 
     return (
-      <div className="app-container" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', width: '100%' }}>
         {toast && (
           <div className="toast-container">
             <div className={`toast ${toast.type}`}>
@@ -319,16 +350,7 @@ export default function App() {
             </div>
           </div>
         )}
-        <div style={{ position: 'fixed', top: '16px', right: '16px', zIndex: 100 }}>
-          <button
-            className="theme-toggle-btn"
-            onClick={() => setTheme(prev => prev === 'dark' ? 'light' : 'dark')}
-            title="Switch theme"
-          >
-            {theme === 'dark' ? 'Neon Dark' : 'Light Mode'}
-          </button>
-        </div>
-        <SignIn 
+        <RemotaleAuthFlow 
           onLogin={handleLogin} 
           onRegister={handleRegister}
           initialPortalToken={portalParam} 
@@ -338,8 +360,7 @@ export default function App() {
   }
 
   return (
-    <div className="app-container">
-      {/* Toast Notification */}
+    <>
       {toast && (
         <div className="toast-container">
           <div className={`toast ${toast.type}`}>
@@ -347,418 +368,7 @@ export default function App() {
           </div>
         </div>
       )}
-
-      {/* Top Navbar & Persona Selector */}
-      <Navbar
-        user={authUser}
-        onLogout={handleLogout}
-        currentPersona={currentPersona}
-        setCurrentPersona={handlePersonaChange}
-        clients={clients}
-        activeTab={activeTab}
-        setActiveTab={(tab) => {
-          setSelectedProject(null);
-          setActiveTab(tab);
-        }}
-        stats={stats}
-        onOpenNewProject={() => setIsNewProjectOpen(true)}
-        onOpenNewChange={() => setIsNewChangeOpen(true)}
-        onOpenNewClient={() => setIsNewClientOpen(true)}
-        onResetData={handleResetData}
-        driver={driver}
-        theme={theme}
-        setTheme={setTheme}
-      />
-
-      {/* Main Content Area */}
-      <main className="main-content">
-        {loading ? (
-          <div style={{ textAlign: 'center', padding: '80px 0', color: 'var(--text-muted)' }}>
-            <p>Loading agency platform...</p>
-          </div>
-        ) : selectedProject ? (
-          /* Dedicated Project Notepad Workspace View */
-          <ProjectNotepadWorkspace
-            project={selectedProject}
-            notepad={activeNotepad}
-            changes={changes}
-            onSaveNotepad={handleSaveNotepad}
-            onCreateChange={handleCreateChange}
-            onUpdateChangeStatus={handleUpdateChangeStatus}
-            onToggleDeliverable={handleToggleDeliverable}
-            onBack={() => setSelectedProject(null)}
-            isAdmin={isAdmin}
-            currentUser={isAdmin ? { name: 'Agency Director' } : currentClient}
-          />
-        ) : (
-          /* Standard Views based on Tab */
-          <>
-            {/* Urgent Alert Banner (Shown in Admin Overview if critical issues exist) */}
-            {isAdmin && activeTab === 'dashboard' && criticalPending && (
-              <div className="alert-banner">
-                <div className="alert-banner-content">
-                  <div className="alert-banner-text">
-                    <h4>Urgent Client Revision Requires Attention</h4>
-                    <p>
-                      <strong>{criticalPending.companyName}:</strong> {criticalPending.title} (Target: {criticalPending.deadline || 'Immediate'})
-                    </p>
-                  </div>
-                </div>
-
-                <button 
-                  className="btn btn-danger btn-sm"
-                  onClick={() => {
-                    const proj = projects.find(p => p.id === criticalPending.projectId);
-                    if (proj) handleSelectProject(proj);
-                    else setActiveTab('changes');
-                  }}
-                >
-                  Review Hotfix →
-                </button>
-              </div>
-            )}
-
-            {/* Admin Dashboard Tab */}
-            {isAdmin && activeTab === 'dashboard' && (
-              <div>
-                <StatsGrid stats={stats} />
-
-                {/* Deadline Command Center (Today & This Week) */}
-                <DeadlineCenter
-                  stats={stats}
-                  onSelectProjectById={(pId) => {
-                    const p = projects.find(proj => proj.id === pId);
-                    if (p) handleSelectProject(p);
-                  }}
-                />
-
-                {/* Split Overview: Active Projects & Recent Changes */}
-                <div className="dashboard-overview-split">
-                  {/* Left: Active Projects */}
-                  <div>
-                    <div className="section-header">
-                      <div className="section-header-title">
-                        <h2>Active Client Projects</h2>
-                        <span className="badge-count">
-                          {projects.filter(p => p.status === 'in-progress' || p.status === 'under-review').length}
-                        </span>
-                      </div>
-                      <button className="btn btn-outline btn-sm" onClick={() => setActiveTab('projects')}>
-                        View All
-                      </button>
-                    </div>
-
-                    {projects.length === 0 ? (
-                      <div style={{
-                        padding: '32px 16px',
-                        textAlign: 'center',
-                        background: 'var(--bg-surface)',
-                        border: '1px solid var(--border-subtle)',
-                        borderRadius: 'var(--radius-lg)',
-                        color: 'var(--text-muted)',
-                        fontSize: '13px'
-                      }}>
-                        <p style={{ marginBottom: '8px' }}>No active projects yet.</p>
-                        <button 
-                          className="btn btn-primary btn-sm" 
-                          onClick={() => setIsNewProjectOpen(true)}
-                        >
-                          + Create Project
-                        </button>
-                      </div>
-                    ) : (
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                        {projects.slice(0, 4).map(proj => (
-                          <div 
-                            key={proj.id}
-                            className="project-card"
-                            style={{ padding: '16px' }}
-                          >
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
-                              <div>
-                                <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase' }}>
-                                  {proj.companyName}
-                                </div>
-                                <h4 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--text-primary)' }}>
-                                  {proj.title}
-                                </h4>
-                              </div>
-                              <span className={`badge-pill status-${proj.status}`}>
-                                {proj.status}
-                              </span>
-                            </div>
-
-                            <div className="progress-container" style={{ margin: '8px 0' }}>
-                              <div className="progress-track">
-                                <div className="progress-fill" style={{ width: `${proj.progress}%` }}></div>
-                              </div>
-                            </div>
-
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '12px', color: 'var(--text-muted)' }}>
-                              <span>Deadline: <strong>{proj.deadline}</strong></span>
-                              <button 
-                                className="btn btn-secondary btn-sm"
-                                style={{ padding: '4px 10px', fontSize: '11px' }}
-                                onClick={() => handleSelectProject(proj)}
-                              >
-                                Open Notepad →
-                              </button>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Right: Urgent Revisions Feed */}
-                  <div>
-                    <div className="section-header">
-                      <div className="section-header-title">
-                        <h2>Recent Client Requests</h2>
-                        <span className="badge-count">{changes.length}</span>
-                      </div>
-                      <button className="btn btn-outline btn-sm" onClick={() => setActiveTab('changes')}>
-                        All Revisions
-                      </button>
-                    </div>
-
-                    {changes.length === 0 ? (
-                      <div style={{
-                        padding: '32px 16px',
-                        textAlign: 'center',
-                        background: 'var(--bg-surface)',
-                        border: '1px solid var(--border-subtle)',
-                        borderRadius: 'var(--radius-lg)',
-                        color: 'var(--text-muted)',
-                        fontSize: '13px'
-                      }}>
-                        <p>No revision requests logged yet.</p>
-                      </div>
-                    ) : (
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                        {changes.slice(0, 4).map(c => (
-                          <div 
-                            key={c.id} 
-                            className={`change-item-card ${c.urgency === 'critical' ? 'is-critical' : ''}`}
-                            style={{ padding: '14px' }}
-                          >
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                              <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-primary)' }}>
-                                {c.title}
-                              </span>
-                              <span className={`badge-pill urgency-${c.urgency}`} style={{ fontSize: '10px' }}>
-                                {c.urgency}
-                              </span>
-                            </div>
-                            <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
-                              {c.companyName} • Target: {c.deadline || 'Flexible'}
-                            </p>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '6px' }}>
-                              <span className={`badge-pill status-${c.status}`} style={{ fontSize: '10px' }}>
-                                {c.status}
-                              </span>
-                              <button 
-                                className="btn btn-outline btn-sm"
-                                style={{ padding: '3px 8px', fontSize: '11px' }}
-                                onClick={() => {
-                                  const p = projects.find(proj => proj.id === c.projectId);
-                                  if (p) handleSelectProject(p);
-                                }}
-                              >
-                                Open Project
-                              </button>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Admin Projects Tab */}
-            {isAdmin && activeTab === 'projects' && (
-              <ProjectsView
-                projects={visibleProjects}
-                onSelectProject={handleSelectProject}
-                onOpenNewProject={() => setIsNewProjectOpen(true)}
-                isAdmin={true}
-                onToggleDeliverable={handleToggleDeliverable}
-                clients={clients}
-              />
-            )}
-
-            {/* Admin Changes Feed Tab */}
-            {isAdmin && activeTab === 'changes' && (
-              <ChangesFeed
-                changes={visibleChanges}
-                onUpdateStatus={handleUpdateChangeStatus}
-                onSelectProjectById={(pId) => {
-                  const p = projects.find(proj => proj.id === pId);
-                  if (p) handleSelectProject(p);
-                }}
-                isAdmin={true}
-                onOpenNewChange={() => setIsNewChangeOpen(true)}
-              />
-            )}
-
-            {/* Admin Notepads Tab */}
-            {isAdmin && activeTab === 'notepads' && (
-              <AdminNotepadsView
-                projects={projects}
-                onSelectProject={handleSelectProject}
-              />
-            )}
-
-            {/* Admin Clients Tab */}
-            {isAdmin && activeTab === 'clients' && (
-              <ClientsView
-                clients={clients}
-                onOpenNewClient={() => setIsNewClientOpen(true)}
-                onSwitchToClient={(cId) => handlePersonaChange({ type: 'client', id: cId })}
-                onCopyPortalLink={handleCopyPortalLink}
-                onDeleteClient={handleDeleteClient}
-                copiedToken={copiedToken}
-              />
-            )}
-
-            {/* Client View: My Projects */}
-            {!isAdmin && activeTab === 'client-projects' && (
-              <div>
-                {/* Client Welcome Hero */}
-                <div style={{
-                  background: 'var(--bg-surface)',
-                  border: '1px solid var(--border-subtle)',
-                  borderRadius: 'var(--radius-lg)',
-                  padding: '24px',
-                  marginBottom: '24px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  gap: '16px',
-                  flexWrap: 'wrap',
-                  boxShadow: 'var(--shadow-xs)'
-                }}>
-                  <div>
-                    <h2 style={{ fontSize: '18px', fontWeight: 800, marginBottom: '4px' }}>
-                      Welcome, {currentClient?.name || authUser?.name}
-                    </h2>
-                    <p style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
-                      Track deliverables, view live project notepads, and submit priority revisions directly to the engineering team.
-                    </p>
-                  </div>
-
-                  <div>
-                    <button 
-                      className="btn btn-primary"
-                      onClick={() => setIsNewChangeOpen(true)}
-                    >
-                      + Request Revision
-                    </button>
-                  </div>
-                </div>
-
-                <ProjectsView
-                  projects={visibleProjects}
-                  onSelectProject={handleSelectProject}
-                  onOpenNewProject={() => {}}
-                  isAdmin={false}
-                  onToggleDeliverable={handleToggleDeliverable}
-                  clients={clients}
-                />
-              </div>
-            )}
-
-            {/* Client View: Project Workspace / Notepad Selector */}
-            {!isAdmin && activeTab === 'client-workspace' && (
-              <div>
-                <div className="section-header">
-                  <div className="section-header-title">
-                    <h2>Select Project to Open Notepad</h2>
-                  </div>
-                </div>
-
-                {visibleProjects.length === 0 ? (
-                  <div style={{
-                    padding: '48px 24px',
-                    textAlign: 'center',
-                    background: 'var(--bg-surface)',
-                    border: '1px solid var(--border-subtle)',
-                    borderRadius: 'var(--radius-lg)',
-                    color: 'var(--text-muted)',
-                    fontSize: '13px'
-                  }}>
-                    <p>No projects assigned to your portal yet.</p>
-                  </div>
-                ) : (
-                  <div className="projects-grid">
-                    {visibleProjects.map(proj => (
-                      <div key={proj.id} className="project-card">
-                        <div>
-                          <div className="project-card-top">
-                            <span className="project-client-name">{currentClient?.company}</span>
-                            <span className={`badge-pill status-${proj.status}`}>{proj.status}</span>
-                          </div>
-                          <h3 className="project-card-title">{proj.title}</h3>
-                          <p className="project-card-desc">{proj.description}</p>
-                        </div>
-
-                        <div className="project-card-actions">
-                          <button 
-                            className="btn btn-primary btn-sm"
-                            style={{ width: '100%' }}
-                            onClick={() => handleSelectProject(proj)}
-                          >
-                            Open Project Notepad & Changes →
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Client View: Change Tracker */}
-            {!isAdmin && activeTab === 'client-changes' && (
-              <ChangesFeed
-                changes={visibleChanges}
-                onUpdateStatus={handleUpdateChangeStatus}
-                onSelectProjectById={(pId) => {
-                  const p = projects.find(proj => proj.id === pId);
-                  if (p) handleSelectProject(p);
-                }}
-                isAdmin={false}
-                onOpenNewChange={() => setIsNewChangeOpen(true)}
-              />
-            )}
-          </>
-        )}
-      </main>
-
-      {/* Modals */}
-      <NewProjectModal
-        isOpen={isNewProjectOpen}
-        onClose={() => setIsNewProjectOpen(false)}
-        onSubmit={handleCreateProject}
-        clients={clients}
-      />
-
-      <NewClientModal
-        isOpen={isNewClientOpen}
-        onClose={() => setIsNewClientOpen(false)}
-        onSubmit={handleCreateClient}
-      />
-
-      <NewChangeModal
-        isOpen={isNewChangeOpen}
-        onClose={() => setIsNewChangeOpen(false)}
-        onSubmit={handleCreateChange}
-        projects={visibleProjects}
-        defaultProjectId={selectedProject?.id || visibleProjects[0]?.id}
-        requestedBy={currentClient?.name || 'Client'}
-      />
-    </div>
+      <RemotaleDashboard user={authUser} onLogout={handleLogout} />
+    </>
   );
 }

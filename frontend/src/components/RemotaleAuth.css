@@ -1,0 +1,1057 @@
+/* ==========================================================================
+   REMOTALE MOBILE AUTH FLOW & SHOWCASE STYLES
+   Pixel-Perfect Match for Screen 1 (Welcome), Screen 2 (Signup), Screen 3 (Login)
+   ========================================================================== */
+
+.remotale-auth-viewport {
+  min-height: 100vh;
+  width: 100%;
+  background: #f4f2fb;
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(221, 214, 254, 0.6) 0%, transparent 40%),
+    radial-gradient(circle at 90% 15%, rgba(199, 210, 254, 0.5) 0%, transparent 45%),
+    radial-gradient(circle at 50% 85%, rgba(237, 233, 254, 0.7) 0%, transparent 50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 24px 16px 48px;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #0f172a;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+/* --------------------------------------------------------------------------
+   Top Viewport Switcher Toolbar
+   -------------------------------------------------------------------------- */
+.remotale-top-nav-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1240px;
+  margin-bottom: 24px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  border-radius: 999px;
+  padding: 6px 14px;
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.08);
+}
+
+.remotale-top-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 800;
+  font-size: 15px;
+  color: #0f172a;
+  letter-spacing: -0.3px;
+}
+
+.remotale-nav-pills {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #f1f5f9;
+  padding: 3px;
+  border-radius: 999px;
+}
+
+.remotale-nav-pill-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  background: transparent;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.remotale-nav-pill-btn:hover {
+  color: #1e293b;
+}
+
+.remotale-nav-pill-btn.active {
+  background: #ffffff;
+  color: #4f46e5;
+  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.15);
+}
+
+.remotale-badge-num {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #4f46e5;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10.5px;
+  font-weight: 800;
+}
+
+.remotale-nav-pill-btn:not(.active) .remotale-badge-num {
+  background: #94a3b8;
+}
+
+.remotale-quick-access-btn {
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #4f46e5;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+
+.remotale-quick-access-btn:hover {
+  background: #f5f3ff;
+  border-color: #c7d2fe;
+}
+
+/* --------------------------------------------------------------------------
+   Screens Container (Side-by-Side or Single Phone View)
+   -------------------------------------------------------------------------- */
+.remotale-screens-container {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 28px;
+  width: 100%;
+  max-width: 1300px;
+  margin: 0 auto;
+  transition: all 0.3s ease;
+}
+
+.remotale-screens-container.side-by-side {
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.remotale-screen-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.remotale-screen-header-badge {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #2563eb;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 800;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+  margin-bottom: 14px;
+}
+
+/* --------------------------------------------------------------------------
+   Mobile Phone Device Mockup Frame
+   -------------------------------------------------------------------------- */
+.remotale-phone-frame {
+  width: 375px;
+  max-width: 100%;
+  min-height: 780px;
+  background: #ffffff;
+  border-radius: 36px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 
+    0 25px 60px -15px rgba(99, 102, 241, 0.16),
+    0 12px 30px -8px rgba(15, 23, 42, 0.08);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* iOS Top Status Bar */
+.remotale-status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 22px 4px 22px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #0f172a;
+  user-select: none;
+}
+
+.remotale-status-time {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+}
+
+.remotale-status-icons {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.remotale-status-icons svg {
+  display: block;
+}
+
+/* Phone Screen Body */
+.remotale-screen-body {
+  padding: 12px 20px 24px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+/* --------------------------------------------------------------------------
+   SCREEN 1: WELCOME / ROLE SELECTION
+   -------------------------------------------------------------------------- */
+.remotale-welcome-screen {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  flex-grow: 1;
+  position: relative;
+}
+
+.remotale-welcome-top-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.remotale-welcome-brand-text {
+  font-size: 19px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.4px;
+}
+
+.remotale-hero-title {
+  font-size: 32px;
+  line-height: 1.12;
+  font-weight: 800;
+  letter-spacing: -0.8px;
+  color: #0f172a;
+  margin: 0 0 10px 0;
+}
+
+.remotale-hero-highlight {
+  display: block;
+  background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.remotale-hero-description {
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: #64748b;
+  margin: 0 0 16px 0;
+  max-width: 250px;
+}
+
+/* Floating Graphic Visual Container */
+.remotale-visual-showcase {
+  position: relative;
+  height: 220px;
+  width: 100%;
+  margin: 4px 0 16px 0;
+}
+
+.remotale-ambient-shape {
+  position: absolute;
+  right: -25px;
+  top: 10px;
+  width: 210px;
+  height: 210px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(221, 214, 254, 0.75) 0%, rgba(243, 232, 255, 0.4) 65%, transparent 100%);
+  z-index: 0;
+  filter: blur(14px);
+}
+
+/* Card 1: Purple Bar Chart Square */
+.remotale-chart-badge {
+  position: absolute;
+  top: 12px;
+  right: 50px;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 20px -4px rgba(99, 102, 241, 0.45);
+  z-index: 2;
+  animation: floatSlow 4s ease-in-out infinite;
+}
+
+/* Card 2: Project Progress Card */
+.remotale-progress-card {
+  position: absolute;
+  top: 38px;
+  right: 10px;
+  width: 180px;
+  background: #ffffff;
+  border: 1px solid #f1f5f9;
+  border-radius: 16px;
+  padding: 12px 14px;
+  box-shadow: 0 14px 28px -6px rgba(0, 0, 0, 0.08), 0 6px 14px -3px rgba(0, 0, 0, 0.03);
+  z-index: 1;
+}
+
+.remotale-progress-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.remotale-progress-title {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.remotale-progress-percent {
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #1e293b;
+}
+
+.remotale-progress-bar-track {
+  width: 100%;
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.remotale-progress-bar-fill {
+  width: 70%;
+  height: 100%;
+  background: #4f46e5;
+  border-radius: 999px;
+}
+
+.remotale-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.remotale-check-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.remotale-check-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #4f46e5;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8.5px;
+  font-weight: 800;
+}
+
+/* Card 3: Team Card */
+.remotale-team-pill {
+  position: absolute;
+  bottom: 0px;
+  right: 18px;
+  background: #ffffff;
+  border: 1px solid #f1f5f9;
+  border-radius: 14px;
+  padding: 8px 12px;
+  box-shadow: 0 10px 24px -5px rgba(0, 0, 0, 0.09);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.remotale-team-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.remotale-team-avatars {
+  display: flex;
+  align-items: center;
+}
+
+.remotale-avatar-img {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ffffff;
+  margin-left: -5px;
+}
+
+.remotale-avatar-img:first-child {
+  margin-left: 0;
+}
+
+.remotale-avatar-more {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #6366f1;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 800;
+  border: 2px solid #ffffff;
+  margin-left: -5px;
+}
+
+/* Bottom "Continue as" Section */
+.remotale-continue-container {
+  background: #ffffff;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 14px;
+  display: flex;
+  flex-direction: column;
+}
+
+.remotale-continue-heading {
+  font-size: 17px;
+  font-weight: 800;
+  color: #0f172a;
+  text-align: center;
+  margin: 0 0 2px 0;
+}
+
+.remotale-continue-subtext {
+  font-size: 11.5px;
+  color: #64748b;
+  text-align: center;
+  margin: 0 0 14px 0;
+}
+
+.remotale-role-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+}
+
+.remotale-role-card:hover {
+  transform: translateY(-2px);
+  border-color: #c7d2fe;
+  box-shadow: 0 8px 20px -4px rgba(99, 102, 241, 0.16);
+}
+
+.remotale-role-card-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.remotale-role-icon-box {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.remotale-role-icon-box.client {
+  background: #f5f3ff;
+  color: #4f46e5;
+  border: 1px solid #ede9fe;
+}
+
+.remotale-role-icon-box.admin {
+  background: #eff6ff;
+  color: #2563eb;
+  border: 1px solid #dbeafe;
+}
+
+.remotale-role-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.remotale-role-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 2px;
+}
+
+.remotale-role-desc {
+  font-size: 11px;
+  color: #64748b;
+  line-height: 1.35;
+  max-width: 220px;
+}
+
+.remotale-role-arrow {
+  color: #0f172a;
+  font-size: 16px;
+  font-weight: 700;
+  transition: transform 0.2s;
+}
+
+.remotale-role-card:hover .remotale-role-arrow {
+  transform: translateX(3px);
+  color: #4f46e5;
+}
+
+/* --------------------------------------------------------------------------
+   SCREEN 2 (SIGNUP) & SCREEN 3 (LOGIN) COMMON COMPONENTS
+   -------------------------------------------------------------------------- */
+.remotale-top-nav-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin-bottom: 18px;
+}
+
+.remotale-back-btn {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0f172a;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.remotale-back-btn:hover {
+  background: #f1f5f9;
+}
+
+.remotale-center-brand {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 18px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.4px;
+}
+
+.remotale-screen-title-area {
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+.remotale-screen-title-area h2 {
+  font-size: 20px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.4px;
+  margin: 0 0 5px 0;
+}
+
+.remotale-screen-title-area p {
+  font-size: 12px;
+  color: #64748b;
+  line-height: 1.45;
+  margin: 0;
+}
+
+/* Segmented Control Role Selector */
+.remotale-role-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 4px;
+  gap: 4px;
+  margin-bottom: 20px;
+}
+
+.remotale-role-tab-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1.5px solid transparent;
+  background: transparent;
+  border-radius: 9px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.remotale-role-tab-btn.active {
+  background: #f5f3ff;
+  border-color: #818cf8;
+  color: #4f46e5;
+  font-weight: 700;
+  box-shadow: 0 1px 4px rgba(79, 70, 229, 0.08);
+}
+
+/* Form Styles */
+.remotale-auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  width: 100%;
+}
+
+/* Input Row with Circular Icon Badge (as seen in Screen 2) */
+.remotale-input-group-with-icon {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+}
+
+.remotale-input-circle-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1.5px solid #cbd5e1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #475569;
+  flex-shrink: 0;
+  margin-top: 18px;
+}
+
+.remotale-input-field-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.remotale-input-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 5px;
+}
+
+.remotale-input-box {
+  width: 100%;
+  height: 44px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 0 14px;
+  font-size: 13px;
+  color: #0f172a;
+  outline: none;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.remotale-input-box:focus {
+  background: #ffffff;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+.remotale-input-box::placeholder {
+  color: #94a3b8;
+}
+
+/* Password Input with Show/Hide Eye */
+.remotale-pw-box-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.remotale-pw-box-wrapper .remotale-input-box {
+  padding-right: 40px;
+}
+
+.remotale-eye-toggle-btn {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  color: #64748b;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.remotale-eye-toggle-btn:hover {
+  color: #1e293b;
+}
+
+/* Screen 3 Input Style (Inline left icon inside input) */
+.remotale-inline-icon-input {
+  position: relative;
+  width: 100%;
+}
+
+.remotale-inline-icon-input .remotale-input-box {
+  padding-left: 38px;
+}
+
+.remotale-inline-left-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+/* Options Row: Remember Me & Forgot Password */
+.remotale-options-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 2px;
+}
+
+.remotale-remember-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: #334155;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.remotale-checkbox-custom {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border: 1.5px solid #cbd5e1;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+
+.remotale-checkbox-custom.checked {
+  background: #4f46e5;
+  border-color: #4f46e5;
+  color: #ffffff;
+}
+
+.remotale-forgot-link {
+  border: none;
+  background: transparent;
+  color: #4f46e5;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.15s;
+}
+
+.remotale-forgot-link:hover {
+  color: #4338ca;
+  text-decoration: underline;
+}
+
+/* Primary CTA Button */
+.remotale-primary-btn {
+  width: 100%;
+  height: 46px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(90deg, #4f46e5 0%, #6366f1 50%, #7c3aed 100%);
+  color: #ffffff;
+  font-size: 14.5px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px 0 rgba(79, 70, 229, 0.35);
+  margin-top: 6px;
+  transition: all 0.2s ease;
+}
+
+.remotale-primary-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px 0 rgba(79, 70, 229, 0.45);
+}
+
+.remotale-primary-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* Error Banner inside Mobile Card */
+.remotale-error-notice {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 500;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+/* Success Notice */
+.remotale-success-notice {
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #047857;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 500;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+/* Bottom Nav Link */
+.remotale-bottom-footer-link {
+  text-align: center;
+  margin-top: 14px;
+  font-size: 12.5px;
+  color: #64748b;
+}
+
+.remotale-inline-action-btn {
+  border: none;
+  background: transparent;
+  color: #4f46e5;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0 0 0 4px;
+}
+
+.remotale-inline-action-btn:hover {
+  text-decoration: underline;
+}
+
+/* --------------------------------------------------------------------------
+   Forgot Password Modal
+   -------------------------------------------------------------------------- */
+.remotale-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: fadeIn 0.2s ease;
+}
+
+.remotale-modal-box {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 28px 24px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.remotale-modal-close-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  border: none;
+  background: #f1f5f9;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #64748b;
+}
+
+.remotale-modal-close-btn:hover {
+  color: #0f172a;
+}
+
+/* Animations */
+@keyframes floatSlow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+/* --------------------------------------------------------------------------
+   Admin Signup Contact Owner Card
+   -------------------------------------------------------------------------- */
+.remotale-admin-contact-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 24px 16px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  margin-top: 6px;
+  animation: fadeIn 0.25s ease;
+}
+
+.remotale-admin-lock-badge {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #ede9fe;
+  color: #4f46e5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.2);
+}
+
+.remotale-admin-contact-card h3 {
+  font-size: 16px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 8px 0;
+}
+
+.remotale-admin-contact-card p {
+  font-size: 12.5px;
+  color: #64748b;
+  line-height: 1.5;
+  margin: 0 0 18px 0;
+  max-width: 280px;
+}
+
+.remotale-contact-owner-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 16px;
+  background: linear-gradient(90deg, #4f46e5 0%, #6366f1 50%, #7c3aed 100%);
+  color: #ffffff;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.remotale-contact-owner-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(79, 70, 229, 0.45);
+}
+
+.remotale-secondary-action-btn {
+  margin-top: 12px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #1e293b;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+  width: 100%;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.remotale-secondary-action-btn:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+}
+
+.remotale-link-action-btn {
+  margin-top: 10px;
+  background: transparent;
+  border: none;
+  color: #4f46e5;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.remotale-link-action-btn:hover {
+  text-decoration: underline;
+}
+
+/* Responsiveness */
+@media (max-width: 820px) {
+  .remotale-screens-container.side-by-side {
+    flex-direction: column;
+    align-items: center;
+  }
+  .remotale-top-nav-bar {
+    flex-direction: column;
+    gap: 10px;
+    border-radius: 20px;
+    padding: 12px;
+  }
+}

@@ -36,7 +36,17 @@ export const api = {
       method: 'POST',
       body: JSON.stringify(clientData)
     }),
+  forgotPassword: (email, newPassword) =>
+    request('/api/auth/forgot-password', {
+      method: 'POST',
+      body: JSON.stringify({ email, newPassword })
+    }),
   resetData: () => request('/api/auth/reset-data', { method: 'POST' }),
+
+  // Notifications (Admin Alert Center)
+  getNotifications: () => request('/api/notifications'),
+  markNotificationRead: (id) => request(`/api/notifications/${id}/read`, { method: 'PATCH' }),
+  clearNotifications: () => request('/api/notifications', { method: 'DELETE' }),
 
   // Stats
   getStats: () => request('/api/stats'),
@@ -111,6 +121,31 @@ export const api = {
       body: JSON.stringify({ status, resolutionNote })
     }),
   deleteChange: (id) => request(`/api/changes/${id}`, { method: 'DELETE' }),
+
+  // Tasks
+  getTasks: (params = {}) => {
+    const query = new URLSearchParams();
+    if (params.clientId) query.append('clientId', params.clientId);
+    if (params.projectId) query.append('projectId', params.projectId);
+    const queryString = query.toString() ? `?${query.toString()}` : '';
+    return request(`/api/tasks${queryString}`);
+  },
+  createTask: (taskData) => request('/api/tasks', { method: 'POST', body: JSON.stringify(taskData) }),
+  toggleTask: (id, completed) => request(`/api/tasks/${id}/toggle`, { method: 'PATCH', body: JSON.stringify({ completed }) }),
+
+  // Messages
+  getMessages: (params = {}) => {
+    const query = new URLSearchParams();
+    if (params.clientId) query.append('clientId', params.clientId);
+    if (params.projectId) query.append('projectId', params.projectId);
+    const queryString = query.toString() ? `?${query.toString()}` : '';
+    return request(`/api/messages${queryString}`);
+  },
+  sendMessage: (msgData) => request('/api/messages', { method: 'POST', body: JSON.stringify(msgData) }),
+
+  // Team
+  getTeam: () => request('/api/team'),
+  getTeamActivities: () => request('/api/team/activities'),
 
   // Health
   checkHealth: () => request('/api/health')

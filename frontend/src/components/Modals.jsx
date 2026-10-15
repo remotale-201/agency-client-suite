@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 
-export function NewProjectModal({ isOpen, onClose, onSubmit, clients }) {
+export function NewProjectModal({ isOpen, onClose, onSubmit, clients = [], isClient = false, currentClient = null }) {
   const [title, setTitle] = useState('');
-  const [clientId, setClientId] = useState(clients[0]?.id || '');
+  const [clientId, setClientId] = useState(currentClient?.id || clients[0]?.id || '');
   const [description, setDescription] = useState('');
   const [deadline, setDeadline] = useState('');
   const [priority, setPriority] = useState('normal');
@@ -10,14 +10,16 @@ export function NewProjectModal({ isOpen, onClose, onSubmit, clients }) {
   const [staging, setStaging] = useState('');
   const [drive, setDrive] = useState('');
   const [deliverables, setDeliverables] = useState([
-    'Discovery & Design Architecture',
-    'Figma UI Design System',
-    'Core Frontend & Backend Implementation',
-    'Final QA & Live Deployment'
+    'Discovery & Requirements Definition',
+    'Design & Architecture Prototype',
+    'Core Development & Implementation',
+    'Production Deployment & Sign-off'
   ]);
   const [newDelivText, setNewDelivText] = useState('');
 
   if (!isOpen) return null;
+
+  const effectiveClientId = isClient ? (currentClient?.id || clientId) : (clientId || clients[0]?.id);
 
   const handleAddDeliverable = () => {
     if (!newDelivText.trim()) return;
@@ -31,11 +33,11 @@ export function NewProjectModal({ isOpen, onClose, onSubmit, clients }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!title.trim() || !clientId) return;
+    if (!title.trim() || !effectiveClientId) return;
 
     onSubmit({
       title,
-      clientId,
+      clientId: effectiveClientId,
       description,
       deadline,
       priority,
@@ -54,7 +56,7 @@ export function NewProjectModal({ isOpen, onClose, onSubmit, clients }) {
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h3>Create New Client Project</h3>
+          <h3>{isClient ? 'Submit New Project Request' : 'Create New Client Project'}</h3>
           <button className="btn btn-outline btn-sm" onClick={onClose}>
             ✕
           </button>
@@ -62,19 +64,36 @@ export function NewProjectModal({ isOpen, onClose, onSubmit, clients }) {
 
         <form onSubmit={handleSubmit}>
           <div className="modal-body">
-            <div className="form-group">
-              <label className="form-label">Client Company *</label>
-              <select 
-                className="form-select"
-                value={clientId}
-                onChange={(e) => setClientId(e.target.value)}
-                required
-              >
-                {clients.map(c => (
-                  <option key={c.id} value={c.id}>{c.company} ({c.name})</option>
-                ))}
-              </select>
-            </div>
+            {isClient ? (
+              <div className="form-group">
+                <label className="form-label">Client Workspace</label>
+                <div style={{
+                  padding: '10px 14px',
+                  background: 'var(--bg-surface-elevated)',
+                  borderRadius: 'var(--radius-md)',
+                  border: '1px solid var(--border-subtle)',
+                  fontSize: '13px',
+                  fontWeight: 700,
+                  color: 'var(--text-primary)'
+                }}>
+                  {currentClient?.company || 'Your Company Workspace'} ({currentClient?.name})
+                </div>
+              </div>
+            ) : (
+              <div className="form-group">
+                <label className="form-label">Client Company *</label>
+                <select 
+                  className="form-select"
+                  value={clientId || clients[0]?.id || ''}
+                  onChange={(e) => setClientId(e.target.value)}
+                  required
+                >
+                  {clients.map(c => (
+                    <option key={c.id} value={c.id}>{c.company} ({c.name})</option>
+                  ))}
+                </select>
+              </div>
+            )}
 
             <div className="form-group">
               <label className="form-label">Project Title *</label>
@@ -188,7 +207,7 @@ export function NewProjectModal({ isOpen, onClose, onSubmit, clients }) {
               Cancel
             </button>
             <button type="submit" className="btn btn-primary">
-              Create Project
+              {isClient ? 'Submit Project Request →' : 'Create Project'}
             </button>
           </div>
         </form>
@@ -269,9 +288,9 @@ export function NewClientModal({ isOpen, onClose, onSubmit }) {
 
             <div className="form-row-2col">
               <div className="form-group">
-                <label className="form-label">Client Login Email *</label>
+                <label className="form-label">Client Login Email / Username *</label>
                 <input
-                  type="email"
+                  type="text"
                   className="form-input"
                   placeholder="client@company.com"
                   value={email}

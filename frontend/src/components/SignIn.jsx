@@ -107,11 +107,11 @@ export default function SignIn({ onLogin, onRegister, initialPortalToken }) {
         {mode === 'signin' ? (
           <form onSubmit={handleSignInSubmit} className="signin-form">
             <div className="form-group">
-              <label className="form-label">Email or Portal ID</label>
+              <label className="form-label">Email / Username</label>
               <input
                 type="text"
                 className="form-input"
-                placeholder="name@company.com or portal-id"
+                placeholder="name@company.com or username"
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
                 required

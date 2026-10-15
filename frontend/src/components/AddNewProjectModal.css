@@ -1,0 +1,582 @@
+/* ==========================================================================
+   ADD NEW PROJECT MODAL - EXACT REPLICA OF USER SCREENSHOT
+   ========================================================================== */
+
+.anp-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  overflow-y: auto;
+  padding: 30px 16px;
+  animation: anpFadeIn 0.2s ease-out;
+}
+
+@keyframes anpFadeIn {
+  from { opacity: 0; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.anp-container {
+  width: 100%;
+  max-width: 820px;
+  background: #fbfcfe;
+  border-radius: 20px;
+  box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25);
+  padding: 24px 28px 36px;
+  color: #0f172a;
+  border: 1px solid #e2e8f0;
+  font-family: inherit;
+  margin: auto 0;
+}
+
+/* --------------------------------------------------------------------------
+   Top Bar
+   -------------------------------------------------------------------------- */
+.anp-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.anp-top-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.anp-back-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.anp-back-btn:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.anp-brand-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.anp-brand-name {
+  font-size: 18px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.4px;
+}
+
+.anp-user-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 12px 5px 6px;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+.anp-avatar-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #ddd6fe;
+  color: #6d28d9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 13px;
+}
+
+.anp-user-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.anp-user-name {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.anp-user-role {
+  font-size: 10.5px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+/* --------------------------------------------------------------------------
+   Hero Section
+   -------------------------------------------------------------------------- */
+.anp-hero-section {
+  margin-bottom: 24px;
+}
+
+.anp-hero-title {
+  font-size: 24px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 6px 0;
+  letter-spacing: -0.5px;
+}
+
+.anp-hero-sub {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Cards
+   -------------------------------------------------------------------------- */
+.anp-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.anp-card {
+  background: #ffffff;
+  border: 1px solid #edf2f7;
+  border-radius: 16px;
+  padding: 22px 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.anp-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.anp-card-header-between {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+.anp-card-icon-box {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: #ede9fe;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.anp-card-title {
+  font-size: 15.5px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 2px 0;
+}
+
+.anp-card-desc {
+  font-size: 12px;
+  color: #64748b;
+  margin: 0;
+}
+
+.anp-badge-secure {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #ede9fe;
+  color: #4f46e5;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+/* --------------------------------------------------------------------------
+   Form Fields
+   -------------------------------------------------------------------------- */
+.anp-field-group {
+  margin-bottom: 14px;
+}
+
+.anp-label {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 6px;
+}
+
+.anp-required {
+  color: #ef4444;
+  margin-left: 2px;
+}
+
+.anp-field-hint {
+  display: block;
+  font-size: 11px;
+  color: #64748b;
+  margin-top: 4px;
+}
+
+.anp-input {
+  width: 100%;
+  padding: 11px 14px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #0f172a;
+  font-size: 13.5px;
+  outline: none;
+  transition: all 0.15s ease;
+  box-sizing: border-box;
+}
+
+.anp-input:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+}
+
+.anp-input::placeholder {
+  color: #94a3b8;
+}
+
+.anp-select {
+  cursor: pointer;
+  appearance: auto;
+}
+
+.anp-textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #0f172a;
+  font-size: 13.5px;
+  outline: none;
+  transition: all 0.15s ease;
+  box-sizing: border-box;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 90px;
+}
+
+.anp-textarea:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+}
+
+.anp-char-count {
+  text-align: right;
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 4px;
+}
+
+.anp-input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.anp-input-left-icon {
+  position: absolute;
+  left: 12px;
+  font-size: 14px;
+  pointer-events: none;
+}
+
+.anp-input-with-icon .anp-input {
+  padding-left: 36px;
+}
+
+/* --------------------------------------------------------------------------
+   Project Type Cards Grid
+   -------------------------------------------------------------------------- */
+.anp-types-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+@media (max-width: 640px) {
+  .anp-types-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.anp-type-card {
+  position: relative;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 18px 12px 16px;
+  text-align: center;
+  cursor: pointer;
+  background: #ffffff;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.anp-type-card:hover {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+}
+
+.anp-type-card.selected {
+  border: 2px solid #4f46e5;
+  background: #fbfbfe;
+  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.12);
+}
+
+.anp-type-check-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #4f46e5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.anp-type-icon-wrapper {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.anp-type-card.selected .anp-type-icon-wrapper {
+  background: #ede9fe;
+}
+
+.anp-type-name {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 4px;
+}
+
+.anp-type-desc {
+  font-size: 11px;
+  color: #64748b;
+  line-height: 1.35;
+}
+
+/* --------------------------------------------------------------------------
+   Timeline & Priority Grid
+   -------------------------------------------------------------------------- */
+.anp-timeline-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 14px;
+}
+
+@media (max-width: 640px) {
+  .anp-timeline-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Credentials Row
+   -------------------------------------------------------------------------- */
+.anp-cred-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+@media (max-width: 640px) {
+  .anp-cred-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.anp-input-pw-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.anp-pw-eye-btn {
+  position: absolute;
+  right: 10px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.anp-btn-add-credential {
+  width: 100%;
+  background: #f5f3ff;
+  border: 1px dashed #c7d2fe;
+  border-radius: 10px;
+  padding: 10px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #4f46e5;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  margin-top: 6px;
+}
+
+.anp-btn-add-credential:hover {
+  background: #ede9fe;
+}
+
+/* --------------------------------------------------------------------------
+   Files & References Grid
+   -------------------------------------------------------------------------- */
+.anp-files-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+@media (max-width: 640px) {
+  .anp-files-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.anp-upload-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px dashed #cbd5e1;
+  border-radius: 12px;
+  padding: 22px 14px;
+  background: #f8fafc;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.anp-upload-box:hover {
+  border-color: #6366f1;
+  background: #f5f3ff;
+}
+
+.anp-upload-icon-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.anp-upload-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #4f46e5;
+  margin-bottom: 2px;
+}
+
+.anp-upload-desc {
+  font-size: 11px;
+  color: #64748b;
+  margin-bottom: 2px;
+}
+
+.anp-upload-hint {
+  font-size: 10px;
+  color: #94a3b8;
+}
+
+.anp-uploaded-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+  justify-content: center;
+}
+
+.anp-file-tag {
+  background: #ede9fe;
+  color: #4f46e5;
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+/* --------------------------------------------------------------------------
+   Submit Button
+   -------------------------------------------------------------------------- */
+.anp-submit-btn {
+  width: 100%;
+  background: #4f46e5;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  padding: 15px 24px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);
+}
+
+.anp-submit-btn:hover {
+  background: #4338ca;
+  box-shadow: 0 6px 20px rgba(79, 70, 229, 0.45);
+  transform: translateY(-1px);
+}
+
+.anp-submit-btn:active {
+  transform: translateY(0);
+}
+
+.anp-submit-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+}

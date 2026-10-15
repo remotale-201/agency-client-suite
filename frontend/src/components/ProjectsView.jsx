@@ -46,11 +46,9 @@ export default function ProjectsView({
           <span className="badge-count">{filteredProjects.length}</span>
         </div>
 
-        {isAdmin && (
-          <button className="btn btn-primary btn-sm" onClick={onOpenNewProject}>
-            + Create Project
-          </button>
-        )}
+        <button className="btn btn-primary btn-sm" onClick={onOpenNewProject}>
+          {isAdmin ? '+ Create Project' : '+ Add Project'}
+        </button>
       </div>
 
       {/* Filter and Search Bar */}
@@ -102,6 +100,13 @@ export default function ProjectsView({
           color: 'var(--text-muted)'
         }}>
           <p>No projects matched your criteria.</p>
+          <button 
+            className="btn btn-primary btn-sm" 
+            style={{ marginTop: '12px' }} 
+            onClick={onOpenNewProject}
+          >
+            {isAdmin ? '+ Create First Project' : '+ Submit First Project Request'}
+          </button>
         </div>
       ) : (
         <div className="projects-grid">
