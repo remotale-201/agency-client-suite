@@ -235,7 +235,30 @@ app.put('/api/projects/:id', async (req, res) => {
   try {
     const updated = await db.updateProject(req.params.id, req.body);
     if (!updated) return res.status(404).json({ error: 'Project not found' });
-    res.json(updated);
+    const tasks = await db.getTasks(null, updated.id);
+    res.json({ ...updated, tasks });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Dedicated Project Notepad endpoints
+app.get('/api/projects/:id/notepad', async (req, res) => {
+  try {
+    const proj = await db.getProjectById(req.params.id);
+    if (!proj) return res.status(404).json({ error: 'Project not found' });
+    res.json({ projectId: proj.id, content: proj.notes || '' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.put('/api/projects/:id/notepad', async (req, res) => {
+  try {
+    const { content } = req.body;
+    const updated = await db.updateProject(req.params.id, { notes: content });
+    if (!updated) return res.status(404).json({ error: 'Project not found' });
+    res.json({ projectId: updated.id, content: updated.notes || '' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

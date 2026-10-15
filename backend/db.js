@@ -536,12 +536,12 @@ async function initPostgresTables() {
             title = EXCLUDED.title,
             description = EXCLUDED.description,
             status = EXCLUDED.status,
-            progress = EXCLUDED.progress,
+            progress = COALESCE(projects.progress, EXCLUDED.progress),
             deadline = EXCLUDED.deadline,
             project_type = EXCLUDED.project_type,
             start_date = EXCLUDED.start_date,
             priority = EXCLUDED.priority,
-            notes = EXCLUDED.notes;
+            notes = COALESCE(NULLIF(projects.notes, ''), EXCLUDED.notes);
         `, [
           p.id,
           p.clientId,
@@ -571,8 +571,7 @@ async function initPostgresTables() {
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
             ON CONFLICT (id) DO UPDATE SET
               title = EXCLUDED.title,
-              due_date = EXCLUDED.due_date,
-              completed = EXCLUDED.completed;
+              due_date = EXCLUDED.due_date;
           `, [
             tId,
             p.id,
@@ -976,11 +975,26 @@ const db = {
       if (fields.length === 0) return null;
       values.push(id);
 
-      const res = await pgPool.query(
-        `UPDATE projects SET ${fields.join(', ')} WHERE id = $${i} RETURNING *`,
-        values
-      );
-      return res.rows[0] || null;
+      let pgUpdated = null;
+      try {
+        const res = await pgPool.query(
+          `UPDATE projects SET ${fields.join(', ')} WHERE id = $${i} RETURNING *`,
+          values
+        );
+        pgUpdated = res.rows[0] || null;
+      } catch (err) {
+        console.error('[DB updateProject PG Error]', err.message);
+      }
+
+      // Always mirror updates to local store as well
+      const local = readLocalStore();
+      const idx = (local.projects || []).findIndex(p => p.id === id);
+      if (idx !== -1) {
+        local.projects[idx] = { ...local.projects[idx], ...updates };
+        writeLocalStore(local);
+        if (!pgUpdated) pgUpdated = local.projects[idx];
+      }
+      return pgUpdated;
     }
 
     const local = readLocalStore();
@@ -997,7 +1011,6 @@ const db = {
     if (initPromise) await initPromise;
     if (isPostgres && pgPool) {
       await pgPool.query('DELETE FROM projects WHERE id = $1', [id]);
-      return true;
     }
     const local = readLocalStore();
     local.projects = (local.projects || []).filter(p => p.id !== id);
@@ -1039,48 +1052,90 @@ const db = {
 
   async addTask(taskObj) {
     if (initPromise) await initPromise;
+    let saved = null;
     if (isPostgres && pgPool) {
-      const res = await pgPool.query(
-        `INSERT INTO tasks (id, project_id, client_id, title, due_date, completed)
-         VALUES ($1, $2, $3, $4, $5, $6)
-         RETURNING *`,
-        [
-          taskObj.id || `task-${Date.now()}`,
-          taskObj.project_id || taskObj.projectId || null,
-          taskObj.client_id || taskObj.clientId || null,
-          taskObj.title,
-          taskObj.due_date || taskObj.dueDate || 'Oct 25, 2024',
-          Boolean(taskObj.completed)
-        ]
-      );
-      return res.rows[0];
+      try {
+        const res = await pgPool.query(
+          `INSERT INTO tasks (id, project_id, client_id, title, due_date, completed)
+           VALUES ($1, $2, $3, $4, $5, $6)
+           RETURNING *`,
+          [
+            taskObj.id || `task-${Date.now()}`,
+            taskObj.project_id || taskObj.projectId || null,
+            taskObj.client_id || taskObj.clientId || null,
+            taskObj.title,
+            taskObj.due_date || taskObj.dueDate || 'Oct 25, 2024',
+            Boolean(taskObj.completed)
+          ]
+        );
+        saved = res.rows[0];
+      } catch (e) {
+        console.error('[DB addTask PG Error]', e.message);
+      }
     }
 
     const local = readLocalStore();
     local.tasks = local.tasks || [];
-    local.tasks.unshift(taskObj);
+    local.tasks.unshift(saved || taskObj);
     writeLocalStore(local);
-    return taskObj;
+    return saved || taskObj;
   },
 
   async toggleTask(id, completed) {
     if (initPromise) await initPromise;
+    let updatedTask = null;
+
     if (isPostgres && pgPool) {
-      const res = await pgPool.query(
-        'UPDATE tasks SET completed = $1 WHERE id = $2 RETURNING *',
-        [completed, id]
-      );
-      return res.rows[0] || null;
+      try {
+        let q = '';
+        let params = [];
+        if (completed !== undefined) {
+          q = 'UPDATE tasks SET completed = $1 WHERE id = $2 RETURNING *';
+          params = [Boolean(completed), id];
+        } else {
+          q = 'UPDATE tasks SET completed = NOT completed WHERE id = $1 RETURNING *';
+          params = [id];
+        }
+        const res = await pgPool.query(q, params);
+        if (res.rows[0]) {
+          updatedTask = res.rows[0];
+          // Recalculate parent project's progress in PostgreSQL
+          if (updatedTask.project_id) {
+            const stats = await pgPool.query(
+              `SELECT COUNT(*)::int as total, COUNT(*) FILTER (WHERE completed = true)::int as done
+               FROM tasks WHERE project_id = $1`,
+              [updatedTask.project_id]
+            );
+            if (stats.rows[0] && stats.rows[0].total > 0) {
+              const pct = Math.round((stats.rows[0].done / stats.rows[0].total) * 100);
+              await pgPool.query('UPDATE projects SET progress = $1 WHERE id = $2', [pct, updatedTask.project_id]);
+            }
+          }
+        }
+      } catch (err) {
+        console.error('[DB toggleTask PG Error]', err.message);
+      }
     }
 
+    // Always mirror to local store as well
     const local = readLocalStore();
     const task = (local.tasks || []).find(t => t.id === id);
     if (task) {
-      task.completed = completed !== undefined ? completed : !task.completed;
+      task.completed = completed !== undefined ? Boolean(completed) : !task.completed;
+      if (!updatedTask) updatedTask = task;
+      // Also update project progress in local store
+      if (task.project_id) {
+        const projTasks = (local.tasks || []).filter(t => t.project_id === task.project_id);
+        const total = projTasks.length;
+        const done = projTasks.filter(t => t.completed).length;
+        const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+        const proj = (local.projects || []).find(p => p.id === task.project_id);
+        if (proj) proj.progress = pct;
+      }
       writeLocalStore(local);
-      return task;
     }
-    return null;
+
+    return updatedTask;
   },
 
   // Messages

@@ -236,14 +236,16 @@ export default function ProjectDetailWorkspace({
 
   const menuRef = useRef(null);
 
-  // Parse notes
+  // Parse notes and keep in sync with real-time updates from server
   useEffect(() => {
-    setNotesContent(
-      (project?.notes !== undefined && project?.notes !== null)
-        ? project.notes
-        : (project?.description || '')
-    );
-  }, [project]);
+    if (!isEditingNotes) {
+      setNotesContent(
+        (project?.notes !== undefined && project?.notes !== null)
+          ? project.notes
+          : (project?.description || '')
+      );
+    }
+  }, [project?.notes, project?.description, isEditingNotes]);
 
   // Click outside menu
   useEffect(() => {
@@ -295,8 +297,24 @@ export default function ProjectDetailWorkspace({
     ];
   }
 
-  // Real tasks list directly from database project.tasks
-  const currentTasks = (project?.tasks && project.tasks.length > 0) ? project.tasks : [];
+  // Real tasks list directly with optimistic local state for instant tick responsiveness
+  const [localTasks, setLocalTasks] = useState(() => (project?.tasks && project.tasks.length > 0) ? project.tasks : []);
+
+  useEffect(() => {
+    if (project?.tasks) {
+      setLocalTasks(project.tasks);
+    }
+  }, [project?.tasks]);
+
+  const handleToggleTaskInternal = (taskId, currentCompleted) => {
+    const nextCompleted = !currentCompleted;
+    // 1. Instant optimistic local UI update with 0 latency
+    setLocalTasks(prev => prev.map(t => t.id === taskId ? { ...t, completed: nextCompleted } : t));
+    // 2. Propagate to parent handler to sync to PostgreSQL and dashboard
+    if (onToggleTask) {
+      onToggleTask(taskId, currentCompleted);
+    }
+  };
 
   // Safe files list matching Image 2
   const filesList = [
@@ -902,21 +920,26 @@ export default function ProjectDetailWorkspace({
             )}
 
             <div className="pdw-tasks-list">
-              {currentTasks.length === 0 ? (
+              {localTasks.length === 0 ? (
                 <div style={{ padding: '24px 12px', textAlign: 'center', color: '#94a3b8', fontSize: '13px' }}>
                   No tasks recorded for this project yet. Click <strong>+ Add Task</strong> above.
                 </div>
               ) : (
-                currentTasks.map((t) => (
+                localTasks.map((t) => (
                   <div key={t.id} className="pdw-task-row">
                     <div className="pdw-task-left">
                       <input
                         type="checkbox"
                         className="pdw-task-checkbox"
                         checked={Boolean(t.completed)}
-                        onChange={() => onToggleTask && onToggleTask(t.id, t.completed)}
+                        onChange={() => handleToggleTaskInternal(t.id, t.completed)}
                       />
-                      <span className={`pdw-task-title ${t.completed ? 'completed' : ''}`}>
+                      <span
+                        className={`pdw-task-title ${t.completed ? 'completed' : ''}`}
+                        onClick={() => handleToggleTaskInternal(t.id, t.completed)}
+                        style={{ cursor: 'pointer' }}
+                        title="Click to toggle completion"
+                      >
                         {t.title}
                       </span>
                     </div>

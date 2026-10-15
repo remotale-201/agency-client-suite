@@ -200,6 +200,10 @@ export default function RemotaleDashboard({ user, onLogout }) {
 
   // Selected Project for Detail View (Image 2)
   const [selectedProject, setSelectedProject] = useState(null);
+  const selectedProjectRef = useRef(selectedProject);
+  useEffect(() => {
+    selectedProjectRef.current = selectedProject;
+  }, [selectedProject]);
 
   // Project to Edit in Modal
   const [projectToEdit, setProjectToEdit] = useState(null);
@@ -277,7 +281,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [isAddingTask, setIsAddingTask] = useState(false);
 
-  // Fetch all real database data
+  // Fetch all real database data with real-time sync
   const loadData = async () => {
     try {
       const [statsRes, projsRes, tasksRes, msgsRes, clientsRes, actsRes] = await Promise.all([
@@ -296,9 +300,10 @@ export default function RemotaleDashboard({ user, onLogout }) {
       setClients(clientsRes || []);
       setTeamActivities(actsRes || []);
 
-      // If a project is selected, update its reference
-      if (selectedProject) {
-        const found = (projsRes || []).find(p => p.id === selectedProject.id);
+      // If a project is currently open in detail view, keep it synchronized in real-time
+      const currentSelected = selectedProjectRef.current;
+      if (currentSelected) {
+        const found = (projsRes || []).find(p => p.id === currentSelected.id);
         if (found) {
           const projTasks = (tasksRes || []).filter(t => t.project_id === found.id);
           setSelectedProject({ ...found, tasks: projTasks });
@@ -313,7 +318,8 @@ export default function RemotaleDashboard({ user, onLogout }) {
 
   useEffect(() => {
     loadData();
-    const interval = setInterval(loadData, 10000);
+    // Fast 3-second real-time sync between Client & Admin
+    const interval = setInterval(loadData, 3000);
     return () => clearInterval(interval);
   }, []);
 
@@ -385,8 +391,11 @@ export default function RemotaleDashboard({ user, onLogout }) {
   // Handle Add Task inside Project Detail View
   const handleAddTaskInDetail = async ({ projectId, title, dueDate }) => {
     try {
+      const targetProjId = projectId || selectedProject?.id;
+      const targetClientId = selectedProject?.client_id || selectedProject?.clientId;
       const created = await api.createTask({
-        projectId: projectId || selectedProject?.id,
+        projectId: targetProjId,
+        clientId: targetClientId,
         title,
         dueDate: dueDate || 'Oct 25, 2024'
       });
@@ -397,19 +406,62 @@ export default function RemotaleDashboard({ user, onLogout }) {
           tasks: [...(prev.tasks || []), created]
         }));
       }
+      setProjects(prev => prev.map(p => p.id === targetProjId ? {
+        ...p,
+        tasks: [...(p.tasks || []), created]
+      } : p));
       await loadData();
     } catch (err) {
       console.error('Error adding task:', err);
     }
   };
 
-  // Handle Task Toggle -> updates PostgreSQL 'tasks' table
+  // Handle Task Toggle -> updates PostgreSQL 'tasks' table and all local state optimistically
   const handleToggleTask = async (taskId, currentCompleted) => {
+    const nextCompleted = !currentCompleted;
+
+    // 1. Optimistically update tasks state
+    setTasks(prev => prev.map(t => t.id === taskId ? { ...t, completed: nextCompleted } : t));
+
+    // 2. Optimistically update selectedProject state and recalculate progress percentage
+    setSelectedProject(prev => {
+      if (!prev) return null;
+      const updatedTasks = (prev.tasks || []).map(t => t.id === taskId ? { ...t, completed: nextCompleted } : t);
+      const total = updatedTasks.length;
+      const done = updatedTasks.filter(t => t.completed).length;
+      const newProgress = total > 0 ? Math.round((done / total) * 100) : prev.progress;
+      return {
+        ...prev,
+        progress: newProgress,
+        tasks: updatedTasks
+      };
+    });
+
+    // 3. Optimistically update projects state with new tasks & progress
+    setProjects(prev => prev.map(p => {
+      const hasTask = (p.tasks || []).some(t => t.id === taskId);
+      if (!hasTask) return p;
+      const updatedTasks = (p.tasks || []).map(t => t.id === taskId ? { ...t, completed: nextCompleted } : t);
+      const total = updatedTasks.length;
+      const done = updatedTasks.filter(t => t.completed).length;
+      const newProgress = total > 0 ? Math.round((done / total) * 100) : p.progress;
+      return {
+        ...p,
+        progress: newProgress,
+        tasks: updatedTasks
+      };
+    }));
+
+    // 4. Send to backend database
     try {
-      const updated = await api.toggleTask(taskId, !currentCompleted);
-      setTasks(prev => prev.map(t => t.id === taskId ? { ...t, completed: !currentCompleted } : t));
+      await api.toggleTask(taskId, nextCompleted);
+      // Soft sync in background
+      api.getProjects().then(setProjects).catch(() => {});
+      api.getTasks().then(setTasks).catch(() => {});
     } catch (err) {
       console.error('Error toggling task:', err);
+      // Revert if error
+      loadData();
     }
   };
 
