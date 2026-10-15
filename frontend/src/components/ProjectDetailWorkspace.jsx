@@ -551,9 +551,9 @@ export default function ProjectDetailWorkspace({
           </div>
 
           <div className="pdw-hero-info">
-            <div className="pdw-status-pill">
+            <div className={`pdw-status-pill ${calculatedProgress >= 100 || project?.status === 'completed' ? 'completed' : (project?.status || 'in-progress')}`}>
               <span className="pdw-status-dot" />
-              <span>In Progress</span>
+              <span>{calculatedProgress >= 100 || project?.status === 'completed' ? 'Completed' : (project?.status === 'under-review' ? 'Under Review' : 'In Progress')}</span>
             </div>
 
             <h1 className="pdw-hero-title">{project?.title || 'E-commerce Website'}</h1>

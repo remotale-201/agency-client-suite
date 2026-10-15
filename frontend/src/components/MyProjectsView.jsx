@@ -143,16 +143,17 @@ export default function MyProjectsView({
 
   // Compute counts
   const totalCount = projects.length;
-  const inProgressCount = projects.filter(p => p.status === 'in-progress').length;
+  const inProgressCount = projects.filter(p => p.status === 'in-progress' && Number(p.progress || 0) < 100).length;
   const underReviewCount = projects.filter(p => p.status === 'under-review').length;
-  const completedCount = projects.filter(p => p.status === 'completed').length;
+  const completedCount = projects.filter(p => p.status === 'completed' || Number(p.progress || 0) >= 100).length;
 
   // Filter projects
   const filteredProjects = projects.filter(p => {
+    const isCompleted = p.status === 'completed' || Number(p.progress || 0) >= 100;
     // Tab filter
-    if (activeFilter === 'in-progress' && p.status !== 'in-progress') return false;
+    if (activeFilter === 'in-progress' && (p.status !== 'in-progress' || isCompleted)) return false;
     if (activeFilter === 'under-review' && p.status !== 'under-review') return false;
-    if (activeFilter === 'completed' && p.status !== 'completed') return false;
+    if (activeFilter === 'completed' && !isCompleted) return false;
 
     // Search filter
     if (searchTerm.trim()) {
@@ -224,14 +225,15 @@ export default function MyProjectsView({
   };
 
   // Status Badge Resolver
-  const renderStatusBadge = (status) => {
+  const renderStatusBadge = (status, progress) => {
+    if (status === 'completed' || Number(progress || 0) >= 100) {
+      return <span className="my-project-status-badge status-completed">Completed</span>;
+    }
     switch (status) {
       case 'in-progress':
         return <span className="my-project-status-badge status-in-progress">In Progress</span>;
       case 'under-review':
         return <span className="my-project-status-badge status-under-review">Under Review</span>;
-      case 'completed':
-        return <span className="my-project-status-badge status-completed">Completed</span>;
       default:
         return <span className="my-project-status-badge status-pending">Pending</span>;
     }
@@ -400,7 +402,7 @@ export default function MyProjectsView({
                       <span className={`my-project-cat-badge ${meta.className}`}>
                         {meta.label}
                       </span>
-                      {renderStatusBadge(proj.status)}
+                      {renderStatusBadge(proj.status, proj.progress)}
                       {clientName && (
                         <span className="my-project-client-badge">
                           👤 {clientName}

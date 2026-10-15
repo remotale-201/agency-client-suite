@@ -181,11 +181,11 @@ const realProjects = [
     description: 'In Process.',
     notes: 'In Process.',
     projectType: 'Graphics',
-    status: 'in-progress',
+    status: 'completed',
     priority: 'Urgent',
     deadline: '16/10/2026',
     startDate: '15/10/2026',
-    progress: 25,
+    progress: 100,
     tasks: [
       { title: '25% Done', completed: true },
       { title: '50% Done', completed: false },
@@ -628,6 +628,11 @@ async function initPostgresTables() {
         ALTER TABLE invoices ADD COLUMN IF NOT EXISTS client_email VARCHAR(255);
       `);
 
+      // Automatically mark projects with >= 100% progress as completed
+      await client.query(`
+        UPDATE projects SET status = 'completed', progress = 100 WHERE progress >= 100 AND status != 'completed';
+      `);
+
       console.log('[Neon DB] Tables verified with clean database state & credentials.');
     } finally {
       client.release();
@@ -855,7 +860,12 @@ const db = {
     if (isPostgres && pgPool) {
       try {
         let query = `
-          SELECT p.*, u.name as "clientName", u.company as "companyName", u.avatar as "clientAvatar"
+          SELECT p.id, p.client_id, p.title, p.description, p.budget, p.deadline,
+                 p.project_type, p.start_date, p.priority, p.credentials, p.reference_link,
+                 p.notes, p.created_at, p.files,
+                 p.progress,
+                 CASE WHEN p.progress >= 100 THEN 'completed' ELSE p.status END as status,
+                 u.name as "clientName", u.company as "companyName", u.avatar as "clientAvatar"
           FROM projects p
           LEFT JOIN users u ON u.id = p.client_id
         `;
@@ -893,14 +903,22 @@ const db = {
     if (clientId) {
       projs = projs.filter(p => p.client_id === clientId || p.clientId === clientId);
     }
-    return projs;
+    return projs.map(p => ({
+      ...p,
+      status: Number(p.progress) >= 100 ? 'completed' : p.status
+    }));
   },
 
   async getProjectById(id) {
     if (initPromise) await initPromise;
     if (isPostgres && pgPool) {
       const res = await pgPool.query(`
-        SELECT p.*, u.name as "clientName", u.company as "companyName", u.avatar as "clientAvatar"
+        SELECT p.id, p.client_id, p.title, p.description, p.budget, p.deadline,
+               p.project_type, p.start_date, p.priority, p.credentials, p.reference_link,
+               p.notes, p.created_at, p.files,
+               p.progress,
+               CASE WHEN p.progress >= 100 THEN 'completed' ELSE p.status END as status,
+               u.name as "clientName", u.company as "companyName", u.avatar as "clientAvatar"
         FROM projects p
         LEFT JOIN users u ON u.id = p.client_id
         WHERE p.id = $1
@@ -908,7 +926,12 @@ const db = {
       return res.rows[0] || null;
     }
     const local = readLocalStore();
-    return (local.projects || []).find(p => p.id === id) || null;
+    const found = (local.projects || []).find(p => p.id === id);
+    if (!found) return null;
+    return {
+      ...found,
+      status: Number(found.progress) >= 100 ? 'completed' : found.status
+    };
   },
 
   async addProject(projectObj) {
@@ -950,6 +973,15 @@ const db = {
 
   async updateProject(id, updates) {
     if (initPromise) await initPromise;
+    // Auto mark completed when progress is 100%
+    if (Number(updates.progress) >= 100 && (!updates.status || updates.status === 'in-progress')) {
+      updates.status = 'completed';
+      updates.progress = 100;
+    }
+    if (updates.status === 'completed' && updates.progress === undefined) {
+      updates.progress = 100;
+    }
+
     if (isPostgres && pgPool) {
       const fields = [];
       const values = [];
@@ -1144,7 +1176,11 @@ const db = {
             );
             if (stats.rows[0] && stats.rows[0].total > 0) {
               const pct = Math.round((stats.rows[0].done / stats.rows[0].total) * 100);
-              await pgPool.query('UPDATE projects SET progress = $1 WHERE id = $2', [pct, updatedTask.project_id]);
+              if (pct >= 100) {
+                await pgPool.query("UPDATE projects SET progress = 100, status = 'completed' WHERE id = $1", [updatedTask.project_id]);
+              } else {
+                await pgPool.query("UPDATE projects SET progress = $1, status = CASE WHEN status = 'completed' THEN 'in-progress' ELSE status END WHERE id = $2", [pct, updatedTask.project_id]);
+              }
             }
           }
         }
@@ -1166,7 +1202,15 @@ const db = {
         const done = projTasks.filter(t => t.completed).length;
         const pct = total > 0 ? Math.round((done / total) * 100) : 0;
         const proj = (local.projects || []).find(p => p.id === task.project_id);
-        if (proj) proj.progress = pct;
+        if (proj) {
+          proj.progress = pct;
+          if (pct >= 100) {
+            proj.status = 'completed';
+            proj.progress = 100;
+          } else if (proj.status === 'completed') {
+            proj.status = 'in-progress';
+          }
+        }
       }
       writeLocalStore(local);
     }
@@ -1252,9 +1296,9 @@ const db = {
       if (clientId) {
         const [projCount, inProg, underRev, comp, rev] = await Promise.all([
           pgPool.query("SELECT COUNT(*)::int as count FROM projects WHERE client_id = $1", [clientId]),
-          pgPool.query("SELECT COUNT(*)::int as count FROM projects WHERE client_id = $1 AND status = 'in-progress'", [clientId]),
+          pgPool.query("SELECT COUNT(*)::int as count FROM projects WHERE client_id = $1 AND (status = 'in-progress' AND (progress IS NULL OR progress < 100))", [clientId]),
           pgPool.query("SELECT COUNT(*)::int as count FROM projects WHERE client_id = $1 AND status = 'under-review'", [clientId]),
-          pgPool.query("SELECT COUNT(*)::int as count FROM projects WHERE client_id = $1 AND status = 'completed'", [clientId]),
+          pgPool.query("SELECT COUNT(*)::int as count FROM projects WHERE client_id = $1 AND (status = 'completed' OR progress >= 100)", [clientId]),
           pgPool.query("SELECT COALESCE(SUM(budget), 0)::numeric as total FROM projects WHERE client_id = $1", [clientId])
         ]);
 
@@ -1271,9 +1315,9 @@ const db = {
       const [clientsCount, projCount, inProg, underRev, comp, rev] = await Promise.all([
         pgPool.query("SELECT COUNT(*)::int as count FROM users WHERE role = 'client'"),
         pgPool.query("SELECT COUNT(*)::int as count FROM projects"),
-        pgPool.query("SELECT COUNT(*)::int as count FROM projects WHERE status = 'in-progress'"),
+        pgPool.query("SELECT COUNT(*)::int as count FROM projects WHERE (status = 'in-progress' AND (progress IS NULL OR progress < 100))"),
         pgPool.query("SELECT COUNT(*)::int as count FROM projects WHERE status = 'under-review'"),
-        pgPool.query("SELECT COUNT(*)::int as count FROM projects WHERE status = 'completed'"),
+        pgPool.query("SELECT COUNT(*)::int as count FROM projects WHERE (status = 'completed' OR progress >= 100)"),
         pgPool.query("SELECT COALESCE(SUM(budget), 0)::numeric as total FROM projects")
       ]);
 
@@ -1288,15 +1332,18 @@ const db = {
     }
 
     const local = readLocalStore();
-    let projects = local.projects || [];
+    let projects = (local.projects || []).map(p => {
+      const is100 = Number(p.progress) >= 100;
+      return is100 ? { ...p, status: 'completed', progress: 100 } : p;
+    });
     if (clientId) {
       projects = projects.filter(p => p.client_id === clientId || p.clientId === clientId);
       return {
         totalClients: 1,
         totalProjects: projects.length,
-        inProgress: projects.filter(p => p.status === 'in-progress').length,
+        inProgress: projects.filter(p => p.status === 'in-progress' && Number(p.progress || 0) < 100).length,
         underReview: projects.filter(p => p.status === 'under-review').length,
-        completed: projects.filter(p => p.status === 'completed').length,
+        completed: projects.filter(p => p.status === 'completed' || Number(p.progress || 0) >= 100).length,
         totalRevenue: projects.reduce((s, p) => s + (Number(p.budget) || 0), 0)
       };
     }
@@ -1304,9 +1351,9 @@ const db = {
     return {
       totalClients: (local.users || []).filter(u => u.role === 'client').length,
       totalProjects: projects.length,
-      inProgress: projects.filter(p => p.status === 'in-progress').length,
+      inProgress: projects.filter(p => p.status === 'in-progress' && Number(p.progress || 0) < 100).length,
       underReview: projects.filter(p => p.status === 'under-review').length,
-      completed: projects.filter(p => p.status === 'completed').length,
+      completed: projects.filter(p => p.status === 'completed' || Number(p.progress || 0) >= 100).length,
       totalRevenue: projects.reduce((s, p) => s + (Number(p.budget) || 0), 0)
     };
   },

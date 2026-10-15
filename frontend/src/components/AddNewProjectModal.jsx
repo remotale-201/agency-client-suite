@@ -223,8 +223,8 @@ export default function AddNewProjectModal({
         startDate,
         deadline,
         priority,
-        status,
-        progress: Number(progress),
+        status: (Number(progress) >= 100 || status === 'completed') ? 'completed' : status,
+        progress: (Number(progress) >= 100 || status === 'completed') ? 100 : Number(progress),
         credentials: credentialsList.filter(c => (c.platform && c.platform.trim()) || (c.username && c.username.trim()) || (c.password && c.password.trim())),
         referenceLink: referenceLink.trim(),
         notes: notes.trim()

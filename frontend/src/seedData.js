@@ -143,16 +143,16 @@ export const SEED_PROJECTS = [
     description: 'In Process.',
     notes: 'In Process.',
     project_type: 'Graphics',
-    status: 'in-progress',
+    status: 'completed',
     priority: 'Urgent',
     deadline: '16/10/2026',
     startDate: '15/10/2026',
-    progress: 25,
+    progress: 100,
     tasks: [
       { id: 't-33', title: '25% Done', completed: true },
-      { id: 't-34', title: '50% Done', completed: false },
-      { id: 't-35', title: '75% Done', completed: false },
-      { id: 't-36', title: '100% Done', completed: false }
+      { id: 't-34', title: '50% Done', completed: true },
+      { id: 't-35', title: '75% Done', completed: true },
+      { id: 't-36', title: '100% Done', completed: true }
     ]
   },
   {

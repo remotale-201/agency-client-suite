@@ -186,6 +186,24 @@
   background: #4f46e5;
 }
 
+.pdw-status-pill.completed {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.pdw-status-pill.completed .pdw-status-dot {
+  background: #16a34a;
+}
+
+.pdw-status-pill.under-review {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.pdw-status-pill.under-review .pdw-status-dot {
+  background: #d97706;
+}
+
 .pdw-hero-title {
   font-size: 24px;
   font-weight: 800;

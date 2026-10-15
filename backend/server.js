@@ -172,14 +172,24 @@ app.get('/api/projects', async (req, res) => {
   try {
     const { clientId, status } = req.query;
     let projects = await db.getProjects(clientId);
+    const allTasks = await db.getTasks(clientId);
+    projects = projects.map(p => {
+      const pTasks = allTasks.filter(t => t.project_id === p.id);
+      const total = pTasks.length;
+      const done = pTasks.filter(t => t.completed).length;
+      const taskPct = total > 0 ? Math.round((done / total) * 100) : null;
+      const pct = taskPct !== null ? taskPct : (Number(p.progress) || 0);
+      const isCompleted = pct >= 100 || (total > 0 && done === total) || p.status === 'completed';
+      return {
+        ...p,
+        progress: isCompleted ? 100 : pct,
+        status: isCompleted ? 'completed' : p.status,
+        tasks: pTasks
+      };
+    });
     if (status) {
       projects = projects.filter(p => p.status === status);
     }
-    const allTasks = await db.getTasks(clientId);
-    projects = projects.map(p => ({
-      ...p,
-      tasks: allTasks.filter(t => t.project_id === p.id)
-    }));
     res.json(projects);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -191,7 +201,17 @@ app.get('/api/projects/:id', async (req, res) => {
     const project = await db.getProjectById(req.params.id);
     if (!project) return res.status(404).json({ error: 'Project not found' });
     const tasks = await db.getTasks(null, project.id);
-    res.json({ ...project, tasks });
+    const total = tasks.length;
+    const done = tasks.filter(t => t.completed).length;
+    const taskPct = total > 0 ? Math.round((done / total) * 100) : null;
+    const pct = taskPct !== null ? taskPct : (Number(project.progress) || 0);
+    const isCompleted = pct >= 100 || (total > 0 && done === total) || project.status === 'completed';
+    res.json({
+      ...project,
+      progress: isCompleted ? 100 : pct,
+      status: isCompleted ? 'completed' : project.status,
+      tasks
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -207,13 +227,16 @@ app.post('/api/projects', async (req, res) => {
       return res.status(400).json({ error: 'Project title is required' });
     }
 
+    const numProgress = Number(progress);
+    const isCompleted = numProgress >= 100 || status === 'completed';
+
     const newProject = {
       id: `proj-${Date.now()}`,
       client_id: clientId || 'client-1',
       title: title.trim(),
       description: description || '',
-      status: status || 'in-progress',
-      progress: Number(progress) || (status === 'completed' ? 100 : (status === 'under-review' ? 90 : 70)),
+      status: isCompleted ? 'completed' : (status || 'in-progress'),
+      progress: isCompleted ? 100 : (Number.isFinite(numProgress) ? numProgress : (status === 'under-review' ? 90 : 70)),
       budget: Number(budget) || 0,
       deadline: deadline || 'Oct 31, 2024',
       project_type: projectType || 'Web Development',
@@ -233,10 +256,25 @@ app.post('/api/projects', async (req, res) => {
 
 app.put('/api/projects/:id', async (req, res) => {
   try {
-    const updated = await db.updateProject(req.params.id, req.body);
+    const updates = { ...req.body };
+    if (Number(updates.progress) >= 100 && (!updates.status || updates.status === 'in-progress')) {
+      updates.status = 'completed';
+      updates.progress = 100;
+    }
+    const updated = await db.updateProject(req.params.id, updates);
     if (!updated) return res.status(404).json({ error: 'Project not found' });
     const tasks = await db.getTasks(null, updated.id);
-    res.json({ ...updated, tasks });
+    const total = tasks.length;
+    const done = tasks.filter(t => t.completed).length;
+    const taskPct = total > 0 ? Math.round((done / total) * 100) : null;
+    const pct = taskPct !== null ? taskPct : (Number(updated.progress) || 0);
+    const isCompleted = pct >= 100 || (total > 0 && done === total) || updated.status === 'completed';
+    res.json({
+      ...updated,
+      progress: isCompleted ? 100 : pct,
+      status: isCompleted ? 'completed' : updated.status,
+      tasks
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

@@ -296,7 +296,15 @@ export default function RemotaleDashboard({ user, onLogout }) {
         setStats(statsRes);
       }
       if (Array.isArray(projsRes) && projsRes.length > 0) {
-        setProjects(projsRes);
+        const mappedProjs = projsRes.map(p => {
+          const is100 = Number(p.progress) >= 100;
+          return {
+            ...p,
+            progress: is100 ? 100 : p.progress,
+            status: is100 ? 'completed' : p.status
+          };
+        });
+        setProjects(mappedProjs);
       }
       if (Array.isArray(tasksRes) && tasksRes.length > 0) {
         setTasks(tasksRes);
@@ -320,7 +328,13 @@ export default function RemotaleDashboard({ user, onLogout }) {
         const found = projsRes.find(p => p.id === currentSelected.id);
         if (found) {
           const projTasks = Array.isArray(tasksRes) ? tasksRes.filter(t => t.project_id === found.id) : (found.tasks || []);
-          setSelectedProject({ ...found, tasks: projTasks });
+          const is100 = Number(found.progress) >= 100;
+          setSelectedProject({
+            ...found,
+            progress: is100 ? 100 : found.progress,
+            status: is100 ? 'completed' : found.status,
+            tasks: projTasks
+          });
         }
       }
     } catch (err) {
@@ -340,8 +354,11 @@ export default function RemotaleDashboard({ user, onLogout }) {
   // Handle New Project Creation -> saves to PostgreSQL 'projects' table
   const handleCreateProject = async (projectData) => {
     try {
+      const is100 = Number(projectData.progress) >= 100;
       const payload = {
         ...projectData,
+        status: is100 ? 'completed' : (projectData.status || 'in-progress'),
+        progress: is100 ? 100 : Number(projectData.progress),
         clientId: !isRealAdmin ? (user?.id || 'client-awais') : (projectData.clientId || effectiveClientId || 'client-awais')
       };
       const created = await api.createProject(payload);
@@ -372,7 +389,12 @@ export default function RemotaleDashboard({ user, onLogout }) {
   };
 
   // Handle Project Update -> updates in PostgreSQL and state
-  const handleUpdateProject = async (projectId, updates) => {
+  const handleUpdateProject = async (projectId, rawUpdates) => {
+    const updates = { ...rawUpdates };
+    if (Number(updates.progress) >= 100 && (!updates.status || updates.status === 'in-progress')) {
+      updates.status = 'completed';
+      updates.progress = 100;
+    }
     // Optimistic local state update for instant UI feedback
     setProjects(prev => prev.map(p => p.id === projectId ? { ...p, ...updates } : p));
     if (selectedProject?.id === projectId) {
@@ -513,9 +535,12 @@ export default function RemotaleDashboard({ user, onLogout }) {
       const total = updatedTasks.length;
       const done = updatedTasks.filter(t => t.completed).length;
       const newProgress = total > 0 ? Math.round((done / total) * 100) : prev.progress;
+      const isCompleted = newProgress >= 100 || (total > 0 && done === total);
+      const newStatus = isCompleted ? 'completed' : (prev.status === 'completed' ? 'in-progress' : prev.status);
       return {
         ...prev,
-        progress: newProgress,
+        progress: isCompleted ? 100 : newProgress,
+        status: newStatus,
         tasks: updatedTasks
       };
     });
@@ -528,9 +553,12 @@ export default function RemotaleDashboard({ user, onLogout }) {
       const total = updatedTasks.length;
       const done = updatedTasks.filter(t => t.completed).length;
       const newProgress = total > 0 ? Math.round((done / total) * 100) : p.progress;
+      const isCompleted = newProgress >= 100 || (total > 0 && done === total);
+      const newStatus = isCompleted ? 'completed' : (p.status === 'completed' ? 'in-progress' : p.status);
       return {
         ...p,
-        progress: newProgress,
+        progress: isCompleted ? 100 : newProgress,
+        status: newStatus,
         tasks: updatedTasks
       };
     }));
@@ -1123,7 +1151,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
               </div>
             </div>
             <div>
-              <div className="remotale-stat-val">{visibleProjects.filter(p => p.status === 'in-progress').length}</div>
+              <div className="remotale-stat-val">{visibleProjects.filter(p => p.status === 'in-progress' && Number(p.progress || 0) < 100).length}</div>
               <div className="remotale-stat-lbl">In Progress</div>
             </div>
           </div>
@@ -1149,7 +1177,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
               </div>
             </div>
             <div>
-              <div className="remotale-stat-val">{visibleProjects.filter(p => p.status === 'completed').length}</div>
+              <div className="remotale-stat-val">{visibleProjects.filter(p => p.status === 'completed' || Number(p.progress || 0) >= 100).length}</div>
               <div className="remotale-stat-lbl">Completed</div>
             </div>
           </div>
@@ -1197,8 +1225,8 @@ export default function RemotaleDashboard({ user, onLogout }) {
                     <div className="remotale-proj-title-row">
                       <span className="remotale-proj-title">{proj.title}</span>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span className={`remotale-status-pill ${proj.status}`}>
-                          {proj.status === 'in-progress' ? 'In Progress' : (proj.status === 'under-review' ? 'Under Review' : 'Completed')}
+                        <span className={`remotale-status-pill ${(proj.status === 'completed' || Number(proj.progress) >= 100) ? 'completed' : proj.status}`}>
+                          {(proj.status === 'completed' || Number(proj.progress) >= 100) ? 'Completed' : (proj.status === 'under-review' ? 'Under Review' : 'In Progress')}
                         </span>
                         {renderProjectDotsMenu(proj)}
                       </div>
@@ -1714,7 +1742,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
               </div>
             </div>
             <div>
-              <div className="remotale-stat-val">{stats.inProgress || visibleProjects.filter(p => p.status === 'in-progress').length || 10}</div>
+              <div className="remotale-stat-val">{stats.inProgress || visibleProjects.filter(p => p.status === 'in-progress' && Number(p.progress || 0) < 100).length || 0}</div>
               <div className="remotale-stat-lbl">In Progress</div>
             </div>
           </div>
@@ -1727,7 +1755,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
               </div>
             </div>
             <div>
-              <div className="remotale-stat-val">{stats.completed || visibleProjects.filter(p => p.status === 'completed').length || 0}</div>
+              <div className="remotale-stat-val">{stats.completed || visibleProjects.filter(p => p.status === 'completed' || Number(p.progress || 0) >= 100).length || 0}</div>
               <div className="remotale-stat-lbl">Completed</div>
             </div>
           </div>
@@ -1775,8 +1803,8 @@ export default function RemotaleDashboard({ user, onLogout }) {
                   </div>
 
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span className={`remotale-status-pill ${proj.status}`}>
-                      {proj.status === 'in-progress' ? 'In Progress' : (proj.status === 'under-review' ? 'Under Review' : 'Completed')}
+                    <span className={`remotale-status-pill ${(proj.status === 'completed' || Number(proj.progress) >= 100) ? 'completed' : proj.status}`}>
+                      {(proj.status === 'completed' || Number(proj.progress) >= 100) ? 'Completed' : (proj.status === 'under-review' ? 'Under Review' : 'In Progress')}
                     </span>
                     {renderProjectDotsMenu(proj)}
                   </div>
@@ -2299,7 +2327,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
                 <PulseIcon size={14} color="#16A34A" />
               </div>
               <div>
-                <div style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>{stats.inProgress || projects.filter(p=>p.status==='in-progress').length}</div>
+                <div style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>{stats.inProgress || projects.filter(p => p.status === 'in-progress' && Number(p.progress || 0) < 100).length}</div>
                 <div style={{ fontSize: '9.5px', color: '#64748b', marginTop: '2px' }}>In Progress</div>
                 <span className="remotale-stat-growth-pill" style={{ fontSize: '9px', padding: '1px 4px' }}>↑ +8%</span>
               </div>
@@ -2311,7 +2339,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
                 <CheckmarkIcon size={14} color="#16A34A" />
               </div>
               <div>
-                <div style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>{stats.completed || projects.filter(p=>p.status==='completed').length}</div>
+                <div style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>{stats.completed || projects.filter(p => p.status === 'completed' || Number(p.progress || 0) >= 100).length}</div>
                 <div style={{ fontSize: '9.5px', color: '#64748b', marginTop: '2px' }}>Completed</div>
                 <span className="remotale-stat-growth-pill" style={{ fontSize: '9px', padding: '1px 4px' }}>↑ +40%</span>
               </div>
@@ -2386,8 +2414,8 @@ export default function RemotaleDashboard({ user, onLogout }) {
                       </div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <span className={`remotale-status-pill ${p.status}`} style={{ fontSize: '10px', padding: '2px 8px' }}>
-                        {p.status === 'in-progress' ? 'In Progress' : (p.status === 'under-review' ? 'Under Review' : 'Completed')}
+                      <span className={`remotale-status-pill ${(p.status === 'completed' || Number(p.progress) >= 100) ? 'completed' : p.status}`} style={{ fontSize: '10px', padding: '2px 8px' }}>
+                        {(p.status === 'completed' || Number(p.progress) >= 100) ? 'Completed' : (p.status === 'under-review' ? 'Under Review' : 'In Progress')}
                       </span>
                       {renderProjectDotsMenu(p)}
                     </div>
@@ -3010,7 +3038,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
                 <div className="remotale-stat-icon-box blue" style={{ width: '28px', height: '28px' }}>
                   <TargetIcon size={14} color="#2563EB" />
                 </div>
-                <div style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>{visibleProjects.filter(p => p.status === 'in-progress').length}</div>
+                <div style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>{visibleProjects.filter(p => p.status === 'in-progress' && Number(p.progress || 0) < 100).length}</div>
                 <div style={{ fontSize: '9px', color: '#64748b' }}>In Progress</div>
               </div>
 
@@ -3026,7 +3054,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
                 <div className="remotale-stat-icon-box green" style={{ width: '28px', height: '28px' }}>
                   <CheckmarkIcon size={14} color="#16A34A" />
                 </div>
-                <div style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>{visibleProjects.filter(p => p.status === 'completed').length}</div>
+                <div style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>{visibleProjects.filter(p => p.status === 'completed' || Number(p.progress || 0) >= 100).length}</div>
                 <div style={{ fontSize: '9px', color: '#64748b' }}>Done</div>
               </div>
             </div>
@@ -3088,8 +3116,8 @@ export default function RemotaleDashboard({ user, onLogout }) {
                         </div>
                         <div className="remotale-proj-title-row">
                           <span className="remotale-proj-title" style={{ fontSize: '13px' }}>{proj.title}</span>
-                          <span className={`remotale-status-pill ${proj.status}`} style={{ fontSize: '9.5px', padding: '2px 6px' }}>
-                            {proj.status === 'in-progress' ? 'In Progress' : (proj.status === 'under-review' ? 'Under Review' : 'Completed')}
+                          <span className={`remotale-status-pill ${(proj.status === 'completed' || Number(proj.progress) >= 100) ? 'completed' : proj.status}`} style={{ fontSize: '9.5px', padding: '2px 6px' }}>
+                            {(proj.status === 'completed' || Number(proj.progress) >= 100) ? 'Completed' : (proj.status === 'under-review' ? 'Under Review' : 'In Progress')}
                           </span>
                         </div>
                       </div>

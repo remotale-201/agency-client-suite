@@ -18,16 +18,18 @@ export default function ProjectsView({
       p.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (p.companyName && p.companyName.toLowerCase().includes(searchTerm.toLowerCase()));
     
-    const matchesStatus = statusFilter === 'all' || p.status === statusFilter;
+    const effectiveStatus = (p.status === 'completed' || Number(p.progress) >= 100) ? 'completed' : p.status;
+    const matchesStatus = statusFilter === 'all' || effectiveStatus === statusFilter;
     const matchesClient = clientFilter === 'all' || p.clientId === clientFilter;
 
     return matchesSearch && matchesStatus && matchesClient;
   });
 
-  const getStatusBadge = (status) => {
+  const getStatusBadge = (status, progress) => {
+    if (status === 'completed' || Number(progress) >= 100) {
+      return <span className="badge-pill status-completed">Completed</span>;
+    }
     switch (status) {
-      case 'completed':
-        return <span className="badge-pill status-completed">Completed</span>;
       case 'in-progress':
         return <span className="badge-pill status-in-progress">In Progress</span>;
       case 'under-review':
@@ -121,7 +123,7 @@ export default function ProjectsView({
                     <span className="project-client-name">
                       {proj.companyName || 'Client Project'}
                     </span>
-                    {getStatusBadge(proj.status)}
+                    {getStatusBadge(proj.status, proj.progress)}
                   </div>
 
                   <h3 className="project-card-title">{proj.title}</h3>
