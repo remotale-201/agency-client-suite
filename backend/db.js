@@ -266,7 +266,9 @@ function ensureLocalStore() {
       p.tasks.forEach((t) => {
         const tTitle = typeof t === 'string' ? t : t.title;
         const tCompleted = typeof t === 'object' ? Boolean(t.completed) : false;
-        const assigned = seedAssignees[(tIdx - 1) % seedAssignees.length];
+        const assigned = (seedAssignees && seedAssignees.length > 0)
+          ? seedAssignees[(tIdx - 1) % seedAssignees.length]
+          : { name: 'Abdullah', avatar: '' };
         initialTasks.push({
           id: `task-${p.id}-${tIdx}`,
           project_id: p.id,
@@ -274,8 +276,8 @@ function ensureLocalStore() {
           title: tTitle,
           due_date: p.deadline,
           completed: tCompleted,
-          assigned_name: assigned.name,
-          assigned_avatar: assigned.avatar
+          assigned_name: assigned?.name || 'Abdullah',
+          assigned_avatar: assigned?.avatar || ''
         });
         tIdx++;
       });
@@ -312,24 +314,24 @@ function ensureLocalStore() {
         id: `member-${i + 1}`,
         name: a.name,
         role: i === 0 ? 'Lead Developer' : i === 1 ? 'UI/UX Designer' : 'Project Manager',
-        avatar: a.avatar,
-        email: `${a.name.toLowerCase()}@remotale.com`
+        avatar: a?.avatar || '',
+        email: `${(a.name || 'member').toLowerCase()}@remotale.com`
       })),
       team_activities: [
         {
           id: 'act-1',
-          member_name: 'Sara',
-          member_avatar: seedAssignees[1].avatar,
-          action: 'completed task',
-          details: 'Graphics revision for Pak White Label',
+          member_name: 'Abdullah',
+          member_avatar: seedAssignees[0]?.avatar || '',
+          action: 'reviewed notes and requirements',
+          details: 'Updated notepad on Pak White Label',
           created_at: new Date().toISOString()
         },
         {
           id: 'act-2',
-          member_name: 'Ahmed',
-          member_avatar: seedAssignees[0].avatar,
-          action: 'uploaded assets',
-          details: 'New banners added for Farjah Luxury Decor',
+          member_name: 'Abdullah',
+          member_avatar: seedAssignees[0]?.avatar || '',
+          action: 'scheduled deadline',
+          details: 'New banners scheduled for Farjah Luxury Decor',
           created_at: new Date().toISOString()
         }
       ],
@@ -342,7 +344,11 @@ function ensureLocalStore() {
 }
 
 function readLocalStore() {
-  ensureLocalStore();
+  try {
+    ensureLocalStore();
+  } catch (err) {
+    console.error('[ensureLocalStore Error]', err);
+  }
   try {
     return JSON.parse(fs.readFileSync(STORE_PATH, 'utf-8'));
   } catch (err) {
@@ -572,7 +578,9 @@ async function initPostgresTables() {
         for (const t of p.tasks) {
           const tTitle = typeof t === 'string' ? t : t.title;
           const tCompleted = typeof t === 'object' ? Boolean(t.completed) : false;
-          const assigned = seedAssignees[(tIdx - 1) % seedAssignees.length];
+          const assigned = (seedAssignees && seedAssignees.length > 0)
+            ? seedAssignees[(tIdx - 1) % seedAssignees.length]
+            : { name: 'Abdullah', avatar: '' };
           const tId = `task-${p.id}-${tIdx}`;
 
           await client.query(`
@@ -588,8 +596,8 @@ async function initPostgresTables() {
             tTitle,
             p.deadline,
             tCompleted,
-            assigned.name,
-            assigned.avatar
+            assigned?.name || 'Abdullah',
+            assigned?.avatar || ''
           ]);
           tIdx++;
         }

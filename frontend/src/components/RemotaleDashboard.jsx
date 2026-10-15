@@ -366,15 +366,24 @@ export default function RemotaleDashboard({ user, onLogout }) {
 
   // Handle Project Update -> updates in PostgreSQL and state
   const handleUpdateProject = async (projectId, updates) => {
+    // Optimistic local state update for instant UI feedback
+    setProjects(prev => prev.map(p => p.id === projectId ? { ...p, ...updates } : p));
+    if (selectedProject?.id === projectId) {
+      setSelectedProject(prev => ({ ...prev, ...updates }));
+    }
+
     try {
       const updated = await api.updateProject(projectId, updates);
-      setProjects(prev => prev.map(p => p.id === projectId ? { ...p, ...updated } : p));
-      if (selectedProject?.id === projectId) {
-        setSelectedProject(prev => ({ ...prev, ...updated }));
+      if (updated) {
+        setProjects(prev => prev.map(p => p.id === projectId ? { ...p, ...updated } : p));
+        if (selectedProject?.id === projectId) {
+          setSelectedProject(prev => ({ ...prev, ...updated }));
+        }
       }
       await loadData();
       return updated;
     } catch (err) {
+      console.error('[Update Project Error]', err);
       alert(err.message || 'Failed to update project');
       throw err;
     }

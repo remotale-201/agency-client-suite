@@ -401,10 +401,14 @@ export default function ProjectDetailWorkspace({
     .filter(Boolean);
 
   const handleSaveNotes = async () => {
-    if (onUpdateProject && project?.id) {
-      await onUpdateProject(project.id, { notes: notesContent });
-    }
     setIsEditingNotes(false);
+    if (onUpdateProject && project?.id) {
+      try {
+        await onUpdateProject(project.id, { notes: notesContent });
+      } catch (err) {
+        console.error('Error saving notes:', err);
+      }
+    }
   };
 
   const handleCreateTask = async (e) => {
