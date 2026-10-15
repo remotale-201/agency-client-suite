@@ -148,9 +148,33 @@ export default function InvoiceDetailModal({
             </div>
 
             <div className="inv-bill-col">
-              <span className="inv-col-label">Associated Project:</span>
-              <h4 className="inv-project-title">{invoice.project_title || invoice.title}</h4>
-              <p className="inv-client-detail">Deliverables & Milestone Billing</p>
+              {(() => {
+                const projectTitles = Array.isArray(invoice.project_titles) && invoice.project_titles.length > 0
+                  ? invoice.project_titles
+                  : (invoice.project_title ? invoice.project_title.split(',').map(s => s.trim()).filter(Boolean) : []);
+
+                if (projectTitles.length > 1) {
+                  return (
+                    <>
+                      <span className="inv-col-label">Covered Projects ({projectTitles.length}):</span>
+                      <div className="inv-sheet-projects-list">
+                        {projectTitles.map((t, idx) => (
+                          <span key={idx} className="inv-sheet-project-pill">📁 {t}</span>
+                        ))}
+                      </div>
+                      <p className="inv-client-detail">Consolidated Multi-Project Milestone Statement</p>
+                    </>
+                  );
+                }
+
+                return (
+                  <>
+                    <span className="inv-col-label">Associated Project:</span>
+                    <h4 className="inv-project-title">{projectTitles[0] || invoice.project_title || invoice.title}</h4>
+                    <p className="inv-client-detail">Deliverables & Milestone Billing</p>
+                  </>
+                );
+              })()}
             </div>
           </div>
 
@@ -172,6 +196,9 @@ export default function InvoiceDetailModal({
                     <tr key={idx}>
                       <td>{idx + 1}</td>
                       <td>
+                        {item.project_title && (
+                          <div className="inv-item-project-tag">📁 {item.project_title}</div>
+                        )}
                         <strong>{item.description || 'Project Development Milestone'}</strong>
                       </td>
                       <td style={{ textAlign: 'center' }}>{item.qty || 1}</td>

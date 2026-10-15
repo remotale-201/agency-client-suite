@@ -1180,6 +1180,242 @@
 }
 
 /* ==========================================================================
+   MULTI-PROJECT INVOICE GENERATOR STYLES
+   ========================================================================== */
+
+.inv-multi-projects-block {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 20px;
+}
+
+.inv-multi-projects-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.inv-multi-projects-title-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.inv-multi-projects-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.inv-multi-projects-count-pill {
+  font-size: 11px;
+  font-weight: 700;
+  background: #e0e7ff;
+  color: #4338ca;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.inv-multi-projects-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.inv-link-action-btn {
+  background: none;
+  border: none;
+  color: #4f46e5;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.inv-link-action-btn:hover {
+  color: #3730a3;
+}
+
+.inv-action-dot {
+  color: #cbd5e1;
+}
+
+.inv-projects-empty-hint {
+  font-size: 12.5px;
+  color: #64748b;
+  font-style: italic;
+  padding: 8px 0;
+}
+
+.inv-projects-chips-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.inv-project-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.inv-project-chip:hover {
+  border-color: #94a3b8;
+  background: #f1f5f9;
+}
+
+.inv-project-chip.active {
+  background: #eef2ff;
+  border-color: #6366f1;
+  color: #4338ca;
+  box-shadow: 0 1px 3px rgba(99, 102, 241, 0.15);
+}
+
+.inv-chip-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #e2e8f0;
+  color: #475569;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.inv-project-chip.active .inv-chip-indicator {
+  background: #4f46e5;
+  color: #ffffff;
+}
+
+.inv-chip-badge {
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: #f1f5f9;
+  color: #64748b;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.inv-project-chip.active .inv-chip-badge {
+  background: #e0e7ff;
+  color: #4338ca;
+}
+
+/* Quick Add Bar */
+.inv-quick-add-projects-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  padding: 8px 12px;
+  background: #ffffff;
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+}
+
+.inv-quick-add-lbl {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.inv-quick-add-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.inv-quick-proj-add-btn {
+  padding: 4px 10px;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.inv-quick-proj-add-btn:hover {
+  background: #e0e7ff;
+  border-color: #a5b4fc;
+  color: #4338ca;
+}
+
+/* Table select project */
+.inv-table-select-proj {
+  width: 100%;
+  padding: 7px 8px;
+  border: 1px solid #cbd5e1;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #ffffff;
+  color: #1e293b;
+  box-sizing: border-box;
+}
+
+.inv-table-select-proj:focus {
+  border-color: #6366f1;
+}
+
+/* Sheet & PDF Multi-Project Tags */
+.inv-sheet-projects-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 4px 0 6px 0;
+}
+
+.inv-sheet-project-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #eef2ff;
+  color: #4338ca;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid #c7d2fe;
+}
+
+.inv-item-project-tag {
+  display: inline-block;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #4f46e5;
+  background: #eef2ff;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-bottom: 4px;
+}
+
+/* ==========================================================================
    PRINT MEDIA QUERY - STRICT CLEAN EXPORT
    ========================================================================== */
 

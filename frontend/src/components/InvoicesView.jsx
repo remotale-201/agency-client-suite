@@ -50,7 +50,9 @@ export default function InvoicesView({
         const matchesNumber = (inv.invoice_number || '').toLowerCase().includes(q);
         const matchesTitle = (inv.title || '').toLowerCase().includes(q);
         const matchesClient = (inv.client_name || '').toLowerCase().includes(q);
-        const matchesProj = (inv.project_title || '').toLowerCase().includes(q);
+        const matchesProj = (inv.project_title || '').toLowerCase().includes(q) ||
+          (Array.isArray(inv.project_titles) && inv.project_titles.some(pt => pt.toLowerCase().includes(q))) ||
+          (Array.isArray(inv.items) && inv.items.some(it => (it.project_title || '').toLowerCase().includes(q)));
         if (!matchesNumber && !matchesTitle && !matchesClient && !matchesProj) return false;
       }
 
@@ -311,11 +313,19 @@ export default function InvoicesView({
                       {inv.client_company && <span className="inv-company-tag">({inv.client_company})</span>}
                     </div>
 
-                    {inv.project_title && (
-                      <span className="inv-card-proj-badge">
-                        📁 {inv.project_title}
-                      </span>
-                    )}
+                    {(() => {
+                      const projectBadges = Array.isArray(inv.project_titles) && inv.project_titles.length > 0
+                        ? inv.project_titles
+                        : (inv.project_title ? inv.project_title.split(',').map(s => s.trim()).filter(Boolean) : []);
+
+                      if (projectBadges.length === 0) return null;
+
+                      return projectBadges.map((projTitle, pIdx) => (
+                        <span key={pIdx} className="inv-card-proj-badge" title={projTitle}>
+                          📁 {projTitle}
+                        </span>
+                      ));
+                    })()}
 
                     <span className="inv-card-date">
                       📅 Due: <strong>{inv.due_date || '25/10/2026'}</strong>

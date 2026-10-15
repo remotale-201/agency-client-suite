@@ -667,6 +667,8 @@ async function initPostgresTables() {
         ALTER TABLE invoices ADD COLUMN IF NOT EXISTS issue_date VARCHAR(50);
         ALTER TABLE invoices ADD COLUMN IF NOT EXISTS payment_details TEXT;
         ALTER TABLE invoices ADD COLUMN IF NOT EXISTS published BOOLEAN DEFAULT true;
+        ALTER TABLE invoices ADD COLUMN IF NOT EXISTS project_ids JSONB DEFAULT '[]';
+        ALTER TABLE invoices ADD COLUMN IF NOT EXISTS project_titles JSONB DEFAULT '[]';
       `);
 
       // Seed initial sample invoices if empty
@@ -1456,26 +1458,40 @@ const db = {
         ORDER BY i.created_at DESC
       `;
       const res = await pgPool.query(query, values);
-      return res.rows.map(inv => ({
-        ...inv,
-        amount: Number(inv.amount),
-        subtotal: Number(inv.subtotal || inv.amount),
-        tax: Number(inv.tax || 0),
-        discount: Number(inv.discount || 0),
-        items: typeof inv.items === 'string' ? JSON.parse(inv.items) : (inv.items || [])
-      }));
+      return res.rows.map(inv => {
+        const pIds = typeof inv.project_ids === 'string' ? JSON.parse(inv.project_ids) : (inv.project_ids || (inv.project_id ? [inv.project_id] : []));
+        const pTitles = typeof inv.project_titles === 'string' ? JSON.parse(inv.project_titles) : (inv.project_titles || (inv.project_title ? [inv.project_title] : []));
+        return {
+          ...inv,
+          project_ids: pIds,
+          project_titles: pTitles,
+          project_title: inv.project_title || (pTitles.length > 0 ? pTitles.join(', ') : ''),
+          amount: Number(inv.amount),
+          subtotal: Number(inv.subtotal || inv.amount),
+          tax: Number(inv.tax || 0),
+          discount: Number(inv.discount || 0),
+          items: typeof inv.items === 'string' ? JSON.parse(inv.items) : (inv.items || [])
+        };
+      });
     }
 
     const local = readLocalStore();
     let invoices = (local.invoices || []).map(inv => {
       const client = (local.users || []).find(u => u.id === inv.client_id);
       const project = (local.projects || []).find(p => p.id === inv.project_id);
+      const pIds = Array.isArray(inv.project_ids) ? inv.project_ids : (inv.project_id ? [inv.project_id] : []);
+      const pTitles = Array.isArray(inv.project_titles) && inv.project_titles.length > 0 
+        ? inv.project_titles 
+        : (pIds.length > 0 ? pIds.map(pid => (local.projects || []).find(p => p.id === pid)?.title).filter(Boolean) : (project ? [project.title] : []));
+
       return {
         ...inv,
         client_name: client?.name || 'Client',
         client_company: client?.company || 'Agency Client',
         client_email: client?.email || '',
-        project_title: project?.title || inv.title,
+        project_ids: pIds,
+        project_titles: pTitles,
+        project_title: inv.project_title || (pTitles.length > 0 ? pTitles.join(', ') : (project?.title || inv.title)),
         amount: Number(inv.amount),
         subtotal: Number(inv.subtotal || inv.amount),
         tax: Number(inv.tax || 0),
@@ -1488,7 +1504,7 @@ const db = {
       invoices = invoices.filter(inv => inv.client_id === clientId);
     }
     if (projectId) {
-      invoices = invoices.filter(inv => inv.project_id === projectId);
+      invoices = invoices.filter(inv => inv.project_id === projectId || (Array.isArray(inv.project_ids) && inv.project_ids.includes(projectId)));
     }
     if (status) {
       invoices = invoices.filter(inv => inv.status === status);
@@ -1511,8 +1527,13 @@ const db = {
       `, [id]);
       if (res.rows.length === 0) return null;
       const inv = res.rows[0];
+      const pIds = typeof inv.project_ids === 'string' ? JSON.parse(inv.project_ids) : (inv.project_ids || (inv.project_id ? [inv.project_id] : []));
+      const pTitles = typeof inv.project_titles === 'string' ? JSON.parse(inv.project_titles) : (inv.project_titles || (inv.project_title ? [inv.project_title] : []));
       return {
         ...inv,
+        project_ids: pIds,
+        project_titles: pTitles,
+        project_title: inv.project_title || (pTitles.length > 0 ? pTitles.join(', ') : ''),
         amount: Number(inv.amount),
         subtotal: Number(inv.subtotal || inv.amount),
         tax: Number(inv.tax || 0),
@@ -1526,12 +1547,19 @@ const db = {
     if (!inv) return null;
     const client = (local.users || []).find(u => u.id === inv.client_id);
     const project = (local.projects || []).find(p => p.id === inv.project_id);
+    const pIds = Array.isArray(inv.project_ids) ? inv.project_ids : (inv.project_id ? [inv.project_id] : []);
+    const pTitles = Array.isArray(inv.project_titles) && inv.project_titles.length > 0 
+      ? inv.project_titles 
+      : (pIds.length > 0 ? pIds.map(pid => (local.projects || []).find(p => p.id === pid)?.title).filter(Boolean) : (project ? [project.title] : []));
+
     return {
       ...inv,
       client_name: client?.name || 'Client',
       client_company: client?.company || 'Agency Client',
       client_email: client?.email || '',
-      project_title: project?.title || inv.title,
+      project_ids: pIds,
+      project_titles: pTitles,
+      project_title: inv.project_title || (pTitles.length > 0 ? pTitles.join(', ') : (project?.title || inv.title)),
       amount: Number(inv.amount),
       subtotal: Number(inv.subtotal || inv.amount),
       tax: Number(inv.tax || 0),
@@ -1552,11 +1580,21 @@ const db = {
     const status = invoiceData.status || (invoiceData.published ? 'published' : 'draft');
     const published = invoiceData.published !== undefined ? Boolean(invoiceData.published) : (status === 'published');
 
+    const projectIds = Array.isArray(invoiceData.project_ids) 
+      ? invoiceData.project_ids 
+      : (invoiceData.project_id ? [invoiceData.project_id] : []);
+    const projectTitles = Array.isArray(invoiceData.project_titles)
+      ? invoiceData.project_titles
+      : (invoiceData.project_title ? invoiceData.project_title.split(',').map(s => s.trim()).filter(Boolean) : []);
+
     const cleanInvoice = {
       id,
       client_id: invoiceData.client_id || invoiceData.clientId,
-      project_id: invoiceData.project_id || invoiceData.projectId || null,
+      project_id: invoiceData.project_id || (projectIds.length > 0 ? projectIds[0] : null),
+      project_ids: projectIds,
       title: invoiceData.title || `Invoice ${invoiceNumber}`,
+      project_title: invoiceData.project_title || (projectTitles.length > 0 ? projectTitles.join(', ') : null),
+      project_titles: projectTitles,
       invoice_number: invoiceNumber,
       amount,
       subtotal,
@@ -1578,15 +1616,17 @@ const db = {
         INSERT INTO invoices (
           id, client_id, project_id, title, invoice_number, amount, status,
           due_date, issue_date, currency, subtotal, tax, discount, notes,
-          payment_details, published, items
+          payment_details, published, items, project_ids, project_titles
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17::jsonb)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17::jsonb, $18::jsonb, $19::jsonb)
         ON CONFLICT (id) DO UPDATE SET
           title = EXCLUDED.title,
           amount = EXCLUDED.amount,
           status = EXCLUDED.status,
           due_date = EXCLUDED.due_date,
-          items = EXCLUDED.items;
+          items = EXCLUDED.items,
+          project_ids = EXCLUDED.project_ids,
+          project_titles = EXCLUDED.project_titles;
       `, [
         cleanInvoice.id,
         cleanInvoice.client_id,
@@ -1604,7 +1644,9 @@ const db = {
         cleanInvoice.notes,
         cleanInvoice.payment_details,
         cleanInvoice.published,
-        JSON.stringify(cleanInvoice.items)
+        JSON.stringify(cleanInvoice.items),
+        JSON.stringify(cleanInvoice.project_ids),
+        JSON.stringify(cleanInvoice.project_titles)
       ]);
     }
 

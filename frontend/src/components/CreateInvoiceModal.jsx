@@ -9,7 +9,8 @@ export default function CreateInvoiceModal({
   projects = []
 }) {
   const [selectedClientId, setSelectedClientId] = useState('');
-  const [selectedProjectId, setSelectedProjectId] = useState('');
+  const [selectedProjectIds, setSelectedProjectIds] = useState([]);
+  const [invoiceTitle, setInvoiceTitle] = useState('');
   const [currency, setCurrency] = useState('PKR');
   const [invoiceNumber, setInvoiceNumber] = useState('');
   const [issueDate, setIssueDate] = useState('');
@@ -20,9 +21,16 @@ export default function CreateInvoiceModal({
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Line items state
+  // Line items state (each item can be assigned to a specific project)
   const [items, setItems] = useState([
-    { description: 'Project Development & Milestone Deliverable', qty: 1, rate: 85000, amount: 85000 }
+    {
+      description: 'Project Development & Milestone Deliverable',
+      project_id: '',
+      project_title: '',
+      qty: 1,
+      rate: 85000,
+      amount: 85000
+    }
   ]);
   const [discount, setDiscount] = useState(0);
   const [tax, setTax] = useState(0);
@@ -54,27 +62,97 @@ export default function CreateInvoiceModal({
     return pCId === selectedClientId;
   });
 
-  // When selected project changes, prefill line item description
-  const handleProjectChange = (projId) => {
-    setSelectedProjectId(projId);
-    const proj = projects.find(p => p.id === projId);
-    if (proj) {
+  // When client changes, auto-select first project if available
+  useEffect(() => {
+    if (clientProjects.length > 0 && selectedProjectIds.length === 0) {
+      const firstProj = clientProjects[0];
+      setSelectedProjectIds([firstProj.id]);
+      setInvoiceTitle(`${firstProj.title} Invoice`);
       setItems([
         {
-          description: `${proj.title} - Scope of Work & Milestones`,
+          description: `${firstProj.title} - Scope of Work & Milestones`,
+          project_id: firstProj.id,
+          project_title: firstProj.title,
           qty: 1,
-          rate: items[0]?.rate || 85000,
-          amount: items[0]?.rate || 85000
+          rate: 85000,
+          amount: 85000
         }
       ]);
+    }
+  }, [selectedClientId]);
+
+  // Toggle a project selection
+  const handleToggleProject = (projId) => {
+    const proj = clientProjects.find(p => p.id === projId);
+    if (!proj) return;
+
+    if (selectedProjectIds.includes(projId)) {
+      const updated = selectedProjectIds.filter(id => id !== projId);
+      setSelectedProjectIds(updated);
+      updateTitleFromProjects(updated);
+    } else {
+      const updated = [...selectedProjectIds, projId];
+      setSelectedProjectIds(updated);
+      updateTitleFromProjects(updated);
+
+      // Also add a line item for this project if not already present
+      const hasItem = items.some(it => it.project_id === projId);
+      if (!hasItem) {
+        setItems(prev => [
+          ...prev,
+          {
+            description: `${proj.title} - Deliverable Milestone`,
+            project_id: proj.id,
+            project_title: proj.title,
+            qty: 1,
+            rate: 65000,
+            amount: 65000
+          }
+        ]);
+      }
+    }
+  };
+
+  // Select all client projects
+  const handleSelectAllProjects = () => {
+    const allIds = clientProjects.map(p => p.id);
+    setSelectedProjectIds(allIds);
+    updateTitleFromProjects(allIds);
+  };
+
+  // Clear all selected projects
+  const handleClearProjects = () => {
+    setSelectedProjectIds([]);
+    setInvoiceTitle('Client Project Invoice');
+  };
+
+  // Update title helper
+  const updateTitleFromProjects = (projIds) => {
+    const projs = clientProjects.filter(p => projIds.includes(p.id));
+    if (projs.length === 0) {
+      setInvoiceTitle('Client Milestone Invoice');
+    } else if (projs.length === 1) {
+      setInvoiceTitle(`${projs[0].title} Invoice`);
+    } else if (projs.length === 2) {
+      setInvoiceTitle(`${projs[0].title} & ${projs[1].title} Invoice`);
+    } else {
+      setInvoiceTitle(`Combined Multi-Project Invoice (${projs.length} Projects)`);
     }
   };
 
   // Add line item
-  const handleAddItem = () => {
+  const handleAddItem = (defaultProjId = '') => {
+    const proj = clientProjects.find(p => p.id === defaultProjId);
     setItems([
       ...items,
-      { description: 'Additional Project Service', qty: 1, rate: 25000, amount: 25000 }
+      {
+        description: proj ? `${proj.title} - Milestone Deliverable` : 'Additional Project Service',
+        project_id: proj ? proj.id : '',
+        project_title: proj ? proj.title : '',
+        qty: 1,
+        rate: 25000,
+        amount: 25000
+      }
     ]);
   };
 
@@ -97,6 +175,13 @@ export default function CreateInvoiceModal({
     } else if (field === 'rate') {
       item.rate = Math.max(0, Number(value) || 0);
       item.amount = item.qty * item.rate;
+    } else if (field === 'project_id') {
+      item.project_id = value;
+      const proj = clientProjects.find(p => p.id === value);
+      item.project_title = proj ? proj.title : '';
+      if (value && !selectedProjectIds.includes(value)) {
+        setSelectedProjectIds(prev => [...prev, value]);
+      }
     }
 
     updated[index] = item;
@@ -117,16 +202,26 @@ export default function CreateInvoiceModal({
     }
 
     const selectedClient = clients.find(c => c.id === selectedClientId);
-    const selectedProj = projects.find(p => p.id === selectedProjectId);
+
+    // Collect all project IDs referenced in selection OR in line items
+    const combinedProjectIds = Array.from(new Set([
+      ...selectedProjectIds,
+      ...items.map(it => it.project_id).filter(Boolean)
+    ]));
+
+    const includedProjects = clientProjects.filter(p => combinedProjectIds.includes(p.id));
+    const projectTitles = includedProjects.map(p => p.title);
 
     const invoicePayload = {
       client_id: selectedClientId,
       client_name: selectedClient?.name || 'Client',
       client_company: selectedClient?.company || 'Agency Client',
       client_email: selectedClient?.email || '',
-      project_id: selectedProjectId || null,
-      project_title: selectedProj?.title || (items[0]?.description || 'Project Invoice'),
-      title: selectedProj ? `${selectedProj.title} Invoice` : (items[0]?.description || 'Client Invoice'),
+      project_ids: combinedProjectIds,
+      project_titles: projectTitles,
+      project_id: combinedProjectIds[0] || null,
+      project_title: projectTitles.join(', ') || (items[0]?.description || 'Project Invoice'),
+      title: invoiceTitle.trim() || (projectTitles.length > 0 ? `${projectTitles.join(' & ')} Invoice` : 'Client Invoice'),
       invoice_number: invoiceNumber || `INV-${Date.now()}`,
       currency,
       subtotal,
@@ -141,6 +236,8 @@ export default function CreateInvoiceModal({
       payment_details: paymentDetails,
       items: items.map(it => ({
         description: it.description || 'Service Deliverable',
+        project_id: it.project_id || null,
+        project_title: it.project_title || '',
         qty: Number(it.qty) || 1,
         rate: Number(it.rate) || 0,
         amount: Number(it.amount) || 0
@@ -168,7 +265,7 @@ export default function CreateInvoiceModal({
           <div>
             <h2 className="inv-create-title">Generate New Invoice</h2>
             <p className="inv-create-sub">
-              Create an itemized project bill with custom pricing and instant client publication.
+              Create an itemized bill for one or multiple projects with custom milestone pricing and instant client publication.
             </p>
           </div>
           <button type="button" className="inv-btn-close" onClick={onClose}>✕</button>
@@ -185,7 +282,7 @@ export default function CreateInvoiceModal({
                 value={selectedClientId}
                 onChange={(e) => {
                   setSelectedClientId(e.target.value);
-                  setSelectedProjectId('');
+                  setSelectedProjectIds([]);
                 }}
               >
                 <option value="">-- Select Client --</option>
@@ -197,21 +294,16 @@ export default function CreateInvoiceModal({
               </select>
             </div>
 
-            {/* 2. Project Select (Filtered by client) */}
+            {/* 2. Invoice Title */}
             <div className="inv-form-group">
-              <label className="inv-form-label">Active Project <span className="req">*</span></label>
-              <select
-                className="inv-form-select"
-                value={selectedProjectId}
-                onChange={(e) => handleProjectChange(e.target.value)}
-              >
-                <option value="">-- Select Active Project --</option>
-                {clientProjects.map(p => (
-                  <option key={p.id} value={p.id}>
-                    {p.title} ({p.status})
-                  </option>
-                ))}
-              </select>
+              <label className="inv-form-label">Invoice Title</label>
+              <input
+                type="text"
+                className="inv-form-input"
+                value={invoiceTitle}
+                onChange={(e) => setInvoiceTitle(e.target.value)}
+                placeholder="e.g. Phase 1 Development & Store Design"
+              />
             </div>
 
             {/* 3. Currency */}
@@ -266,33 +358,133 @@ export default function CreateInvoiceModal({
             </div>
           </div>
 
+          {/* Multi-Project Inclusion Block */}
+          <div className="inv-multi-projects-block">
+            <div className="inv-multi-projects-header">
+              <div className="inv-multi-projects-title-box">
+                <span className="inv-multi-projects-label">Projects to Bill:</span>
+                <span className="inv-multi-projects-count-pill">
+                  {selectedProjectIds.length} of {clientProjects.length} Selected
+                </span>
+              </div>
+              {clientProjects.length > 1 && (
+                <div className="inv-multi-projects-actions">
+                  <button
+                    type="button"
+                    className="inv-link-action-btn"
+                    onClick={handleSelectAllProjects}
+                  >
+                    Select All
+                  </button>
+                  <span className="inv-action-dot">•</span>
+                  <button
+                    type="button"
+                    className="inv-link-action-btn"
+                    onClick={handleClearProjects}
+                  >
+                    Clear All
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {clientProjects.length === 0 ? (
+              <div className="inv-projects-empty-hint">
+                No active projects found under this client. You can still add custom services below.
+              </div>
+            ) : (
+              <div className="inv-projects-chips-wrap">
+                {clientProjects.map(p => {
+                  const isSelected = selectedProjectIds.includes(p.id);
+                  return (
+                    <button
+                      key={p.id}
+                      type="button"
+                      className={`inv-project-chip ${isSelected ? 'active' : ''}`}
+                      onClick={() => handleToggleProject(p.id)}
+                      title={`Click to ${isSelected ? 'remove' : 'include'} ${p.title}`}
+                    >
+                      <span className="inv-chip-indicator">{isSelected ? '✓' : '+'}</span>
+                      <span className="inv-chip-text">{p.title}</span>
+                      <span className="inv-chip-badge">{p.status || 'Active'}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
           {/* Line Items & Project Price Section */}
           <div className="inv-items-section">
             <div className="inv-items-header">
-              <h3 className="inv-section-title">Invoice Line Items & Pricing</h3>
-              <button
-                type="button"
-                className="inv-btn-add-item"
-                onClick={handleAddItem}
-              >
-                + Add Service / Milestone
-              </button>
+              <div>
+                <h3 className="inv-section-title">Invoice Line Items & Pricing</h3>
+                <p className="inv-section-sub">
+                  Assign each milestone to a project or general service, set quantity, and adjust rupee rates.
+                </p>
+              </div>
+
+              <div className="inv-items-header-actions">
+                <button
+                  type="button"
+                  className="inv-btn-add-item"
+                  onClick={() => handleAddItem()}
+                >
+                  + Add Line Item
+                </button>
+              </div>
             </div>
+
+            {/* Quick Add Buttons for Selected Projects */}
+            {selectedProjectIds.length > 0 && (
+              <div className="inv-quick-add-projects-bar">
+                <span className="inv-quick-add-lbl">Quick Add Milestone for:</span>
+                <div className="inv-quick-add-btns">
+                  {clientProjects
+                    .filter(p => selectedProjectIds.includes(p.id))
+                    .map(p => (
+                      <button
+                        key={p.id}
+                        type="button"
+                        className="inv-quick-proj-add-btn"
+                        onClick={() => handleAddItem(p.id)}
+                      >
+                        + {p.title}
+                      </button>
+                    ))}
+                </div>
+              </div>
+            )}
 
             <div className="inv-items-table-container">
               <table className="inv-editor-table">
                 <thead>
                   <tr>
+                    <th style={{ width: '220px' }}>Project</th>
                     <th>Milestone / Service Description</th>
-                    <th style={{ width: '80px', textAlign: 'center' }}>Qty</th>
-                    <th style={{ width: '130px', textAlign: 'right' }}>Price / Rate ({currency})</th>
-                    <th style={{ width: '130px', textAlign: 'right' }}>Total</th>
-                    <th style={{ width: '50px' }}></th>
+                    <th style={{ width: '75px', textAlign: 'center' }}>Qty</th>
+                    <th style={{ width: '135px', textAlign: 'right' }}>Price ({currency})</th>
+                    <th style={{ width: '135px', textAlign: 'right' }}>Total</th>
+                    <th style={{ width: '45px' }}></th>
                   </tr>
                 </thead>
                 <tbody>
                   {items.map((item, idx) => (
                     <tr key={idx}>
+                      <td>
+                        <select
+                          className="inv-table-select-proj"
+                          value={item.project_id || ''}
+                          onChange={(e) => handleItemChange(idx, 'project_id', e.target.value)}
+                        >
+                          <option value="">-- General Service --</option>
+                          {clientProjects.map(cp => (
+                            <option key={cp.id} value={cp.id}>
+                              📁 {cp.title}
+                            </option>
+                          ))}
+                        </select>
+                      </td>
                       <td>
                         <input
                           type="text"
@@ -319,7 +511,7 @@ export default function CreateInvoiceModal({
                           style={{ textAlign: 'right', fontWeight: 600 }}
                           value={item.rate}
                           min="0"
-                          step="10"
+                          step="1000"
                           onChange={(e) => handleItemChange(idx, 'rate', e.target.value)}
                         />
                       </td>
