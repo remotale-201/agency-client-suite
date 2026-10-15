@@ -613,27 +613,43 @@ export default function RemotaleDashboard({ user, onLogout }) {
               <BillingIcon size={17} color={activeTab === 'billing' ? '#4F46E5' : '#64748B'} />
               <span>Billing</span>
             </button>
-
-            <button
-              type="button"
-              className="remotale-nav-item"
-              onClick={onLogout}
-              style={{ marginTop: '20px', color: '#ef4444' }}
-              title="Sign Out"
-            >
-              <span style={{ fontSize: '16px' }}>🚪</span>
-              <span>Sign Out</span>
-            </button>
           </nav>
         </div>
 
-        {/* Bottom User Pill */}
-        <div className="remotale-sidebar-user-pill">
-          <div className="remotale-sidebar-avatar-circle">{currentClientUser?.name?.[0] || 'C'}</div>
-          <div className="remotale-sidebar-user-info">
-            <span className="remotale-sidebar-user-name">{currentClientUser?.name || 'Client'}</span>
-            <span className="remotale-sidebar-user-role">{currentClientUser?.company || 'Client'}</span>
+        {/* Bottom User Section with Dedicated Logout */}
+        <div style={{ marginTop: 'auto', padding: '14px', borderTop: '1px solid #e2e8f0', background: '#fafafa' }}>
+          <div className="remotale-sidebar-user-pill" style={{ marginBottom: '10px' }}>
+            <div className="remotale-sidebar-avatar-circle">{currentClientUser?.name?.[0] || 'C'}</div>
+            <div className="remotale-sidebar-user-info" style={{ flex: 1, minWidth: 0 }}>
+              <span className="remotale-sidebar-user-name" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>{currentClientUser?.name || 'Client'}</span>
+              <span className="remotale-sidebar-user-role">{currentClientUser?.company || 'Client'}</span>
+            </div>
           </div>
+          <button
+            type="button"
+            onClick={onLogout}
+            style={{
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+              padding: '10px 14px',
+              background: '#fee2e2',
+              color: '#dc2626',
+              border: '1px solid #fecaca',
+              borderRadius: '8px',
+              fontSize: '13px',
+              fontWeight: 700,
+              cursor: 'pointer',
+              boxShadow: '0 1px 3px rgba(220, 38, 38, 0.1)',
+              transition: 'all 0.15s ease'
+            }}
+            title="Log Out of your account"
+          >
+            <span style={{ fontSize: '15px' }}>🚪</span>
+            <span>Log Out</span>
+          </button>
         </div>
       </aside>
 
@@ -652,6 +668,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
             onAddTask={handleAddTaskInDetail}
             onUpdateProject={handleUpdateProject}
             currentUser={currentClientUser}
+            onLogout={onLogout}
           />
         ) : activeTab === 'projects' ? (
           <MyProjectsView
@@ -667,6 +684,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
             }}
             onDeleteProject={handleDeleteProject}
             currentUser={currentClientUser}
+            onLogout={onLogout}
           />
         ) : (
           <>
@@ -1086,27 +1104,43 @@ export default function RemotaleDashboard({ user, onLogout }) {
               <SettingsIcon size={17} color={activeTab === 'settings' ? '#4F46E5' : '#64748B'} />
               <span>Settings</span>
             </button>
-
-            <button
-              type="button"
-              className="remotale-nav-item"
-              onClick={onLogout}
-              style={{ marginTop: '20px', color: '#ef4444' }}
-              title="Sign Out"
-            >
-              <span style={{ fontSize: '16px' }}>🚪</span>
-              <span>Sign Out</span>
-            </button>
           </nav>
         </div>
 
-        {/* Bottom Admin Pill */}
-        <div className="remotale-sidebar-user-pill">
-          <div className="remotale-sidebar-avatar-circle" style={{ background: '#0f172a' }}>A</div>
-          <div className="remotale-sidebar-user-info">
-            <span className="remotale-sidebar-user-name">Abdullah</span>
-            <span className="remotale-sidebar-user-role">Super Admin</span>
+        {/* Bottom Admin Section with Dedicated Logout */}
+        <div style={{ marginTop: 'auto', padding: '14px', borderTop: '1px solid #e2e8f0', background: '#fafafa' }}>
+          <div className="remotale-sidebar-user-pill" style={{ marginBottom: '10px' }}>
+            <div className="remotale-sidebar-avatar-circle" style={{ background: '#0f172a', color: '#ffffff' }}>A</div>
+            <div className="remotale-sidebar-user-info" style={{ flex: 1, minWidth: 0 }}>
+              <span className="remotale-sidebar-user-name">Abdullah</span>
+              <span className="remotale-sidebar-user-role">Super Admin</span>
+            </div>
           </div>
+          <button
+            type="button"
+            onClick={onLogout}
+            style={{
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+              padding: '10px 14px',
+              background: '#fee2e2',
+              color: '#dc2626',
+              border: '1px solid #fecaca',
+              borderRadius: '8px',
+              fontSize: '13px',
+              fontWeight: 700,
+              cursor: 'pointer',
+              boxShadow: '0 1px 3px rgba(220, 38, 38, 0.1)',
+              transition: 'all 0.15s ease'
+            }}
+            title="Log Out of your account"
+          >
+            <span style={{ fontSize: '15px' }}>🚪</span>
+            <span>Log Out</span>
+          </button>
         </div>
       </aside>
 
@@ -1125,6 +1159,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
             onAddTask={handleAddTaskInDetail}
             onUpdateProject={handleUpdateProject}
             currentUser={user}
+            onLogout={onLogout}
           />
         ) : activeTab === 'projects' ? (
           <MyProjectsView
@@ -1140,6 +1175,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
             }}
             onDeleteProject={handleDeleteProject}
             currentUser={user}
+            onLogout={onLogout}
           />
         ) : (
           <>
@@ -1513,7 +1549,27 @@ export default function RemotaleDashboard({ user, onLogout }) {
                 <RemotaleLogo size={22} />
                 <span style={{ fontWeight: 800, fontSize: '17px', color: '#0f172a' }}>Remotale</span>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <button
+                  type="button"
+                  onClick={onLogout}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    padding: '5px 10px',
+                    borderRadius: '6px',
+                    border: '1px solid #fecaca',
+                    background: '#fee2e2',
+                    color: '#dc2626',
+                    fontSize: '11.5px',
+                    fontWeight: 700,
+                    cursor: 'pointer'
+                  }}
+                  title="Log Out"
+                >
+                  <span>🚪 Log Out</span>
+                </button>
                 <button type="button" className="remotale-bell-btn" style={{ width: '32px', height: '32px' }}>
                   <BellIcon size={16} />
                   <span className="remotale-bell-dot" />
@@ -1541,6 +1597,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
               }}
               onDeleteProject={handleDeleteProject}
               currentUser={user}
+              onLogout={onLogout}
             />
 
             {/* Mobile Bottom Navigation */}
@@ -1605,7 +1662,27 @@ export default function RemotaleDashboard({ user, onLogout }) {
             <span style={{ fontWeight: 800, fontSize: '17px', color: '#0f172a' }}>Remotale</span>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <button
+              type="button"
+              onClick={onLogout}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '4px',
+                padding: '5px 10px',
+                borderRadius: '6px',
+                border: '1px solid #fecaca',
+                background: '#fee2e2',
+                color: '#dc2626',
+                fontSize: '11.5px',
+                fontWeight: 700,
+                cursor: 'pointer'
+              }}
+              title="Log Out"
+            >
+              <span>🚪 Log Out</span>
+            </button>
             <button type="button" className="remotale-bell-btn" style={{ width: '32px', height: '32px' }}>
               <BellIcon size={16} />
               <span className="remotale-bell-dot" />
@@ -1992,7 +2069,8 @@ export default function RemotaleDashboard({ user, onLogout }) {
               onToggleTask={handleToggleTask}
               onAddTask={handleAddTaskInDetail}
               onUpdateProject={handleUpdateProject}
-              currentUser={user}
+              currentUser={currentClientUser}
+              onLogout={onLogout}
             />
             {/* Mobile Bottom Navigation */}
             <div className="remotale-mobile-bottom-nav">
@@ -2056,7 +2134,27 @@ export default function RemotaleDashboard({ user, onLogout }) {
                 <RemotaleLogo size={22} />
                 <span style={{ fontWeight: 800, fontSize: '17px', color: '#0f172a' }}>Remotale</span>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <button
+                  type="button"
+                  onClick={onLogout}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    padding: '5px 10px',
+                    borderRadius: '6px',
+                    border: '1px solid #fecaca',
+                    background: '#fee2e2',
+                    color: '#dc2626',
+                    fontSize: '11.5px',
+                    fontWeight: 700,
+                    cursor: 'pointer'
+                  }}
+                  title="Log Out"
+                >
+                  <span>🚪 Log Out</span>
+                </button>
                 <button type="button" className="remotale-bell-btn" style={{ width: '32px', height: '32px' }}>
                   <BellIcon size={16} />
                   <span className="remotale-bell-dot" />
@@ -2087,6 +2185,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
               }}
               onDeleteProject={handleDeleteProject}
               currentUser={currentClientUser}
+              onLogout={onLogout}
             />
 
             {/* Mobile Bottom Navigation */}
@@ -2151,7 +2250,27 @@ export default function RemotaleDashboard({ user, onLogout }) {
               <span style={{ fontWeight: 800, fontSize: '17px', color: '#0f172a' }}>Remotale</span>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <button
+                type="button"
+                onClick={onLogout}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  padding: '5px 10px',
+                  borderRadius: '6px',
+                  border: '1px solid #fecaca',
+                  background: '#fee2e2',
+                  color: '#dc2626',
+                  fontSize: '11.5px',
+                  fontWeight: 700,
+                  cursor: 'pointer'
+                }}
+                title="Log Out"
+              >
+                <span>🚪 Log Out</span>
+              </button>
               <button type="button" className="remotale-bell-btn" style={{ width: '32px', height: '32px' }}>
                 <BellIcon size={16} />
                 <span className="remotale-bell-dot" />

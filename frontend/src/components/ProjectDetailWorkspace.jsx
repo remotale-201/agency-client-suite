@@ -219,7 +219,8 @@ export default function ProjectDetailWorkspace({
   onToggleTask,
   onAddTask,
   onUpdateProject,
-  currentUser
+  currentUser,
+  onLogout
 }) {
   const [activeTab, setActiveTab] = useState('overview'); // overview, todo, files, credentials, notes
   const [copiedKey, setCopiedKey] = useState(null);
@@ -408,7 +409,32 @@ export default function ProjectDetailWorkspace({
           <span>Remotale</span>
         </div>
 
-        <div className="pdw-topbar-actions" ref={menuRef}>
+        <div className="pdw-topbar-actions" ref={menuRef} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          {onLogout && (
+            <button
+              type="button"
+              onClick={onLogout}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '5px',
+                padding: '6px 12px',
+                borderRadius: '8px',
+                border: '1px solid #fecaca',
+                background: '#fee2e2',
+                color: '#dc2626',
+                fontSize: '12px',
+                fontWeight: 700,
+                cursor: 'pointer',
+                transition: 'all 0.15s ease'
+              }}
+              title="Log Out of your account"
+            >
+              <span>🚪</span>
+              <span>Log Out</span>
+            </button>
+          )}
+
           <button
             type="button"
             className="pdw-dots-btn"
@@ -443,6 +469,20 @@ export default function ProjectDetailWorkspace({
                 <TrashIcon size={15} color="#EF4444" />
                 <span>Delete Project</span>
               </button>
+              {onLogout && (
+                <button
+                  type="button"
+                  className="pdw-menu-item"
+                  style={{ color: '#dc2626' }}
+                  onClick={() => {
+                    setIsTopMenuOpen(false);
+                    onLogout();
+                  }}
+                >
+                  <span style={{ fontSize: '14px' }}>🚪</span>
+                  <span>Log Out</span>
+                </button>
+              )}
             </div>
           )}
         </div>

@@ -127,7 +127,8 @@ export default function MyProjectsView({
   onOpenAddProject,
   onEditProject,
   onDeleteProject,
-  currentUser
+  currentUser,
+  onLogout
 }) {
   const [activeFilter, setActiveFilter] = useState('all'); // 'all', 'in-progress', 'under-review', 'completed'
   const [searchTerm, setSearchTerm] = useState('');
@@ -251,14 +252,41 @@ export default function MyProjectsView({
           <p>Manage and track all your projects in one place.</p>
         </div>
 
-        <button
-          type="button"
-          className="my-projects-btn-add"
-          onClick={onOpenAddProject}
-        >
-          <PlusIcon size={17} color="#FFFFFF" />
-          <span>Add Project</span>
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          {onLogout && (
+            <button
+              type="button"
+              onClick={onLogout}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '9px 15px',
+                borderRadius: '8px',
+                border: '1px solid #fecaca',
+                background: '#fee2e2',
+                color: '#dc2626',
+                fontSize: '13px',
+                fontWeight: 700,
+                cursor: 'pointer',
+                transition: 'all 0.15s ease'
+              }}
+              title="Log Out of your account"
+            >
+              <span>🚪</span>
+              <span>Log Out</span>
+            </button>
+          )}
+
+          <button
+            type="button"
+            className="my-projects-btn-add"
+            onClick={onOpenAddProject}
+          >
+            <PlusIcon size={17} color="#FFFFFF" />
+            <span>Add Project</span>
+          </button>
+        </div>
       </div>
 
       {/* Filter Tabs */}
