@@ -327,7 +327,7 @@ export default function App() {
   // Filter projects and changes for client view
   const visibleProjects = isAdmin 
     ? projects 
-    : projects.filter(p => p.clientId === currentPersona.id);
+    : projects.filter(p => (p.clientId === currentPersona.id || p.client_id === currentPersona.id));
 
   const visibleChanges = isAdmin 
     ? changes 

@@ -286,16 +286,30 @@ export default function RemotaleAuthFlow({ onLogin, onRegister, initialPortalTok
     }
   };
 
-  // Quick Demo Autofill Helper
-  const handleQuickFill = (roleType) => {
-    setSelectedRole(roleType);
-    if (roleType === 'client') {
+  // Quick Demo Autofill Helper for all Published Accounts
+  const handleQuickFill = (accountKey) => {
+    if (accountKey === 'admin') {
+      setSelectedRole('admin');
+      setLoginEmail('admin');
+      setLoginPassword('admin');
+    } else if (accountKey === 'awais') {
+      setSelectedRole('client');
       setLoginEmail('awais');
       setLoginPassword('awais');
-    } else if (roleType === 'user') {
+    } else if (accountKey === 'afshal') {
+      setSelectedRole('client');
       setLoginEmail('afshal');
       setLoginPassword('afshal');
+    } else if (accountKey === 'ali') {
+      setSelectedRole('client');
+      setLoginEmail('ali');
+      setLoginPassword('client123');
+    } else if (accountKey === 'client') {
+      setSelectedRole('client');
+      setLoginEmail('awais');
+      setLoginPassword('awais');
     } else {
+      setSelectedRole('admin');
       setLoginEmail('admin');
       setLoginPassword('admin');
     }
@@ -806,6 +820,71 @@ export default function RemotaleAuthFlow({ onLogin, onRegister, initialPortalTok
           </button>
         </form>
 
+        {/* Published Accounts & Quick Access Directory */}
+        <div className="remotale-published-accounts-card">
+          <div className="remotale-published-header">
+            <span className="remotale-published-tag">🔑 Published Credentials</span>
+            <span className="remotale-published-sub">1-Click Auto-Fill & Test</span>
+          </div>
+          <div className="remotale-published-grid">
+            <button
+              type="button"
+              className={`remotale-account-chip ${loginEmail === 'admin' ? 'active' : ''}`}
+              onClick={() => handleQuickFill('admin')}
+              title="Super Admin • Sees All 10 Projects"
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                <span className="remotale-chip-badge admin">👑 Admin</span>
+                <span style={{ fontSize: '9.5px', color: '#64748b' }}>All 10 Projs</span>
+              </div>
+              <span className="remotale-chip-name">Abdullah</span>
+              <span className="remotale-chip-cred">admin / admin</span>
+            </button>
+
+            <button
+              type="button"
+              className={`remotale-account-chip ${loginEmail === 'awais' ? 'active' : ''}`}
+              onClick={() => handleQuickFill('awais')}
+              title="Client Awais • Sees His 8 Projects Only"
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                <span className="remotale-chip-badge client">👤 Client</span>
+                <span style={{ fontSize: '9.5px', color: '#64748b' }}>8 Projs Only</span>
+              </div>
+              <span className="remotale-chip-name">Awais</span>
+              <span className="remotale-chip-cred">awais / awais</span>
+            </button>
+
+            <button
+              type="button"
+              className={`remotale-account-chip ${loginEmail === 'afshal' ? 'active' : ''}`}
+              onClick={() => handleQuickFill('afshal')}
+              title="Client Afshal • Sees Her 2 Projects Only"
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                <span className="remotale-chip-badge client">👤 Client</span>
+                <span style={{ fontSize: '9.5px', color: '#64748b' }}>2 Projs Only</span>
+              </div>
+              <span className="remotale-chip-name">Afshal</span>
+              <span className="remotale-chip-cred">afshal / afshal</span>
+            </button>
+
+            <button
+              type="button"
+              className={`remotale-account-chip ${loginEmail === 'ali' ? 'active' : ''}`}
+              onClick={() => handleQuickFill('ali')}
+              title="Client Ali Khan • Acme Brand"
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                <span className="remotale-chip-badge client">👤 Client</span>
+                <span style={{ fontSize: '9.5px', color: '#64748b' }}>Client</span>
+              </div>
+              <span className="remotale-chip-name">Ali Khan</span>
+              <span className="remotale-chip-cred">ali / client123</span>
+            </button>
+          </div>
+        </div>
+
         {/* Switch to Sign Up Link */}
         <div className="remotale-bottom-footer-link">
           Don't have an account?{' '}
@@ -877,23 +956,39 @@ export default function RemotaleAuthFlow({ onLogin, onRegister, initialPortalTok
           </button>
         </div>
 
-        {/* Quick Autofill Helper for Testing */}
-        <div style={{ display: 'flex', gap: '8px' }}>
-          <button
-            type="button"
-            className="remotale-quick-access-btn"
-            onClick={() => handleQuickFill('client')}
-            title="Auto-fill verified Client credentials"
-          >
-            <span>👤 Demo Client</span>
-          </button>
+        {/* Quick Autofill Helper for Published Accounts */}
+        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
           <button
             type="button"
             className="remotale-quick-access-btn"
             onClick={() => handleQuickFill('admin')}
-            title="Auto-fill verified Admin credentials"
+            title="Admin Abdullah (admin / admin) • All 10 Projects"
           >
-            <span>⚡ Demo Admin</span>
+            <span>👑 Admin</span>
+          </button>
+          <button
+            type="button"
+            className="remotale-quick-access-btn"
+            onClick={() => handleQuickFill('awais')}
+            title="Client Awais (awais / awais) • 8 Projects Only"
+          >
+            <span>👤 Awais (8 Projs)</span>
+          </button>
+          <button
+            type="button"
+            className="remotale-quick-access-btn"
+            onClick={() => handleQuickFill('afshal')}
+            title="Client Afshal (afshal / afshal) • 2 Projects Only"
+          >
+            <span>👤 Afshal (2 Projs)</span>
+          </button>
+          <button
+            type="button"
+            className="remotale-quick-access-btn"
+            onClick={() => handleQuickFill('ali')}
+            title="Client Ali Khan (ali / client123)"
+          >
+            <span>👤 Ali Khan</span>
           </button>
         </div>
       </header>

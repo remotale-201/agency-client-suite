@@ -124,7 +124,8 @@ app.post('/api/auth/forgot-password', async (req, res) => {
 // ==========================================
 app.get('/api/stats', async (req, res) => {
   try {
-    const stats = await db.getStats();
+    const { clientId } = req.query;
+    const stats = await db.getStats(clientId);
     res.json(stats);
   } catch (err) {
     res.status(500).json({ error: err.message });

@@ -1042,6 +1042,110 @@
   text-decoration: underline;
 }
 
+/* Published Credentials Showcase */
+.remotale-published-accounts-card {
+  margin-top: 14px;
+  background: #f8faff;
+  border: 1px solid #e0e7ff;
+  border-radius: 14px;
+  padding: 12px 14px;
+  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.05);
+}
+
+.remotale-published-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.remotale-published-tag {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #4338ca;
+  background: #ede9fe;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.remotale-published-sub {
+  font-size: 10.5px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.remotale-published-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.remotale-account-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 8px 10px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.remotale-account-chip:hover {
+  border-color: #6366f1;
+  background: #fafafa;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(99, 102, 241, 0.12);
+}
+
+.remotale-account-chip.active {
+  border-color: #4f46e5;
+  background: #eff6ff;
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+}
+
+.remotale-chip-badge {
+  font-size: 9.5px;
+  font-weight: 800;
+  border-radius: 999px;
+  padding: 1px 6px;
+  display: inline-block;
+}
+
+.remotale-chip-badge.admin {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.remotale-chip-badge.client {
+  background: #ede9fe;
+  color: #6d28d9;
+}
+
+.remotale-chip-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.remotale-chip-cred {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: #4f46e5;
+  background: #f1f5f9;
+  padding: 1px 4px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
 /* Responsiveness */
 @media (max-width: 820px) {
   .remotale-screens-container.side-by-side {
@@ -1054,4 +1158,8 @@
     border-radius: 20px;
     padding: 12px;
   }
+  .remotale-published-grid {
+    grid-template-columns: 1fr;
+  }
 }
+

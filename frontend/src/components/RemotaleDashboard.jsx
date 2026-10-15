@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import './RemotaleDashboard.css';
 import { api } from '../api';
 import { RemotaleLogo } from './RemotaleAuthFlow';
@@ -148,8 +148,10 @@ function BellIcon({ size = 18, color = 'currentColor' }) {
 // MAIN DASHBOARD COMPONENT
 // ==========================================
 export default function RemotaleDashboard({ user, onLogout }) {
+  const isRealAdmin = user?.role === 'admin';
   // Role: 'admin' or 'client'
-  const [role, setRole] = useState(() => (user?.role === 'admin' ? 'admin' : 'client'));
+  const [role, setRole] = useState(() => (isRealAdmin ? 'admin' : 'client'));
+  const [previewClientId, setPreviewClientId] = useState('client-awais');
 
   // View Mode: 'desktop' (Image 1 single layout), 'desktop-side-by-side' (Image 1 both layouts), or 'mobile' (Image 2/3)
   const [viewMode, setViewMode] = useState(() => (window.innerWidth >= 1024 ? 'desktop' : 'mobile'));
@@ -182,6 +184,63 @@ export default function RemotaleDashboard({ user, onLogout }) {
 
   // Project to Edit in Modal
   const [projectToEdit, setProjectToEdit] = useState(null);
+
+  // Effective client ID when in client view:
+  // If real client: user.id (e.g. client-awais, client-afshal, client-1)
+  // If admin previewing client: previewClientId
+  const effectiveClientId = !isRealAdmin ? (user?.id || 'client-awais') : (role === 'client' ? previewClientId : null);
+
+  // Active Client User Object
+  const currentClientUser = useMemo(() => {
+    if (!isRealAdmin) return user;
+    const found = clients.find(c => c.id === effectiveClientId);
+    if (found) return found;
+    if (effectiveClientId === 'client-awais') return { id: 'client-awais', name: 'Awais', email: 'awais@remotale.com', company: 'Awais Agency' };
+    if (effectiveClientId === 'client-afshal') return { id: 'client-afshal', name: 'Afshal', email: 'afshal@remotale.com', company: 'Afshal Brand' };
+    return { id: 'client-1', name: 'Ali Khan', email: 'ali@remotale.com', company: 'Acme Brand' };
+  }, [isRealAdmin, user, clients, effectiveClientId]);
+
+  // Client Display Name Helper for Admin views
+  const getClientDisplayName = (clientId, fallback) => {
+    if (clientId === 'client-awais') return 'Awais';
+    if (clientId === 'client-afshal') return 'Afshal';
+    if (clientId === 'client-1') return 'Ali Khan';
+    const c = clients.find(cl => cl.id === clientId);
+    if (c?.name) return c.name;
+    if (fallback && fallback !== 'Ali Khan') return fallback;
+    return 'Awais';
+  };
+
+  // Filter projects strictly:
+  // For client view: ONLY show this client's projects!
+  // For admin view: show all 10 projects!
+  const visibleProjects = useMemo(() => {
+    if (role === 'admin') {
+      return projects;
+    }
+    return projects.filter(p => {
+      const pClientId = p.client_id || p.clientId;
+      return pClientId === effectiveClientId;
+    });
+  }, [role, projects, effectiveClientId]);
+
+  // Filter tasks strictly:
+  const visibleTasks = useMemo(() => {
+    if (role === 'admin') {
+      return tasks;
+    }
+    const visibleProjIds = new Set(visibleProjects.map(p => p.id));
+    return tasks.filter(t => (t.client_id === effectiveClientId || visibleProjIds.has(t.project_id)));
+  }, [role, tasks, visibleProjects, effectiveClientId]);
+
+  // Filter messages strictly:
+  const visibleMessages = useMemo(() => {
+    if (role === 'admin') {
+      return messages;
+    }
+    const visibleProjIds = new Set(visibleProjects.map(p => p.id));
+    return messages.filter(m => (m.sender_id === effectiveClientId || m.receiver_id === effectiveClientId || visibleProjIds.has(m.project_id)));
+  }, [role, messages, visibleProjects, effectiveClientId]);
 
   // Active Dots Dropdown ID on Project cards
   const [activeDotsId, setActiveDotsId] = useState(null);
@@ -242,7 +301,11 @@ export default function RemotaleDashboard({ user, onLogout }) {
   // Handle New Project Creation -> saves to PostgreSQL 'projects' table
   const handleCreateProject = async (projectData) => {
     try {
-      const created = await api.createProject(projectData);
+      const payload = {
+        ...projectData,
+        clientId: !isRealAdmin ? (user?.id || 'client-awais') : (projectData.clientId || effectiveClientId || 'client-awais')
+      };
+      const created = await api.createProject(payload);
       setProjects(prev => [created, ...prev]);
       setIsNewProjectModalOpen(false);
       setProjectToEdit(null);
@@ -550,10 +613,10 @@ export default function RemotaleDashboard({ user, onLogout }) {
 
         {/* Bottom User Pill */}
         <div className="remotale-sidebar-user-pill">
-          <div className="remotale-sidebar-avatar-circle">A</div>
+          <div className="remotale-sidebar-avatar-circle">{currentClientUser?.name?.[0] || 'C'}</div>
           <div className="remotale-sidebar-user-info">
-            <span className="remotale-sidebar-user-name">{user?.name || 'Ali Khan'}</span>
-            <span className="remotale-sidebar-user-role">Client</span>
+            <span className="remotale-sidebar-user-name">{currentClientUser?.name || 'Client'}</span>
+            <span className="remotale-sidebar-user-role">{currentClientUser?.company || 'Client'}</span>
           </div>
         </div>
       </aside>
@@ -572,11 +635,11 @@ export default function RemotaleDashboard({ user, onLogout }) {
             onToggleTask={handleToggleTask}
             onAddTask={handleAddTaskInDetail}
             onUpdateProject={handleUpdateProject}
-            currentUser={user}
+            currentUser={currentClientUser}
           />
         ) : activeTab === 'projects' ? (
           <MyProjectsView
-            projects={projects}
+            projects={visibleProjects}
             onSelectProject={(proj) => setSelectedProject(proj)}
             onOpenAddProject={() => {
               setProjectToEdit(null);
@@ -587,14 +650,14 @@ export default function RemotaleDashboard({ user, onLogout }) {
               setIsNewProjectModalOpen(true);
             }}
             onDeleteProject={handleDeleteProject}
-            currentUser={user}
+            currentUser={currentClientUser}
           />
         ) : (
           <>
         {/* Top Header */}
         <div className="remotale-main-header">
           <div className="remotale-main-greeting">
-            <h1>Hello, {user?.name?.split(' ')[0] || 'Ali'} 👋</h1>
+            <h1>Hello, {currentClientUser?.name?.split(' ')[0] || 'Client'} 👋</h1>
             <p>Here's an overview of your projects.</p>
           </div>
 
@@ -605,7 +668,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
             </button>
 
             <div className="remotale-header-avatar-circle" title="Profile">
-              <span>{user?.name?.[0] || 'A'}</span>
+              <span>{currentClientUser?.name?.[0] || 'C'}</span>
             </div>
 
             <button
@@ -628,7 +691,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
               </div>
             </div>
             <div>
-              <div className="remotale-stat-val">{stats.totalProjects || projects.length}</div>
+              <div className="remotale-stat-val">{visibleProjects.length}</div>
               <div className="remotale-stat-lbl">Total Projects</div>
             </div>
           </div>
@@ -641,7 +704,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
               </div>
             </div>
             <div>
-              <div className="remotale-stat-val">{stats.inProgress || projects.filter(p => p.status === 'in-progress').length}</div>
+              <div className="remotale-stat-val">{visibleProjects.filter(p => p.status === 'in-progress').length}</div>
               <div className="remotale-stat-lbl">In Progress</div>
             </div>
           </div>
@@ -654,7 +717,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
               </div>
             </div>
             <div>
-              <div className="remotale-stat-val">{stats.underReview || projects.filter(p => p.status === 'under-review').length}</div>
+              <div className="remotale-stat-val">{visibleProjects.filter(p => p.status === 'under-review').length}</div>
               <div className="remotale-stat-lbl">Under Review</div>
             </div>
           </div>
@@ -667,7 +730,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
               </div>
             </div>
             <div>
-              <div className="remotale-stat-val">{stats.completed || projects.filter(p => p.status === 'completed').length}</div>
+              <div className="remotale-stat-val">{visibleProjects.filter(p => p.status === 'completed').length}</div>
               <div className="remotale-stat-lbl">Completed</div>
             </div>
           </div>
@@ -688,7 +751,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
               </button>
             </div>
 
-            {projects.length === 0 ? (
+            {visibleProjects.length === 0 ? (
               <div className="remotale-empty-card">
                 <p>No projects created yet.</p>
                 <button
@@ -701,7 +764,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
                 </button>
               </div>
             ) : (
-              projects.slice(0, 3).map((proj, idx) => (
+              visibleProjects.slice(0, 3).map((proj, idx) => (
                 <div
                   key={proj.id}
                   className="remotale-project-card"
@@ -782,12 +845,12 @@ export default function RemotaleDashboard({ user, onLogout }) {
                 </form>
               )}
 
-              {tasks.length === 0 ? (
+              {visibleTasks.length === 0 ? (
                 <div className="remotale-empty-card" style={{ padding: '20px' }}>
                   <p>No pending tasks.</p>
                 </div>
               ) : (
-                tasks.slice(0, 4).map(task => (
+                visibleTasks.slice(0, 4).map(task => (
                   <div key={task.id} className="remotale-task-item">
                     <div
                       className={`remotale-task-checkbox ${task.completed ? 'completed' : ''}`}
@@ -817,12 +880,12 @@ export default function RemotaleDashboard({ user, onLogout }) {
                 </button>
               </div>
 
-              {messages.length === 0 ? (
+              {visibleMessages.length === 0 ? (
                 <div className="remotale-empty-card" style={{ padding: '20px' }}>
                   <p>No messages yet.</p>
                 </div>
               ) : (
-                messages.slice(0, 3).map(msg => (
+                visibleMessages.slice(0, 3).map(msg => (
                   <div key={msg.id} className="remotale-message-item">
                     <img
                       src={msg.sender_avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=80&auto=format&fit=crop&q=80'}
@@ -1141,7 +1204,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
                     </div>
                     <div className="remotale-admin-item-text">
                       <span className="remotale-admin-item-title">{proj.title}</span>
-                      <span className="remotale-admin-item-sub">Client: {proj.clientName || 'Ali Khan'}</span>
+                      <span className="remotale-admin-item-sub">Client: {getClientDisplayName(proj.client_id || proj.clientId, proj.clientName)}</span>
                     </div>
                   </div>
 
@@ -1174,7 +1237,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
                     </div>
                     <div className="remotale-admin-item-text">
                       <span className="remotale-admin-item-title">{p.title}</span>
-                      <span className="remotale-admin-item-sub">{p.clientName || 'Ali Khan'}</span>
+                      <span className="remotale-admin-item-sub">Client: {getClientDisplayName(p.client_id || p.clientId, p.clientName)}</span>
                     </div>
                   </div>
 
@@ -1587,7 +1650,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
                       </div>
                       <div>
                         <div style={{ fontSize: '12.5px', fontWeight: 700, color: '#0f172a' }}>{p.title}</div>
-                        <div style={{ fontSize: '10.5px', color: '#64748b' }}>Client: {p.clientName || 'Ali Khan'}</div>
+                        <div style={{ fontSize: '10.5px', color: '#64748b' }}>Client: {getClientDisplayName(p.client_id || p.clientId, p.clientName)}</div>
                       </div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -1698,7 +1761,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
                       </div>
                       <div>
                         <div style={{ fontSize: '11px', fontWeight: 700, color: '#0f172a' }}>{p.title}</div>
-                        <div style={{ fontSize: '9px', color: '#64748b' }}>Client: {p.clientName || 'Ali Khan'}</div>
+                        <div style={{ fontSize: '9px', color: '#64748b' }}>Client: {getClientDisplayName(p.client_id || p.clientId, p.clientName)}</div>
                       </div>
                     </div>
                     <span className={`remotale-days-left-badge ${idx === 0 ? 'red' : (idx === 1 ? 'amber' : 'purple')}`} style={{ fontSize: '9px', padding: '2px 5px' }}>
@@ -1884,11 +1947,11 @@ export default function RemotaleDashboard({ user, onLogout }) {
                 </button>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <div className="remotale-header-avatar-circle" style={{ width: '32px', height: '32px', fontSize: '13px', background: '#EDE9FE', color: '#7C3AED' }}>
-                    <span>{user?.name ? user.name[0].toUpperCase() : 'A'}</span>
+                    <span>{currentClientUser?.name ? currentClientUser.name[0].toUpperCase() : 'C'}</span>
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.2 }}>
-                    <span style={{ fontSize: '13px', fontWeight: 700, color: '#0f172a' }}>{user?.name || 'Ali Khan'}</span>
-                    <span style={{ fontSize: '11px', color: '#64748b' }}>Client</span>
+                    <span style={{ fontSize: '13px', fontWeight: 700, color: '#0f172a' }}>{currentClientUser?.name || 'Client'}</span>
+                    <span style={{ fontSize: '11px', color: '#64748b' }}>{currentClientUser?.company || 'Client'}</span>
                   </div>
                   <span style={{ fontSize: '11px', color: '#64748b' }}>⌵</span>
                 </div>
@@ -1896,7 +1959,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
             </div>
 
             <MyProjectsView
-              projects={projects}
+              projects={visibleProjects}
               onSelectProject={(proj) => setSelectedProject(proj)}
               onOpenAddProject={() => {
                 setProjectToEdit(null);
@@ -1907,7 +1970,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
                 setIsNewProjectModalOpen(true);
               }}
               onDeleteProject={handleDeleteProject}
-              currentUser={user}
+              currentUser={currentClientUser}
             />
 
             {/* Mobile Bottom Navigation */}
@@ -1979,11 +2042,11 @@ export default function RemotaleDashboard({ user, onLogout }) {
               </button>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <div className="remotale-header-avatar-circle" style={{ width: '32px', height: '32px', fontSize: '13px', background: '#EDE9FE', color: '#7C3AED' }}>
-                  <span>{user?.name ? user.name[0].toUpperCase() : 'A'}</span>
+                  <span>{currentClientUser?.name ? currentClientUser.name[0].toUpperCase() : 'C'}</span>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.2 }}>
-                  <span style={{ fontSize: '13px', fontWeight: 700, color: '#0f172a' }}>{user?.name || 'Ali Khan'}</span>
-                  <span style={{ fontSize: '11px', color: '#64748b' }}>Client</span>
+                  <span style={{ fontSize: '13px', fontWeight: 700, color: '#0f172a' }}>{currentClientUser?.name || 'Client'}</span>
+                  <span style={{ fontSize: '11px', color: '#64748b' }}>{currentClientUser?.company || 'Client'}</span>
                 </div>
                 <span style={{ fontSize: '11px', color: '#64748b' }}>⌵</span>
               </div>
@@ -1996,7 +2059,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
               <div>
                 <h2 style={{ fontSize: '18px', fontWeight: 800, margin: '0 0 2px 0', color: '#0f172a' }}>
-                  Hello, {user?.name?.split(' ')[0] || 'Ali'} 👋
+                  Hello, {currentClientUser?.name?.split(' ')[0] || 'Client'} 👋
                 </h2>
                 <p style={{ fontSize: '11.5px', color: '#64748b', margin: 0 }}>
                   Here's an overview of your projects.
@@ -2021,7 +2084,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
                 <div className="remotale-stat-icon-box purple" style={{ width: '28px', height: '28px' }}>
                   <FolderIcon size={14} color="#4F46E5" />
                 </div>
-                <div style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>{stats.totalProjects || projects.length}</div>
+                <div style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>{visibleProjects.length}</div>
                 <div style={{ fontSize: '9px', color: '#64748b' }}>Total</div>
               </div>
 
@@ -2029,7 +2092,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
                 <div className="remotale-stat-icon-box blue" style={{ width: '28px', height: '28px' }}>
                   <TargetIcon size={14} color="#2563EB" />
                 </div>
-                <div style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>{stats.inProgress || 0}</div>
+                <div style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>{visibleProjects.filter(p => p.status === 'in-progress').length}</div>
                 <div style={{ fontSize: '9px', color: '#64748b' }}>In Progress</div>
               </div>
 
@@ -2037,7 +2100,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
                 <div className="remotale-stat-icon-box amber" style={{ width: '28px', height: '28px' }}>
                   <ClockIcon size={14} color="#CA8A04" />
                 </div>
-                <div style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>{stats.underReview || 0}</div>
+                <div style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>{visibleProjects.filter(p => p.status === 'under-review').length}</div>
                 <div style={{ fontSize: '9px', color: '#64748b' }}>Review</div>
               </div>
 
@@ -2045,7 +2108,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
                 <div className="remotale-stat-icon-box green" style={{ width: '28px', height: '28px' }}>
                   <CheckmarkIcon size={14} color="#16A34A" />
                 </div>
-                <div style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>{stats.completed || 0}</div>
+                <div style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>{visibleProjects.filter(p => p.status === 'completed').length}</div>
                 <div style={{ fontSize: '9px', color: '#64748b' }}>Done</div>
               </div>
             </div>
@@ -2077,7 +2140,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
 
             {/* Projects List */}
             <section className="remotale-card-container" style={{ padding: '14px' }}>
-              {projects.length === 0 ? (
+              {visibleProjects.length === 0 ? (
                 <div className="remotale-empty-card" style={{ padding: '16px' }}>
                   <p>No projects yet.</p>
                   <button
@@ -2093,7 +2156,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
                   </button>
                 </div>
               ) : (
-                projects.slice(0, 3).map((proj, idx) => (
+                visibleProjects.slice(0, 3).map((proj, idx) => (
                   <div
                     key={proj.id}
                     className="remotale-project-card"
@@ -2306,14 +2369,49 @@ export default function RemotaleDashboard({ user, onLogout }) {
         </div>
 
         <div className="remotale-toolbar-right">
-          <button
-            type="button"
-            className="remotale-persona-switch-btn"
-            onClick={() => setRole(prev => prev === 'admin' ? 'client' : 'admin')}
-            title="Toggle between Admin Abdullah and Client Ali Khan view"
-          >
-            <span>{role === 'admin' ? '👤 Switch to Client (Ali Khan)' : '👑 Switch to Admin (Abdullah)'}</span>
-          </button>
+          {isRealAdmin ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <select
+                className="remotale-persona-select"
+                value={role === 'admin' ? 'admin' : previewClientId}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (val === 'admin') {
+                    setRole('admin');
+                  } else {
+                    setRole('client');
+                    setPreviewClientId(val);
+                  }
+                  setSelectedProject(null);
+                }}
+                style={{
+                  background: role === 'admin' ? '#1e293b' : '#4338ca',
+                  color: '#ffffff',
+                  border: '1px solid rgba(255,255,255,0.2)',
+                  borderRadius: '999px',
+                  padding: '6px 14px',
+                  fontWeight: 700,
+                  fontSize: '12px',
+                  cursor: 'pointer',
+                  outline: 'none',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                }}
+                title="Switch between Super Admin and specific Client Portals"
+              >
+                <option value="admin" style={{ background: '#0f172a', color: '#ffffff' }}>👑 Super Admin (All 10 Projects)</option>
+                <option value="client-awais" style={{ background: '#0f172a', color: '#ffffff' }}>👤 Client Portal: Awais (8 Projects)</option>
+                <option value="client-afshal" style={{ background: '#0f172a', color: '#ffffff' }}>👤 Client Portal: Afshal (2 Projects)</option>
+                <option value="client-1" style={{ background: '#0f172a', color: '#ffffff' }}>👤 Client Portal: Ali Khan</option>
+              </select>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span style={{ fontSize: '12px', fontWeight: 700, color: '#4338ca', background: '#ede9fe', padding: '5px 12px', borderRadius: '999px', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                <span>👤</span>
+                <span>{user?.name} ({visibleProjects.length} Projects)</span>
+              </span>
+            </div>
+          )}
 
           <button
             type="button"

@@ -1,35 +1,56 @@
-# Vanguard Studio • Agency OS & Multi-Client Portal System
+# Remotale OS • Agency Platform & Multi-Client Portal System
 
-An elite, high-performance agency management platform and client portal designed with a minimal Dribbble-grade dark aesthetic. Built specifically for digital agencies, development studios, and freelancers to manage client projects, track revenues, share live project notepads, and manage urgency-flagged revision requests with deadlines.
+An elite agency management platform and isolated multi-client portal system. Built for digital agencies, development studios, and freelancers to manage client projects, track deliverables, share project details, and maintain secure project isolation between clients.
+
+---
+
+## 🔑 Published System Credentials & Access Directory
+
+The system is pre-configured with verified credentials for **Super Admin** and all **Client Portals**:
+
+| Role | User / Client | Username | Email | Password | Assigned Projects | Access Scope |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **👑 Super Admin** | Abdullah | `admin` | `admin@remotale.com` | `admin` *(or `admin123`)* | **All 10 Projects** | Full Agency Access (All Clients & Projects) |
+| **👤 Client** | Awais (Awais Agency) | `awais` | `awais@remotale.com` | `awais` | **8 Projects Only** | Strictly Awais's 8 Assigned Projects |
+| **👤 Client** | Afshal (Afshal Brand) | `afshal` | `afshal@remotale.com` | `afshal` | **2 Projects Only** | Strictly Afshal's 2 Assigned Projects |
+| **👤 Client** | Ali Khan (Acme Brand) | `ali` | `ali@remotale.com` | `client123` | **Client Projects** | Strictly Ali Khan's Projects |
+
+> **Client Data Isolation Policy**:
+> - Each client logs in and sees **ONLY their own assigned projects, deliverables, tasks, and messages**.
+> - Clients cannot view or access other clients' projects.
+> - The **Super Admin** sees **all 10 projects** across all clients and can preview any individual client portal instantly using the persona selector.
+
+---
+
+### 📦 Client Project Breakdown
+
+#### 1. Awais (Client Portal — 8 Assigned Projects)
+1. **Pak White Label Abdul Saboor** (Web Development • In Progress)
+2. **Pak White Label Store (Latest)** (Web Development • In Progress)
+3. **Fytnex Products Designing** (Graphics • In Progress • 25% Done)
+4. **20 Dfynex Graphics** (Graphics • Pending finalization)
+5. **20 Fytnix Graphics** (Graphics • Pending article designing)
+6. **20 WearPhere Graphics** (Graphics • Urgent • 25% Done)
+7. **20 Oxytees Graphics** (Graphics • Urgent • 25% Done)
+8. **20 MrGymWear Graphics** (Graphics • High Priority • 25% Done)
+
+#### 2. Afshal (Client Portal — 2 Assigned Projects)
+1. **Farjah — Luxury Decor Items (Redesign)** (Web Development • Urgent)
+2. **Distant Market** (Web Development • Medium Priority)
 
 ---
 
 ## 🌟 Key Features
 
 ### 👑 1. Agency Owner / Admin Dashboard
-- **Executive Revenue Metrics**: Real-time tracking of total contract values ($89,000+ default seed), completed projects, active pipelines, and pending kickoffs.
-- **Urgent Action Banner**: Highlights `🔥 Critical` revision requests requiring immediate engineering attention.
-- **Live Client Changes Feed**: Centralized board of all requested revisions with urgency badges, target completion dates, and status toggles (`Pending` → `In Review` → `In Progress` → `Completed`).
-- **Direct Client Notepads Aggregator**: Inspect every client project's notepad, requirements, and meeting notes in one place.
-- **Client Directory & Portal Links**: Generate and copy custom client portal access links (e.g. `/?portal=finflow-access`).
-- **Project Management**: Add deliverables, set budgets, define deadlines, and attach design/preview links (Figma, live staging, Drive).
+- **All 10 Projects Overview**: Complete visibility into all active client projects, deadlines, and progress.
+- **Client Management**: Create, assign, and manage projects per client.
+- **Client Persona Preview**: Admin can switch to preview any specific client portal (`Awais`, `Afshal`, `Ali Khan`) to inspect their experience in real time.
 
 ### 👤 2. Dedicated Client Portals
-- **Client-Branded Workspace**: Personalized greeting, active deliverables progress bar, and external links.
-- **Interactive Project Notepad**:
-  - Live, real-time sync notepad for notes, specs, and comments.
-  - Quick-insert helpers: `+ Revision Request`, `+ Review Notes`, `+ Bug Report`.
-- **Urgency-Flagged Change Requests**:
-  - `🔥 Critical` (Blocks launch / showstopper)
-  - `⚡ High` (Priority revisions)
-  - `🟢 Normal` (Standard feedback)
-  - `☕ Low` (Nice-to-have cosmetic refinements)
-  - **Target Completion Date** selector.
-  - Full revision history and agency resolution tracking.
-- **Deliverables & Milestones**: Interactive checklist showing exact progress % for each project.
-
-### 🎭 3. Instant Persona Switcher
-- Convenient top bar allowing you to switch between **Agency Owner (Admin)** and multiple client portals (**FinFlow Technologies**, **Lumina Health**, **Nexus AI**) with a single click — perfect for client presentations, screen shares, and testing!
+- **Isolated Workspace**: Personalized greeting (`Hello, Awais 👋`, `Hello, Afshal 👋`), brand profile, and metrics.
+- **Filtered Project Catalog**: Each client only sees their own projects, progress bars, and deliverables.
+- **Project Detail Workspace**: Full project overview with task completion checklists and project notes.
 
 ---
 

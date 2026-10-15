@@ -982,9 +982,28 @@ const db = {
   },
 
   // Overview Stats
-  async getStats() {
+  async getStats(clientId) {
     if (initPromise) await initPromise;
     if (isPostgres && pgPool) {
+      if (clientId) {
+        const [projCount, inProg, underRev, comp, rev] = await Promise.all([
+          pgPool.query("SELECT COUNT(*)::int as count FROM projects WHERE client_id = $1", [clientId]),
+          pgPool.query("SELECT COUNT(*)::int as count FROM projects WHERE client_id = $1 AND status = 'in-progress'", [clientId]),
+          pgPool.query("SELECT COUNT(*)::int as count FROM projects WHERE client_id = $1 AND status = 'under-review'", [clientId]),
+          pgPool.query("SELECT COUNT(*)::int as count FROM projects WHERE client_id = $1 AND status = 'completed'", [clientId]),
+          pgPool.query("SELECT COALESCE(SUM(budget), 0)::numeric as total FROM projects WHERE client_id = $1", [clientId])
+        ]);
+
+        return {
+          totalClients: 1,
+          totalProjects: projCount.rows[0].count,
+          inProgress: inProg.rows[0].count,
+          underReview: underRev.rows[0].count,
+          completed: comp.rows[0].count,
+          totalRevenue: Number(rev.rows[0].total)
+        };
+      }
+
       const [clientsCount, projCount, inProg, underRev, comp, rev] = await Promise.all([
         pgPool.query("SELECT COUNT(*)::int as count FROM users WHERE role = 'client'"),
         pgPool.query("SELECT COUNT(*)::int as count FROM projects"),
@@ -1005,7 +1024,19 @@ const db = {
     }
 
     const local = readLocalStore();
-    const projects = local.projects || [];
+    let projects = local.projects || [];
+    if (clientId) {
+      projects = projects.filter(p => p.client_id === clientId || p.clientId === clientId);
+      return {
+        totalClients: 1,
+        totalProjects: projects.length,
+        inProgress: projects.filter(p => p.status === 'in-progress').length,
+        underReview: projects.filter(p => p.status === 'under-review').length,
+        completed: projects.filter(p => p.status === 'completed').length,
+        totalRevenue: projects.reduce((s, p) => s + (Number(p.budget) || 0), 0)
+      };
+    }
+
     return {
       totalClients: (local.users || []).filter(u => u.role === 'client').length,
       totalProjects: projects.length,

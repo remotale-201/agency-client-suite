@@ -49,7 +49,7 @@ export const api = {
   clearNotifications: () => request('/api/notifications', { method: 'DELETE' }),
 
   // Stats
-  getStats: () => request('/api/stats'),
+  getStats: (clientId) => request(`/api/stats${clientId ? `?clientId=${encodeURIComponent(clientId)}` : ''}`),
 
   // Settings
   getSettings: () => request('/api/settings'),
