@@ -144,10 +144,7 @@ function BarChart3D({ size = 22 }) {
 
 export default function RemotaleAuthFlow({ onLogin, onRegister, initialPortalToken }) {
   // Navigation State: 'welcome' (Screen 1), 'signup' (Screen 2), 'login' (Screen 3)
-  const [activeScreen, setActiveScreen] = useState('welcome');
-  
-  // Showcase View Mode: 'interactive' (Single screen user flow), or 'all' (Side-by-side matching mockup)
-  const [viewMode, setViewMode] = useState('interactive');
+  const [activeScreen, setActiveScreen] = useState('login');
 
   // Selected Role: 'client' or 'admin'
   const [selectedRole, setSelectedRole] = useState('client');
@@ -902,127 +899,14 @@ export default function RemotaleAuthFlow({ onLogin, onRegister, initialPortalTok
 
   return (
     <div className="remotale-auth-viewport">
-      {/* Top Interactive Switcher Toolbar */}
-      <header className="remotale-top-nav-bar">
-        <div className="remotale-top-brand">
-          <RemotaleLogo size={22} />
-          <span>Remotale OS</span>
+      {/* Main Container: Single Interactive View */}
+      <div className="remotale-screens-container">
+        <div className="remotale-screen-column">
+          {activeScreen === 'welcome' && renderScreen1()}
+          {activeScreen === 'signup' && renderScreen2()}
+          {activeScreen === 'login' && renderScreen3()}
         </div>
-
-        {/* Screen Switcher Pills */}
-        <div className="remotale-nav-pills">
-          <button
-            type="button"
-            className={`remotale-nav-pill-btn ${viewMode === 'interactive' && activeScreen === 'welcome' ? 'active' : ''}`}
-            onClick={() => {
-              setViewMode('interactive');
-              setActiveScreen('welcome');
-            }}
-          >
-            <span className="remotale-badge-num">1</span>
-            <span>Welcome</span>
-          </button>
-
-          <button
-            type="button"
-            className={`remotale-nav-pill-btn ${viewMode === 'interactive' && activeScreen === 'signup' ? 'active' : ''}`}
-            onClick={() => {
-              setViewMode('interactive');
-              setActiveScreen('signup');
-            }}
-          >
-            <span className="remotale-badge-num">2</span>
-            <span>Signup</span>
-          </button>
-
-          <button
-            type="button"
-            className={`remotale-nav-pill-btn ${viewMode === 'interactive' && activeScreen === 'login' ? 'active' : ''}`}
-            onClick={() => {
-              setViewMode('interactive');
-              setActiveScreen('login');
-            }}
-          >
-            <span className="remotale-badge-num">3</span>
-            <span>Login</span>
-          </button>
-
-          <button
-            type="button"
-            className={`remotale-nav-pill-btn ${viewMode === 'all' ? 'active' : ''}`}
-            onClick={() => setViewMode('all')}
-          >
-            <span>📱 Side-by-Side (Mockup View)</span>
-          </button>
-        </div>
-
-        {/* Quick Autofill Helper for Published Accounts */}
-        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
-          <button
-            type="button"
-            className="remotale-quick-access-btn"
-            onClick={() => handleQuickFill('admin')}
-            title="Admin Abdullah (admin / admin) • All 10 Projects"
-          >
-            <span>👑 Admin</span>
-          </button>
-          <button
-            type="button"
-            className="remotale-quick-access-btn"
-            onClick={() => handleQuickFill('awais')}
-            title="Client Awais (awais / awais) • 8 Projects Only"
-          >
-            <span>👤 Awais (8 Projs)</span>
-          </button>
-          <button
-            type="button"
-            className="remotale-quick-access-btn"
-            onClick={() => handleQuickFill('afshal')}
-            title="Client Afshal (afshal / afshal) • 2 Projects Only"
-          >
-            <span>👤 Afshal (2 Projs)</span>
-          </button>
-          <button
-            type="button"
-            className="remotale-quick-access-btn"
-            onClick={() => handleQuickFill('ali')}
-            title="Client Ali Khan (ali / client123)"
-          >
-            <span>👤 Ali Khan</span>
-          </button>
-        </div>
-      </header>
-
-      {/* Main Container: Single Interactive View or Side-by-Side 3-Screen View */}
-      {viewMode === 'all' ? (
-        <div className="remotale-screens-container side-by-side">
-          {/* Column 1: Screen 1 */}
-          <div className="remotale-screen-column">
-            <div className="remotale-screen-header-badge">1</div>
-            {renderScreen1()}
-          </div>
-
-          {/* Column 2: Screen 2 */}
-          <div className="remotale-screen-column">
-            <div className="remotale-screen-header-badge">2</div>
-            {renderScreen2()}
-          </div>
-
-          {/* Column 3: Screen 3 */}
-          <div className="remotale-screen-column">
-            <div className="remotale-screen-header-badge">3</div>
-            {renderScreen3()}
-          </div>
-        </div>
-      ) : (
-        <div className="remotale-screens-container">
-          <div className="remotale-screen-column">
-            {activeScreen === 'welcome' && renderScreen1()}
-            {activeScreen === 'signup' && renderScreen2()}
-            {activeScreen === 'login' && renderScreen3()}
-          </div>
-        </div>
-      )}
+      </div>
 
       {/* Forgot Password Modal */}
       {isForgotModalOpen && (

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import './RemotaleDashboard.css';
 import { api } from '../api';
 import { RemotaleLogo } from './RemotaleAuthFlow';
@@ -159,6 +159,20 @@ export default function RemotaleDashboard({ user, onLogout }) {
     const handleResize = () => setIsMobileScreen(window.innerWidth < 1024);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Profile dropdown menu state
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const profileMenuRef = useRef(null);
+
+  useEffect(() => {
+    const handleOutsideClick = (e) => {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(e.target)) {
+        setIsProfileMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => document.removeEventListener('mousedown', handleOutsideClick);
   }, []);
 
   // Active navigation tab
@@ -724,8 +738,52 @@ export default function RemotaleDashboard({ user, onLogout }) {
               <span className="remotale-bell-dot" />
             </button>
 
-            <div className="remotale-header-avatar-circle" title="Profile">
-              <span>{currentClientUser?.name?.[0] || 'C'}</span>
+            <div style={{ position: 'relative' }} ref={profileMenuRef}>
+              <button
+                type="button"
+                onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
+                style={{
+                  cursor: 'pointer',
+                  background: 'transparent',
+                  border: 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '4px 8px',
+                  borderRadius: '999px'
+                }}
+                title="Account Menu"
+              >
+                <div className="remotale-header-avatar-circle" title="Profile">
+                  <span>{currentClientUser?.name?.[0] || 'C'}</span>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'left', lineHeight: 1.15 }}>
+                  <span style={{ fontSize: '13px', fontWeight: 700, color: '#0f172a' }}>{currentClientUser?.name || 'Client'}</span>
+                  <span style={{ fontSize: '11px', color: '#64748b' }}>{currentClientUser?.company || 'Client'} ⌵</span>
+                </div>
+              </button>
+
+              {isProfileMenuOpen && (
+                <div className="remotale-user-dropdown-popover">
+                  <div className="remotale-dropdown-user-header">
+                    <span className="remotale-dropdown-user-name">{currentClientUser?.name || 'Client'}</span>
+                    <span className="remotale-dropdown-user-email">{currentClientUser?.email || 'client@remotale.com'}</span>
+                    <span className="remotale-dropdown-badge">👤 Client Portal</span>
+                  </div>
+                  <div className="remotale-dropdown-divider" />
+                  <button
+                    type="button"
+                    className="remotale-dropdown-logout-item"
+                    onClick={() => {
+                      setIsProfileMenuOpen(false);
+                      onLogout();
+                    }}
+                  >
+                    <span>🚪</span>
+                    <span>Log Out</span>
+                  </button>
+                </div>
+              )}
             </div>
 
             <button
@@ -734,28 +792,6 @@ export default function RemotaleDashboard({ user, onLogout }) {
               onClick={() => setIsNewProjectModalOpen(true)}
             >
               <span>+ New Project</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={onLogout}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                padding: '8px 14px',
-                borderRadius: '8px',
-                border: '1px solid #fee2e2',
-                background: '#fef2f2',
-                color: '#ef4444',
-                fontSize: '12.5px',
-                fontWeight: 600,
-                cursor: 'pointer',
-                transition: 'all 0.15s ease'
-              }}
-              title="Sign Out"
-            >
-              <span>🚪 Sign Out</span>
             </button>
           </div>
         </div>
@@ -1240,27 +1276,48 @@ export default function RemotaleDashboard({ user, onLogout }) {
               <span className="remotale-bell-dot" />
             </button>
 
-            <button
-              type="button"
-              onClick={onLogout}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                padding: '7px 14px',
-                borderRadius: '8px',
-                border: '1px solid #fee2e2',
-                background: '#fef2f2',
-                color: '#ef4444',
-                fontSize: '12.5px',
-                fontWeight: 600,
-                cursor: 'pointer',
-                transition: 'all 0.15s ease'
-              }}
-              title="Sign Out"
-            >
-              <span>🚪 Sign Out</span>
-            </button>
+            <div style={{ position: 'relative' }} ref={profileMenuRef}>
+              <button
+                type="button"
+                className="remotale-header-user-btn"
+                onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
+                style={{ cursor: 'pointer' }}
+                title="Account Menu"
+              >
+                <div className="remotale-header-avatar-circle">
+                  <img
+                    src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80"
+                    alt="Admin"
+                  />
+                </div>
+                <div className="remotale-header-admin-text">
+                  <span className="remotale-header-admin-name">Admin</span>
+                  <span className="remotale-header-admin-role">Super Admin ⌵</span>
+                </div>
+              </button>
+
+              {isProfileMenuOpen && (
+                <div className="remotale-user-dropdown-popover">
+                  <div className="remotale-dropdown-user-header">
+                    <span className="remotale-dropdown-user-name">Abdullah</span>
+                    <span className="remotale-dropdown-user-email">admin@remotale.com</span>
+                    <span className="remotale-dropdown-badge">👑 Super Admin</span>
+                  </div>
+                  <div className="remotale-dropdown-divider" />
+                  <button
+                    type="button"
+                    className="remotale-dropdown-logout-item"
+                    onClick={() => {
+                      setIsProfileMenuOpen(false);
+                      onLogout();
+                    }}
+                  >
+                    <span>🚪</span>
+                    <span>Log Out</span>
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
@@ -1550,36 +1607,42 @@ export default function RemotaleDashboard({ user, onLogout }) {
                 <span style={{ fontWeight: 800, fontSize: '17px', color: '#0f172a' }}>Remotale</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <button
-                  type="button"
-                  onClick={onLogout}
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '4px',
-                    padding: '5px 10px',
-                    borderRadius: '6px',
-                    border: '1px solid #fecaca',
-                    background: '#fee2e2',
-                    color: '#dc2626',
-                    fontSize: '11.5px',
-                    fontWeight: 700,
-                    cursor: 'pointer'
-                  }}
-                  title="Log Out"
-                >
-                  <span>🚪 Log Out</span>
-                </button>
                 <button type="button" className="remotale-bell-btn" style={{ width: '32px', height: '32px' }}>
                   <BellIcon size={16} />
                   <span className="remotale-bell-dot" />
                 </button>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <img
-                    src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80&auto=format&fit=crop&q=80"
-                    alt="Admin"
-                    style={{ width: '30px', height: '30px', borderRadius: '50%', objectFit: 'cover' }}
-                  />
+                <div style={{ position: 'relative' }}>
+                  <div
+                    style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                    onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
+                  >
+                    <img
+                      src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80&auto=format&fit=crop&q=80"
+                      alt="Admin"
+                      style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover' }}
+                    />
+                  </div>
+                  {isProfileMenuOpen && (
+                    <div className="remotale-user-dropdown-popover">
+                      <div className="remotale-dropdown-user-header">
+                        <span className="remotale-dropdown-user-name">Abdullah</span>
+                        <span className="remotale-dropdown-user-email">admin@remotale.com</span>
+                        <span className="remotale-dropdown-badge">👑 Super Admin</span>
+                      </div>
+                      <div className="remotale-dropdown-divider" />
+                      <button
+                        type="button"
+                        className="remotale-dropdown-logout-item"
+                        onClick={() => {
+                          setIsProfileMenuOpen(false);
+                          onLogout();
+                        }}
+                      >
+                        <span>🚪</span>
+                        <span>Log Out</span>
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -1663,40 +1726,46 @@ export default function RemotaleDashboard({ user, onLogout }) {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <button
-              type="button"
-              onClick={onLogout}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '4px',
-                padding: '5px 10px',
-                borderRadius: '6px',
-                border: '1px solid #fecaca',
-                background: '#fee2e2',
-                color: '#dc2626',
-                fontSize: '11.5px',
-                fontWeight: 700,
-                cursor: 'pointer'
-              }}
-              title="Log Out"
-            >
-              <span>🚪 Log Out</span>
-            </button>
             <button type="button" className="remotale-bell-btn" style={{ width: '32px', height: '32px' }}>
               <BellIcon size={16} />
               <span className="remotale-bell-dot" />
             </button>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <img
-                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80&auto=format&fit=crop&q=80"
-                alt="Admin"
-                style={{ width: '30px', height: '30px', borderRadius: '50%', objectFit: 'cover' }}
-              />
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <span style={{ fontSize: '11px', fontWeight: 700, color: '#0f172a' }}>Admin</span>
-                <span style={{ fontSize: '9px', color: '#64748b' }}>Super Admin ⌵</span>
+            <div style={{ position: 'relative' }}>
+              <div
+                style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}
+                onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
+              >
+                <img
+                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80&auto=format&fit=crop&q=80"
+                  alt="Admin"
+                  style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover' }}
+                />
+                <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }}>
+                  <span style={{ fontSize: '11.5px', fontWeight: 700, color: '#0f172a' }}>Admin</span>
+                  <span style={{ fontSize: '9.5px', color: '#64748b' }}>Super Admin ⌵</span>
+                </div>
               </div>
+              {isProfileMenuOpen && (
+                <div className="remotale-user-dropdown-popover">
+                  <div className="remotale-dropdown-user-header">
+                    <span className="remotale-dropdown-user-name">Abdullah</span>
+                    <span className="remotale-dropdown-user-email">admin@remotale.com</span>
+                    <span className="remotale-dropdown-badge">👑 Super Admin</span>
+                  </div>
+                  <div className="remotale-dropdown-divider" />
+                  <button
+                    type="button"
+                    className="remotale-dropdown-logout-item"
+                    onClick={() => {
+                      setIsProfileMenuOpen(false);
+                      onLogout();
+                    }}
+                  >
+                    <span>🚪</span>
+                    <span>Log Out</span>
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -2135,39 +2204,44 @@ export default function RemotaleDashboard({ user, onLogout }) {
                 <span style={{ fontWeight: 800, fontSize: '17px', color: '#0f172a' }}>Remotale</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <button
-                  type="button"
-                  onClick={onLogout}
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '4px',
-                    padding: '5px 10px',
-                    borderRadius: '6px',
-                    border: '1px solid #fecaca',
-                    background: '#fee2e2',
-                    color: '#dc2626',
-                    fontSize: '11.5px',
-                    fontWeight: 700,
-                    cursor: 'pointer'
-                  }}
-                  title="Log Out"
-                >
-                  <span>🚪 Log Out</span>
-                </button>
                 <button type="button" className="remotale-bell-btn" style={{ width: '32px', height: '32px' }}>
                   <BellIcon size={16} />
                   <span className="remotale-bell-dot" />
                 </button>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <div className="remotale-header-avatar-circle" style={{ width: '32px', height: '32px', fontSize: '13px', background: '#EDE9FE', color: '#7C3AED' }}>
-                    <span>{currentClientUser?.name ? currentClientUser.name[0].toUpperCase() : 'C'}</span>
+                <div style={{ position: 'relative' }}>
+                  <div
+                    style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}
+                    onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
+                  >
+                    <div className="remotale-header-avatar-circle" style={{ width: '32px', height: '32px', fontSize: '13px', background: '#EDE9FE', color: '#7C3AED' }}>
+                      <span>{currentClientUser?.name ? currentClientUser.name[0].toUpperCase() : 'C'}</span>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.2 }}>
+                      <span style={{ fontSize: '13px', fontWeight: 700, color: '#0f172a' }}>{currentClientUser?.name || 'Client'}</span>
+                      <span style={{ fontSize: '11px', color: '#64748b' }}>{currentClientUser?.company || 'Client'} ⌵</span>
+                    </div>
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.2 }}>
-                    <span style={{ fontSize: '13px', fontWeight: 700, color: '#0f172a' }}>{currentClientUser?.name || 'Client'}</span>
-                    <span style={{ fontSize: '11px', color: '#64748b' }}>{currentClientUser?.company || 'Client'}</span>
-                  </div>
-                  <span style={{ fontSize: '11px', color: '#64748b' }}>⌵</span>
+                  {isProfileMenuOpen && (
+                    <div className="remotale-user-dropdown-popover">
+                      <div className="remotale-dropdown-user-header">
+                        <span className="remotale-dropdown-user-name">{currentClientUser?.name || 'Client'}</span>
+                        <span className="remotale-dropdown-user-email">{currentClientUser?.email || 'client@remotale.com'}</span>
+                        <span className="remotale-dropdown-badge">👤 Client Portal</span>
+                      </div>
+                      <div className="remotale-dropdown-divider" />
+                      <button
+                        type="button"
+                        className="remotale-dropdown-logout-item"
+                        onClick={() => {
+                          setIsProfileMenuOpen(false);
+                          onLogout();
+                        }}
+                      >
+                        <span>🚪</span>
+                        <span>Log Out</span>
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -2251,39 +2325,44 @@ export default function RemotaleDashboard({ user, onLogout }) {
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <button
-                type="button"
-                onClick={onLogout}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '4px',
-                  padding: '5px 10px',
-                  borderRadius: '6px',
-                  border: '1px solid #fecaca',
-                  background: '#fee2e2',
-                  color: '#dc2626',
-                  fontSize: '11.5px',
-                  fontWeight: 700,
-                  cursor: 'pointer'
-                }}
-                title="Log Out"
-              >
-                <span>🚪 Log Out</span>
-              </button>
               <button type="button" className="remotale-bell-btn" style={{ width: '32px', height: '32px' }}>
                 <BellIcon size={16} />
                 <span className="remotale-bell-dot" />
               </button>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <div className="remotale-header-avatar-circle" style={{ width: '32px', height: '32px', fontSize: '13px', background: '#EDE9FE', color: '#7C3AED' }}>
-                  <span>{currentClientUser?.name ? currentClientUser.name[0].toUpperCase() : 'C'}</span>
+              <div style={{ position: 'relative' }}>
+                <div
+                  style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}
+                  onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
+                >
+                  <div className="remotale-header-avatar-circle" style={{ width: '32px', height: '32px', fontSize: '13px', background: '#EDE9FE', color: '#7C3AED' }}>
+                    <span>{currentClientUser?.name ? currentClientUser.name[0].toUpperCase() : 'C'}</span>
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.2 }}>
+                    <span style={{ fontSize: '13px', fontWeight: 700, color: '#0f172a' }}>{currentClientUser?.name || 'Client'}</span>
+                    <span style={{ fontSize: '11px', color: '#64748b' }}>{currentClientUser?.company || 'Client'} ⌵</span>
+                  </div>
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.2 }}>
-                  <span style={{ fontSize: '13px', fontWeight: 700, color: '#0f172a' }}>{currentClientUser?.name || 'Client'}</span>
-                  <span style={{ fontSize: '11px', color: '#64748b' }}>{currentClientUser?.company || 'Client'}</span>
-                </div>
-                <span style={{ fontSize: '11px', color: '#64748b' }}>⌵</span>
+                {isProfileMenuOpen && (
+                  <div className="remotale-user-dropdown-popover">
+                    <div className="remotale-dropdown-user-header">
+                      <span className="remotale-dropdown-user-name">{currentClientUser?.name || 'Client'}</span>
+                      <span className="remotale-dropdown-user-email">{currentClientUser?.email || 'client@remotale.com'}</span>
+                      <span className="remotale-dropdown-badge">👤 Client Portal</span>
+                    </div>
+                    <div className="remotale-dropdown-divider" />
+                    <button
+                      type="button"
+                      className="remotale-dropdown-logout-item"
+                      onClick={() => {
+                        setIsProfileMenuOpen(false);
+                        onLogout();
+                      }}
+                    >
+                      <span>🚪</span>
+                      <span>Log Out</span>
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </div>

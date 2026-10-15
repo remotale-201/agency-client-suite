@@ -26,18 +26,7 @@
    Top Viewport Switcher Toolbar
    -------------------------------------------------------------------------- */
 .remotale-top-nav-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  max-width: 1240px;
-  margin-bottom: 24px;
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(226, 232, 240, 0.8);
-  border-radius: 999px;
-  padding: 6px 14px;
-  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.08);
+  display: none !important;
 }
 
 .remotale-top-brand {
