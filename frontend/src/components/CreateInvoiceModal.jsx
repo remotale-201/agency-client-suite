@@ -211,17 +211,24 @@ export default function CreateInvoiceModal({
 
     const includedProjects = clientProjects.filter(p => combinedProjectIds.includes(p.id));
     const projectTitles = includedProjects.map(p => p.title);
+    const allTitles = projectTitles.length > 0 
+      ? projectTitles 
+      : items.map(it => it.project_title).filter(Boolean);
+
+    const clientName = selectedClient?.name || (selectedClientId === 'client-afshal' ? 'Afshal' : 'Awais');
+    const clientCompany = selectedClient?.company || (clientName === 'Afshal' ? 'Afshal Brand' : 'Awais Agency');
+    const clientEmail = selectedClient?.email || (clientName === 'Afshal' ? 'afshal@remotale.com' : 'awais@remotale.com');
 
     const invoicePayload = {
       client_id: selectedClientId,
-      client_name: selectedClient?.name || 'Client',
-      client_company: selectedClient?.company || 'Agency Client',
-      client_email: selectedClient?.email || '',
+      client_name: clientName,
+      client_company: clientCompany,
+      client_email: clientEmail,
       project_ids: combinedProjectIds,
-      project_titles: projectTitles,
+      project_titles: allTitles,
       project_id: combinedProjectIds[0] || null,
-      project_title: projectTitles.join(', ') || (items[0]?.description || 'Project Invoice'),
-      title: invoiceTitle.trim() || (projectTitles.length > 0 ? `${projectTitles.join(' & ')} Invoice` : 'Client Invoice'),
+      project_title: allTitles.join(', ') || (items[0]?.description || 'Project Invoice'),
+      title: invoiceTitle.trim() || (allTitles.length > 0 ? `${allTitles.join(' & ')} Invoice` : 'Client Invoice'),
       invoice_number: invoiceNumber || `INV-${Date.now()}`,
       currency,
       subtotal,

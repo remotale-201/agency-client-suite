@@ -405,6 +405,7 @@ export default function InvoicesView({
       {selectedInvoice && (
         <InvoiceDetailModal
           invoice={selectedInvoice}
+          clients={clients}
           onClose={() => setSelectedInvoice(null)}
           onPublish={handlePublishClick}
           onMarkPaid={handlePaidClick}

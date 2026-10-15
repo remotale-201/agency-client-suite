@@ -3,6 +3,7 @@ import './InvoicesView.css';
 
 export default function InvoiceDetailModal({
   invoice,
+  clients = [],
   onClose,
   onPublish,
   onMarkPaid,
@@ -21,13 +22,21 @@ export default function InvoiceDetailModal({
   const isDraft = invoice.status === 'draft';
   const isPublished = invoice.status === 'published' || invoice.published;
 
+  // Resolve client info: prioritize invoice fields > matched clients > Awais as default
+  const matchedClient = (clients || []).find(c => c.id === (invoice.client_id || invoice.clientId)) || {};
+  const clientName = invoice.client_name || matchedClient.name || (invoice.client_id === 'client-afshal' ? 'Afshal' : 'Awais');
+  const clientCompany = invoice.client_company || matchedClient.company || (clientName === 'Afshal' ? 'Afshal Brand' : 'Awais Agency');
+  const clientEmail = invoice.client_email || matchedClient.email || (clientName === 'Afshal' ? 'afshal@remotale.com' : 'awais@remotale.com');
+  const clientPhone = invoice.client_phone || '+92 300 1234567';
+  const clientAddress = invoice.client_address || (clientName === 'Afshal' ? 'Karachi, Sindh, Pakistan' : 'Lahore, Punjab, Pakistan');
+
   const handlePrint = () => {
     window.print();
   };
 
   // Helper to highlight last word of title in vibrant purple as shown in the theme
   const renderStyledTitle = (rawTitle) => {
-    const title = (rawTitle || 'E-commerce Website').trim();
+    const title = (rawTitle || 'Project Invoice').trim();
     const parts = title.split(' ');
     if (parts.length <= 1) {
       return <span className="inv-title-highlight">{title}</span>;
@@ -45,9 +54,12 @@ export default function InvoiceDetailModal({
   // Extract project titles
   const projectTitles = Array.isArray(invoice.project_titles) && invoice.project_titles.length > 0
     ? invoice.project_titles
-    : (invoice.project_title ? invoice.project_title.split(',').map(s => s.trim()).filter(Boolean) : []);
+    : (Array.isArray(invoice.items) && invoice.items.some(it => it.project_title)
+      ? Array.from(new Set(invoice.items.map(it => it.project_title).filter(Boolean)))
+      : (invoice.project_title ? invoice.project_title.split(',').map(s => s.trim()).filter(Boolean) : []));
 
-  const primaryProjectTitle = projectTitles[0] || invoice.project_title || invoice.title || 'E-commerce Website';
+  const isMultiProject = projectTitles.length > 1;
+  const primaryProjectTitle = projectTitles[0] || invoice.project_title || invoice.title || 'Project Milestone Deliverable';
 
   // Parse payment details or provide structured defaults matching the theme
   const parsePaymentInfo = () => {
@@ -198,68 +210,9 @@ export default function InvoiceDetailModal({
               </p>
             </div>
 
-            {/* Two-Column Info Cards: Project Details & Billed To */}
+            {/* Two-Column Info Cards: Billed To & Covered Projects / Project Details */}
             <div className="inv-theme-cards-grid">
-              {/* Card 1: Project Details */}
-              <div className="inv-theme-card">
-                <div className="inv-theme-card-header">
-                  <div className="inv-theme-icon-square purple">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z"/>
-                    </svg>
-                  </div>
-                  <h3 className="inv-theme-card-title">Project Details</h3>
-                </div>
-
-                <div className="inv-theme-kv-list">
-                  <div className="inv-theme-kv-row">
-                    <span className="inv-theme-k">Project Title</span>
-                    <span className="inv-theme-sep">:</span>
-                    <span className="inv-theme-v">
-                      {projectTitles.length > 1 ? (
-                        <div className="inv-theme-multi-projs-list">
-                          {projectTitles.map((t, idx) => (
-                            <span key={idx} className="inv-theme-proj-chip">📁 {t}</span>
-                          ))}
-                        </div>
-                      ) : (
-                        primaryProjectTitle
-                      )}
-                    </span>
-                  </div>
-
-                  <div className="inv-theme-kv-row">
-                    <span className="inv-theme-k">Project Type</span>
-                    <span className="inv-theme-sep">:</span>
-                    <span className="inv-theme-v">Web Development & Store Setup</span>
-                  </div>
-
-                  <div className="inv-theme-kv-row">
-                    <span className="inv-theme-k">Project ID</span>
-                    <span className="inv-theme-sep">:</span>
-                    <span className="inv-theme-v">{invoice.project_id || (invoice.project_ids && invoice.project_ids[0]) || 'PRJ-2024-018'}</span>
-                  </div>
-
-                  <div className="inv-theme-kv-row">
-                    <span className="inv-theme-k">Timeline</span>
-                    <span className="inv-theme-sep">:</span>
-                    <span className="inv-theme-v">{invoice.issue_date || '10 Oct 2024'} – {invoice.due_date || '25 Oct 2024'}</span>
-                  </div>
-
-                  <div className="inv-theme-kv-row">
-                    <span className="inv-theme-k">Status</span>
-                    <span className="inv-theme-sep">:</span>
-                    <span className="inv-theme-v">
-                      <span className="inv-theme-dot-badge">
-                        <span className="inv-theme-dot" />
-                        <span>In Progress</span>
-                      </span>
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Card 2: Billed To */}
+              {/* Card 1: Billed To */}
               <div className="inv-theme-card">
                 <div className="inv-theme-card-header">
                   <div className="inv-theme-icon-square purple">
@@ -274,33 +227,106 @@ export default function InvoiceDetailModal({
                   <div className="inv-theme-kv-row">
                     <span className="inv-theme-k">Name</span>
                     <span className="inv-theme-sep">:</span>
-                    <span className="inv-theme-v font-bold">{invoice.client_name || 'Ali Khan'}</span>
+                    <span className="inv-theme-v font-bold" style={{ fontSize: '13.5px', color: '#1e1b4b' }}>
+                      {clientName}
+                    </span>
                   </div>
 
                   <div className="inv-theme-kv-row">
                     <span className="inv-theme-k">Company</span>
                     <span className="inv-theme-sep">:</span>
-                    <span className="inv-theme-v">{invoice.client_company || 'Ali Store (Pvt. Ltd.)'}</span>
+                    <span className="inv-theme-v">{clientCompany}</span>
                   </div>
 
                   <div className="inv-theme-kv-row">
                     <span className="inv-theme-k">Email</span>
                     <span className="inv-theme-sep">:</span>
-                    <span className="inv-theme-v">{invoice.client_email || 'ali.khan@example.com'}</span>
+                    <span className="inv-theme-v">{clientEmail}</span>
                   </div>
 
                   <div className="inv-theme-kv-row">
                     <span className="inv-theme-k">Phone</span>
                     <span className="inv-theme-sep">:</span>
-                    <span className="inv-theme-v">+92 300 1234567</span>
+                    <span className="inv-theme-v">{clientPhone}</span>
                   </div>
 
                   <div className="inv-theme-kv-row">
                     <span className="inv-theme-k">Address</span>
                     <span className="inv-theme-sep">:</span>
-                    <span className="inv-theme-v">Plot 12, Clifton, Karachi, Sindh, Pakistan</span>
+                    <span className="inv-theme-v">{clientAddress}</span>
                   </div>
                 </div>
+              </div>
+
+              {/* Card 2: Covered Projects or Project Details */}
+              <div className="inv-theme-card">
+                {isMultiProject ? (
+                  <>
+                    <div className="inv-theme-card-header">
+                      <div className="inv-theme-icon-square purple">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z"/>
+                        </svg>
+                      </div>
+                      <h3 className="inv-theme-card-title" style={{ color: '#4338ca', fontWeight: 800, letterSpacing: '0.04em', textTransform: 'uppercase', fontSize: '12.5px' }}>
+                        COVERED PROJECTS ({projectTitles.length}):
+                      </h3>
+                    </div>
+
+                    <div className="inv-covered-projects-content">
+                      <div className="inv-sheet-projects-list">
+                        {projectTitles.map((t, idx) => (
+                          <span key={idx} className="inv-sheet-project-pill">📁 {t}</span>
+                        ))}
+                      </div>
+                      <p className="inv-covered-statement-sub">
+                        Consolidated Multi-Project Milestone Statement
+                      </p>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="inv-theme-card-header">
+                      <div className="inv-theme-icon-square purple">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z"/>
+                        </svg>
+                      </div>
+                      <h3 className="inv-theme-card-title">Project Details</h3>
+                    </div>
+
+                    <div className="inv-theme-kv-list">
+                      <div className="inv-theme-kv-row">
+                        <span className="inv-theme-k">Project Title</span>
+                        <span className="inv-theme-sep">:</span>
+                        <span className="inv-theme-v font-bold">{primaryProjectTitle}</span>
+                      </div>
+
+                      <div className="inv-theme-kv-row">
+                        <span className="inv-theme-k">Project Type</span>
+                        <span className="inv-theme-sep">:</span>
+                        <span className="inv-theme-v">Web Development & Store Setup</span>
+                      </div>
+
+                      <div className="inv-theme-kv-row">
+                        <span className="inv-theme-k">Timeline</span>
+                        <span className="inv-theme-sep">:</span>
+                        <span className="inv-theme-v">{invoice.issue_date || '15/10/2026'} – {invoice.due_date || '25/10/2026'}</span>
+                      </div>
+
+                      <div className="inv-theme-kv-row">
+                        <span className="inv-theme-k">Status</span>
+                        <span className="inv-theme-sep">:</span>
+                        <span className="inv-theme-v">
+                          <span className="inv-theme-dot-badge">
+                            <span className="inv-theme-dot" />
+                            <span>In Progress</span>
+                          </span>
+                        </span>
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
 
@@ -497,8 +523,8 @@ export default function InvoiceDetailModal({
                       <path d="M30 20L48 35" stroke="#1e1b4b" strokeWidth="1.8" strokeLinecap="round" />
                     </svg>
                   </div>
-                  <span className="inv-theme-signee-name">Hamza Khan</span>
-                  <span className="inv-theme-signee-title">CEO, Remotale</span>
+                  <span className="inv-theme-signee-name">Abdullah</span>
+                  <span className="inv-theme-signee-title">Lead Director, Remotale</span>
                 </div>
 
                 {/* Circular Double-Ring Official Stamp matching the photo */}
