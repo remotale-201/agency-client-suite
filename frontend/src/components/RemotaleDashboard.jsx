@@ -6,6 +6,7 @@ import AddNewProjectModal from './AddNewProjectModal';
 import MyProjectsView from './MyProjectsView';
 import ProjectDetailWorkspace from './ProjectDetailWorkspace';
 import InvoicesView from './InvoicesView';
+import ComingSoonView from './ComingSoonView';
 import LetterAvatar from './LetterAvatar';
 import { SEED_PROJECTS, SEED_CLIENTS, SEED_STATS, SEED_INVOICES } from '../seedData';
 
@@ -993,6 +994,14 @@ export default function RemotaleDashboard({ user, onLogout }) {
             onMarkPaidInvoice={handleMarkPaidInvoice}
             onDeleteInvoice={handleDeleteInvoice}
           />
+        ) : (activeTab === 'tasks' || activeTab === 'messages' || activeTab === 'files') ? (
+          <ComingSoonView
+            section={activeTab}
+            onBackToProjects={() => {
+              setSelectedProject(null);
+              setActiveTab('projects');
+            }}
+          />
         ) : activeTab === 'team' ? (
           renderTeamView()
         ) : (
@@ -1555,6 +1564,14 @@ export default function RemotaleDashboard({ user, onLogout }) {
             onPublishInvoice={handlePublishInvoice}
             onMarkPaidInvoice={handleMarkPaidInvoice}
             onDeleteInvoice={handleDeleteInvoice}
+          />
+        ) : (activeTab === 'tasks' || activeTab === 'messages' || activeTab === 'files') ? (
+          <ComingSoonView
+            section={activeTab}
+            onBackToProjects={() => {
+              setSelectedProject(null);
+              setActiveTab('projects');
+            }}
           />
         ) : activeTab === 'team' ? (
           renderTeamView()
@@ -2758,6 +2775,70 @@ export default function RemotaleDashboard({ user, onLogout }) {
               >
                 <UsersIcon size={18} color={isProfileMenuOpen ? '#4F46E5' : '#64748B'} />
                 <span>Profile</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    if (activeTab === 'tasks' || activeTab === 'messages' || activeTab === 'files') {
+      return (
+        <div className="remotale-mobile-wrapper">
+          <div className="remotale-mobile-card">
+            <div className="remotale-mobile-header">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <RemotaleLogo size={22} />
+                <span style={{ fontWeight: 800, fontSize: '17px', color: '#0f172a' }}>Remotale</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div className="remotale-header-avatar-circle" style={{ width: '32px', height: '32px', fontSize: '13px', background: '#EDE9FE', color: '#7C3AED' }}>
+                  <span>{currentClientUser?.name ? currentClientUser.name[0].toUpperCase() : 'C'}</span>
+                </div>
+              </div>
+            </div>
+
+            <ComingSoonView
+              section={activeTab}
+              onBackToProjects={() => {
+                setSelectedProject(null);
+                setActiveTab('projects');
+              }}
+            />
+
+            <div className="remotale-mobile-bottom-nav">
+              <button
+                type="button"
+                className={`remotale-bottom-nav-item ${activeTab === 'home' ? 'active' : ''}`}
+                onClick={() => {
+                  setSelectedProject(null);
+                  setActiveTab('home');
+                }}
+              >
+                <HomeIcon size={18} color="#64748B" />
+                <span>Home</span>
+              </button>
+              <button
+                type="button"
+                className={`remotale-bottom-nav-item ${activeTab === 'projects' ? 'active' : ''}`}
+                onClick={() => {
+                  setSelectedProject(null);
+                  setActiveTab('projects');
+                }}
+              >
+                <FolderIcon size={18} color="#64748B" />
+                <span>Projects</span>
+              </button>
+              <button
+                type="button"
+                className={`remotale-bottom-nav-item ${(activeTab === 'invoices' || activeTab === 'billing') ? 'active' : ''}`}
+                onClick={() => {
+                  setSelectedProject(null);
+                  setActiveTab('invoices');
+                }}
+              >
+                <BillingIcon size={18} color="#64748B" />
+                <span>Invoices</span>
               </button>
             </div>
           </div>
