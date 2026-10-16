@@ -1098,7 +1098,9 @@
   overflow-x: hidden !important;
 }
 
-.remotale-mobile-card .invoices-container {
+.remotale-mobile-card .invoices-container,
+.remotale-mobile-card .invoices-view-container,
+.remotale-mobile-card .remotale-coming-soon-wrapper {
   width: 100% !important;
   max-width: 100% !important;
   box-sizing: border-box !important;
