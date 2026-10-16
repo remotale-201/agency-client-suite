@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Remotale Client Portal - Official User Guide</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+  @page {
+    size: A4;
+    margin: 14mm 14mm 16mm 14mm;
+    @bottom-right {
+      content: counter(page);
+    }
+  }
+
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: #0f172a;
+    background: #ffffff;
+    font-size: 10.5pt;
+    line-height: 1.55;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .page-break {
+    page-break-after: always;
+  }
+
+  .avoid-break {
+    page-break-inside: avoid;
+  }
+
+  /* -------------------------------------------------------------
+     COVER PAGE
+  ------------------------------------------------------------- */
+  .cover-page {
+    min-height: 255mm;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 16mm 10mm 10mm;
+    border-bottom: 2px solid #e2e8f0;
+  }
+
+  .cover-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .logo-box {
+    width: 52px;
+    height: 52px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 26px;
+    box-shadow: 0 10px 25px rgba(79, 70, 229, 0.3);
+  }
+
+  .brand-title {
+    font-size: 26pt;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: -0.8px;
+  }
+
+  .cover-body {
+    margin-top: 35mm;
+  }
+
+  .badge-suite {
+    display: inline-block;
+    background: #ede9fe;
+    color: #6d28d9;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 9.5pt;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 18px;
+    border: 1px solid #ddd6fe;
+  }
+
+  .cover-main-title {
+    font-size: 34pt;
+    font-weight: 800;
+    line-height: 1.15;
+    color: #0f172a;
+    letter-spacing: -1.2px;
+    margin-bottom: 16px;
+  }
+
+  .cover-main-title span {
+    background: linear-gradient(135deg, #4f46e5 0%, #2563eb 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .cover-subtitle {
+    font-size: 13.5pt;
+    color: #475569;
+    font-weight: 400;
+    max-width: 540px;
+    line-height: 1.5;
+    margin-bottom: 24px;
+  }
+
+  .cover-meta-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    padding: 16px 20px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    margin-top: 25mm;
+  }
+
+  .meta-item h4 {
+    font-size: 8.5pt;
+    text-transform: uppercase;
+    color: #64748b;
+    margin-bottom: 4px;
+    letter-spacing: 0.4px;
+  }
+
+  .meta-item p {
+    font-size: 10.5pt;
+    font-weight: 700;
+    color: #0f172a;
+  }
+
+  /* -------------------------------------------------------------
+     TABLE OF CONTENTS
+  ------------------------------------------------------------- */
+  .toc-container {
+    padding-top: 6mm;
+  }
+
+  .section-heading {
+    font-size: 18pt;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: -0.5px;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-sub {
+    font-size: 10pt;
+    color: #64748b;
+    margin-bottom: 20px;
+  }
+
+  .toc-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+  }
+
+  .toc-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: #f8fafc;
+    border: 1px solid #eef2f6;
+    border-radius: 12px;
+  }
+
+  .toc-title {
+    font-weight: 700;
+    color: #1e293b;
+    font-size: 10.5pt;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .toc-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    background: #ede9fe;
+    color: #4f46e5;
+    border-radius: 7px;
+    font-size: 9pt;
+    font-weight: 800;
+  }
+
+  .toc-desc {
+    font-size: 9pt;
+    color: #64748b;
+    font-weight: 400;
+    margin-left: 34px;
+    margin-top: 2px;
+  }
+
+  /* -------------------------------------------------------------
+     SECTIONS & CONTENT
+  ------------------------------------------------------------- */
+  .content-header {
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1.5px solid #f1f5f9;
+  }
+
+  .module-tag {
+    font-size: 8.5pt;
+    font-weight: 800;
+    color: #4f46e5;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 3px;
+  }
+
+  .module-title {
+    font-size: 17pt;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: -0.4px;
+  }
+
+  .paragraph {
+    font-size: 10pt;
+    color: #334155;
+    margin-bottom: 12px;
+    line-height: 1.55;
+  }
+
+  /* Callout Boxes */
+  .callout-box {
+    padding: 12px 16px;
+    border-radius: 12px;
+    margin: 14px 0;
+    font-size: 9.5pt;
+    line-height: 1.5;
+    border-left: 4px solid;
+  }
+
+  .callout-info {
+    background: #eff6ff;
+    border-color: #3b82f6;
+    color: #1e40af;
+  }
+
+  .callout-success {
+    background: #f0fdf4;
+    border-color: #22c55e;
+    color: #166534;
+  }
+
+  .callout-tip {
+    background: #faf5ff;
+    border-color: #a855f7;
+    color: #6b21a8;
+  }
+
+  .callout-title {
+    font-weight: 800;
+    margin-bottom: 3px;
+    font-size: 10pt;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* Step Flow */
+  .step-flow {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 14px 0;
+  }
+
+  .step-card {
+    display: flex;
+    gap: 12px;
+    padding: 11px 14px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.02);
+  }
+
+  .step-badge {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #4f46e5;
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 9.5pt;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .step-body h4 {
+    font-size: 10.5pt;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 2px;
+  }
+
+  .step-body p {
+    font-size: 9.5pt;
+    color: #475569;
+    line-height: 1.45;
+  }
+
+  /* Feature Grid */
+  .feature-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 14px 0;
+  }
+
+  .feature-box {
+    padding: 12px 14px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+  }
+
+  .feature-box-icon {
+    font-size: 18px;
+    margin-bottom: 6px;
+    display: inline-block;
+  }
+
+  .feature-box-title {
+    font-weight: 700;
+    font-size: 10.5pt;
+    color: #0f172a;
+    margin-bottom: 3px;
+  }
+
+  .feature-box-desc {
+    font-size: 9pt;
+    color: #475569;
+    line-height: 1.45;
+  }
+
+  /* Data Table */
+  .custom-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0;
+    font-size: 9pt;
+  }
+
+  .custom-table th {
+    background: #f1f5f9;
+    color: #334155;
+    text-align: left;
+    padding: 8px 10px;
+    font-weight: 700;
+    border: 1px solid #e2e8f0;
+    letter-spacing: 0.3px;
+  }
+
+  .custom-table td {
+    padding: 8px 10px;
+    border: 1px solid #e2e8f0;
+    color: #1e293b;
+    vertical-align: middle;
+  }
+
+  .custom-table tr:nth-child(even) {
+    background: #f8fafc;
+  }
+
+  .code-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8.5pt;
+    background: #f1f5f9;
+    color: #475569;
+    padding: 2px 6px;
+    border-radius: 5px;
+    border: 1px solid #e2e8f0;
+    font-weight: 600;
+  }
+
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 8pt;
+    font-weight: 700;
+  }
+
+  .status-pill.green {
+    background: #dcfce7;
+    color: #15803d;
+  }
+
+  .status-pill.blue {
+    background: #dbeafe;
+    color: #1d4ed8;
+  }
+
+  .status-pill.amber {
+    background: #fef3c7;
+    color: #b45309;
+  }
+
+  .status-pill.purple {
+    background: #ede9fe;
+    color: #6d28d9;
+  }
+
+  /* Visual Mock / Diagram Box */
+  .mock-preview-box {
+    background: #ffffff;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 12px;
+    padding: 14px;
+    margin: 14px 0;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+  }
+
+  .mock-preview-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  .mock-window-dots {
+    display: flex;
+    gap: 5px;
+  }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  .dot-red { background: #ef4444; }
+  .dot-yellow { background: #f59e0b; }
+  .dot-green { background: #10b981; }
+
+  .mock-title {
+    font-size: 9pt;
+    font-weight: 700;
+    color: #64748b;
+  }
+
+  .mock-content-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 7px 10px;
+    background: #f8fafc;
+    border-radius: 7px;
+    margin-bottom: 5px;
+    font-size: 9pt;
+  }
+
+  /* Bottom Nav Visual Mock */
+  .mobile-nav-mock {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 8px 4px;
+    text-align: center;
+    margin: 12px 0;
+  }
+
+  .mobile-nav-mock-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    font-size: 8.5pt;
+    font-weight: 700;
+    color: #64748b;
+  }
+
+  .mobile-nav-mock-item.active {
+    color: #4f46e5;
+  }
+</style>
+</head>
+<body>
+
+  <!-- =============================================================
+       PAGE 1: COVER PAGE
+  ============================================================= -->
+  <div class="cover-page page-break">
+    <div class="cover-header">
+      <div class="logo-box">R</div>
+      <div class="brand-title">Remotale</div>
+    </div>
+
+    <div class="cover-body">
+      <div class="badge-suite">Client Edition &bull; Onboarding Manual</div>
+      <h1 class="cover-main-title">
+        Client Portal<br>
+        <span>Official User Guide</span>
+      </h1>
+      <p class="cover-subtitle">
+        A complete step-by-step walkthrough for agency clients to track project milestones, review deliverables, submit new scopes, and manage itemized invoices.
+      </p>
+
+      <div class="callout-box callout-success" style="max-width: 540px;">
+        <div class="callout-title">🎯 100% Transparency Guarantee</div>
+        Your dedicated Remotale portal gives you real-time visibility into production schedules, sprint deliverables, and official billing statements at any time from any device.
+      </div>
+    </div>
+
+    <div class="cover-meta-grid">
+      <div class="meta-item">
+        <h4>Target Audience</h4>
+        <p>Agency Clients & Partners</p>
+      </div>
+      <div class="meta-item">
+        <h4>System Version</h4>
+        <p>Remotale Suite v2.0</p>
+      </div>
+      <div class="meta-item">
+        <h4>Support Lead</h4>
+        <p>admin@remotale.com</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- =============================================================
+       PAGE 2: TABLE OF CONTENTS & PORTAL OVERVIEW
+  ============================================================= -->
+  <div class="page-break toc-container">
+    <div class="section-heading">
+      <span>📖</span>
+      <span>Table of Contents</span>
+    </div>
+    <p class="section-sub">Quick guide navigation to help you get the most out of your Client Portal.</p>
+
+    <ul class="toc-list">
+      <li class="toc-item">
+        <div>
+          <div class="toc-title">
+            <span class="toc-num">01</span>
+            <span>Signing In & Security</span>
+          </div>
+          <div class="toc-desc">Accessing your secure client account, credentials, and supported devices.</div>
+        </div>
+      </li>
+      <li class="toc-item">
+        <div>
+          <div class="toc-title">
+            <span class="toc-num">02</span>
+            <span>Client Dashboard & Quick Metrics</span>
+          </div>
+          <div class="toc-desc">Navigating the main overview, KPI cards, and project progress bars.</div>
+        </div>
+      </li>
+      <li class="toc-item">
+        <div>
+          <div class="toc-title">
+            <span class="toc-num">03</span>
+            <span>Projects & Milestone Workspace</span>
+          </div>
+          <div class="toc-desc">Deep-dive into project briefs, task checklists, and requesting new projects.</div>
+        </div>
+      </li>
+      <li class="toc-item">
+        <div>
+          <div class="toc-title">
+            <span class="toc-num">04</span>
+            <span>Invoices, Billing & PDF Statements</span>
+          </div>
+          <div class="toc-desc">Reviewing itemized project bills, payment states, and downloading official receipts.</div>
+        </div>
+      </li>
+      <li class="toc-item">
+        <div>
+          <div class="toc-title">
+            <span class="toc-num">05</span>
+            <span>Mobile Client Experience (iPhone & Android)</span>
+          </div>
+          <div class="toc-desc">Using the bottom navigation bar and mobile workspace on handheld devices.</div>
+        </div>
+      </li>
+      <li class="toc-item">
+        <div>
+          <div class="toc-title">
+            <span class="toc-num">06</span>
+            <span>Account Management, Logout & Support</span>
+          </div>
+          <div class="toc-desc">Managing profile details, signing out securely, and reaching your agency team.</div>
+        </div>
+      </li>
+    </ul>
+
+    <div class="feature-grid" style="margin-top: 18px;">
+      <div class="feature-box">
+        <span class="feature-box-icon">🔒</span>
+        <div class="feature-box-title">Client Privacy Sandbox</div>
+        <div class="feature-box-desc">Your portal account is strictly sandboxed. You only ever see projects, deliverables, milestones, and invoices that belong exclusively to your organization.</div>
+      </div>
+      <div class="feature-box">
+        <span class="feature-box-icon">⚡</span>
+        <div class="feature-box-title">Real-Time Cloud Sync</div>
+        <div class="feature-box-desc">Task check-offs, percentage recalculations, and published invoices reflect instantly across all your screens with zero lag.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =============================================================
+       PAGE 3: SECTION 1 - SIGNING IN & ACCESSING YOUR ACCOUNT
+  ============================================================= -->
+  <div class="page-break">
+    <div class="content-header">
+      <div class="module-tag">Module 01 &bull; Authentication & Access</div>
+      <h2 class="module-title">Signing In & Accessing Your Account</h2>
+    </div>
+
+    <p class="paragraph">
+      Remotale provides agency clients with a dedicated digital portal designed to eliminate email back-and-forth and uncertain delivery timelines. Your portal login credentials are provided directly by your Remotale Account Manager upon project onboarding.
+    </p>
+
+    <div class="step-flow avoid-break">
+      <div class="step-card">
+        <div class="step-badge">1</div>
+        <div class="step-body">
+          <h4>Navigate to the Remotale Portal URL</h4>
+          <p>Open the secure web portal link provided by your Account Manager in any modern browser (Chrome, Safari, Edge, Firefox, Brave).</p>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-badge">2</div>
+        <div class="step-body">
+          <h4>Enter Your Client Credentials</h4>
+          <p>Input your designated username (or email address) and password into the login card. Ensure capitalization matches.</p>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-badge">3</div>
+        <div class="step-body">
+          <h4>Instant Role-Based Redirection</h4>
+          <p>The system automatically verifies your organization profile and immediately loads your personalized Client Portal dashboard.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="font-size: 11pt; font-weight: 800; color: #0f172a; margin: 16px 0 8px;">Device & Browser Compatibility</h3>
+    <table class="custom-table avoid-break">
+      <thead>
+        <tr>
+          <th>Platform</th>
+          <th>Supported Browsers</th>
+          <th>Experience Type</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Mobile (iOS & Android)</strong></td>
+          <td>Safari, Chrome, Samsung Internet</td>
+          <td>App-like card layout with sticky bottom navigation</td>
+          <td><span class="status-pill green">Verified 100%</span></td>
+        </tr>
+        <tr>
+          <td><strong>Tablets & iPads</strong></td>
+          <td>Safari, Chrome, Edge</td>
+          <td>Adaptive dual-pane grid layout</td>
+          <td><span class="status-pill green">Verified 100%</span></td>
+        </tr>
+        <tr>
+          <td><strong>Desktop & Laptops</strong></td>
+          <td>Chrome, Edge, Safari, Firefox</td>
+          <td>Full widescreen command workspace</td>
+          <td><span class="status-pill green">Verified 100%</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout-box callout-tip avoid-break">
+      <div class="callout-title">🔒 Account Security Reminder</div>
+      Always keep your portal login details confidential. If you ever need your password reset or additional team members added to your company account, contact <strong>admin@remotale.com</strong>.
+    </div>
+  </div>
+
+  <!-- =============================================================
+       PAGE 4: SECTION 2 - DASHBOARD & METRICS
+  ============================================================= -->
+  <div class="page-break">
+    <div class="content-header">
+      <div class="module-tag">Module 02 &bull; Navigation</div>
+      <h2 class="module-title">Navigating Your Client Dashboard</h2>
+    </div>
+
+    <p class="paragraph">
+      Upon logging in, you arrive at the <strong>Client Overview Dashboard</strong>. This screen is engineered to provide an instant high-level status of your entire project portfolio in under 5 seconds.
+    </p>
+
+    <!-- Mock Overview Card -->
+    <div class="mock-preview-box avoid-break">
+      <div class="mock-preview-header">
+        <div class="mock-window-dots">
+          <div class="dot dot-red"></div>
+          <div class="dot dot-yellow"></div>
+          <div class="dot dot-green"></div>
+        </div>
+        <div class="mock-title">Remotale Client Dashboard &bull; Live Preview</div>
+        <span class="code-badge">👤 Client View</span>
+      </div>
+
+      <div style="margin-bottom: 10px; font-weight: 800; font-size: 12pt; color: #0f172a;">
+        Hello, Awais 👋
+        <span style="font-weight: 400; font-size: 9.5pt; color: #64748b; display: block; margin-top: 2px;">
+          Here is the live real-time status of your commissioned agency projects.
+        </span>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px;">
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 9px; padding: 8px; text-align: center;">
+          <div style="font-size: 8pt; color: #64748b; font-weight: 700;">TOTAL PROJECTS</div>
+          <div style="font-size: 15pt; font-weight: 800; color: #4f46e5;">3</div>
+        </div>
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 9px; padding: 8px; text-align: center;">
+          <div style="font-size: 8pt; color: #64748b; font-weight: 700;">IN PROGRESS</div>
+          <div style="font-size: 15pt; font-weight: 800; color: #2563eb;">2</div>
+        </div>
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 9px; padding: 8px; text-align: center;">
+          <div style="font-size: 8pt; color: #64748b; font-weight: 700;">IN REVIEW</div>
+          <div style="font-size: 15pt; font-weight: 800; color: #d97706;">1</div>
+        </div>
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 9px; padding: 8px; text-align: center;">
+          <div style="font-size: 8pt; color: #64748b; font-weight: 700;">COMPLETED</div>
+          <div style="font-size: 15pt; font-weight: 800; color: #16a34a;">0</div>
+        </div>
+      </div>
+
+      <div style="font-size: 9pt; font-weight: 700; color: #334155; margin-bottom: 6px;">Active Sprints Progress:</div>
+      <div class="mock-content-row">
+        <div>
+          <span style="font-weight: 700; color: #0f172a;">Oxytees Luxury Apparel Brand Identity</span>
+          <span class="status-pill blue" style="margin-left: 8px;">In Progress</span>
+        </div>
+        <span style="font-weight: 700; color: #4f46e5;">65% Completed</span>
+      </div>
+      <div class="mock-content-row">
+        <div>
+          <span style="font-weight: 700; color: #0f172a;">E-Commerce Custom Theme & Checkout Flow</span>
+          <span class="status-pill amber" style="margin-left: 8px;">In Review</span>
+        </div>
+        <span style="font-weight: 700; color: #d97706;">80% Completed</span>
+      </div>
+    </div>
+
+    <h3 style="font-size: 11pt; font-weight: 800; color: #0f172a; margin: 14px 0 6px;">Key Elements on Your Home Screen</h3>
+    <table class="custom-table avoid-break">
+      <thead>
+        <tr>
+          <th style="width: 25%;">Dashboard Element</th>
+          <th style="width: 45%;">What It Displays</th>
+          <th style="width: 30%;">How to Interact</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>KPI Metric Cards</strong></td>
+          <td>Aggregated counts of your total, in-progress, review, and completed initiatives.</td>
+          <td>Gives you immediate status without digging through files.</td>
+        </tr>
+        <tr>
+          <td><strong>My Projects Section</strong></td>
+          <td>Visual cards with project titles, delivery target dates, and dynamic progress bars.</td>
+          <td>Click on any project card to open its full workspace.</td>
+        </tr>
+        <tr>
+          <td><strong>+ New Project Button</strong></td>
+          <td>Prominent button located at the top-right of your dashboard greeting.</td>
+          <td>Click to open the project scope submission modal.</td>
+        </tr>
+        <tr>
+          <td><strong>User Profile Avatar</strong></td>
+          <td>Top-right header circle displaying your initials and company name.</td>
+          <td>Click to reveal company profile details or Log Out.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- =============================================================
+       PAGE 5: SECTION 3 - PROJECTS & DETAIL WORKSPACE
+  ============================================================= -->
+  <div class="page-break">
+    <div class="content-header">
+      <div class="module-tag">Module 03 &bull; Execution</div>
+      <h2 class="module-title">Projects Catalog & Detail Workspace</h2>
+    </div>
+
+    <p class="paragraph">
+      The <strong>Projects Workspace</strong> is where project collaboration occurs. It allows you to inspect granular milestone deliverables, review task statuses, and request new agency initiatives.
+    </p>
+
+    <h3 style="font-size: 11pt; font-weight: 800; color: #0f172a; margin: 12px 0 6px;">1. Filtering & Finding Projects</h3>
+    <p class="paragraph">
+      In the Projects tab, you can quickly filter your catalog using the quick status tabs:
+      <strong>All</strong>, <strong>In Progress</strong>, <strong>In Review</strong>, and <strong>Completed</strong>. You can also type into the real-time search bar to filter by project name instantly.
+    </p>
+
+    <div class="feature-grid avoid-break">
+      <div class="feature-box">
+        <span class="feature-box-icon">📌</span>
+        <div class="feature-box-title">Overview Tab</div>
+        <div class="feature-box-desc">
+          Displays the executive project brief, target completion deadline, assigned agency team leads, and live progress percentage bar.
+        </div>
+      </div>
+      <div class="feature-box">
+        <span class="feature-box-icon">✅</span>
+        <div class="feature-box-title">Tasks & Checklist Tab</div>
+        <div class="feature-box-desc">
+          Detailed checklist of sprint items. Completed tasks are marked with green checkmarks, showing exactly what is finished and what is in progress.
+        </div>
+      </div>
+    </div>
+
+    <h3 style="font-size: 11pt; font-weight: 800; color: #0f172a; margin: 14px 0 6px;">2. Submitting a New Project Request</h3>
+    <p class="paragraph">
+      You do not need to draft lengthy email briefs. You can commission new projects or request feature additions directly from your portal:
+    </p>
+
+    <div class="step-flow avoid-break">
+      <div class="step-card">
+        <div class="step-badge">1</div>
+        <div class="step-body">
+          <h4>Click "+ New Project"</h4>
+          <p>Available on both your Dashboard and Projects catalog header.</p>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-badge">2</div>
+        <div class="step-body">
+          <h4>Specify Project Scope</h4>
+          <p>Enter the Project Title, preferred Target Delivery Date, estimated Budget (PKR), and detailed Scope Description.</p>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-badge">3</div>
+        <div class="step-body">
+          <h4>Submit Scope</h4>
+          <p>Click <strong>Create Project</strong>. Your request is immediately queued in the Remotale system, and your Account Lead will review it and initiate production.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout-box callout-success avoid-break">
+      <div class="callout-title">✓ Real-Time Synchronization</div>
+      Whenever the Remotale engineering team completes a task or updates progress, your portal reflects the update automatically without needing a manual browser refresh.
+    </div>
+  </div>
+
+  <!-- =============================================================
+       PAGE 6: SECTION 4 - INVOICES & BILLING
+  ============================================================= -->
+  <div class="page-break">
+    <div class="content-header">
+      <div class="module-tag">Module 04 &bull; Financials</div>
+      <h2 class="module-title">Invoices, Statements & PDF Exports</h2>
+    </div>
+
+    <p class="paragraph">
+      Remotale provides an integrated, fully functional financial billing center within your Client Portal. You can access published milestone bills, review itemized line items, track settled payments, and download official branded PDF receipts for your accounting records.
+    </p>
+
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px;" class="avoid-break">
+      <div style="background: #fdf4ff; border: 1px solid #f0abfc; border-radius: 10px; padding: 10px; text-align: center;">
+        <div style="font-size: 8pt; color: #86198f; font-weight: 800;">TOTAL INVOICED</div>
+        <div style="font-size: 13pt; font-weight: 800; color: #701a75; margin-top: 2px;">PKR 350,000</div>
+        <div style="font-size: 7.5pt; color: #a21caf;">Lifetime milestone billing</div>
+      </div>
+      <div style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 10px; padding: 10px; text-align: center;">
+        <div style="font-size: 8pt; color: #166534; font-weight: 800;">PAID & SETTLED</div>
+        <div style="font-size: 13pt; font-weight: 800; color: #14532d; margin-top: 2px;">PKR 200,000</div>
+        <div style="font-size: 7.5pt; color: #15803d;">Settled milestone disbursements</div>
+      </div>
+      <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 10px; padding: 10px; text-align: center;">
+        <div style="font-size: 8pt; color: #92400e; font-weight: 800;">PENDING / PUBLISHED</div>
+        <div style="font-size: 13pt; font-weight: 800; color: #78350f; margin-top: 2px;">PKR 150,000</div>
+        <div style="font-size: 7.5pt; color: #b45309;">Current open deliverables</div>
+      </div>
+    </div>
+
+    <h3 style="font-size: 11pt; font-weight: 800; color: #0f172a; margin: 14px 0 6px;">Understanding Invoice Statuses</h3>
+    <table class="custom-table avoid-break">
+      <thead>
+        <tr>
+          <th style="width: 25%;">Status Badge</th>
+          <th style="width: 35%;">What It Signifies</th>
+          <th style="width: 40%;">Client Action Required</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="status-pill amber">⏳ Published</span></td>
+          <td>The milestone has been achieved and an invoice has been issued by the agency.</td>
+          <td>Review the line items and process payment via your agreed payment channel.</td>
+        </tr>
+        <tr>
+          <td><span class="status-pill green">✓ Paid & Settled</span></td>
+          <td>Payment has been confirmed and officially credited by Remotale.</td>
+          <td>Download the finalized receipt for tax and bookkeeping records.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 style="font-size: 11pt; font-weight: 800; color: #0f172a; margin: 16px 0 6px;">How to Inspect & Download PDF Invoices</h3>
+    <div class="step-flow avoid-break">
+      <div class="step-card">
+        <div class="step-badge">1</div>
+        <div class="step-body">
+          <h4>Open the Invoices Tab</h4>
+          <p>Click <strong>Invoices</strong> on the desktop sidebar or on the mobile bottom navigation bar.</p>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-badge">2</div>
+        <div class="step-body">
+          <h4>Click "View Details"</h4>
+          <p>Click on any invoice card or table row. This opens the <strong>Itemized Invoice Modal</strong> showing item lines, unit rates, quantities, and totals.</p>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-badge">3</div>
+        <div class="step-body">
+          <h4>Download Official PDF</h4>
+          <p>Click the <strong>"⬇ Download PDF"</strong> button inside the modal. The system instantly exports an official, high-resolution Remotale invoice ready for print or accounting filing.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =============================================================
+       PAGE 7: SECTION 5 - MOBILE CLIENT GUIDE
+  ============================================================= -->
+  <div class="page-break">
+    <div class="content-header">
+      <div class="module-tag">Module 05 &bull; Handheld Access</div>
+      <h2 class="module-title">Mobile Portal Guide (iOS & Android)</h2>
+    </div>
+
+    <p class="paragraph">
+      Whether you are using an iPhone, Samsung Galaxy, iPad, or any mobile browser, Remotale provides an app-like, thumb-friendly experience designed specifically for mobile screens.
+    </p>
+
+    <h3 style="font-size: 11pt; font-weight: 800; color: #0f172a; margin: 12px 0 6px;">Mobile Bottom Navigation Bar</h3>
+    <p class="paragraph">
+      At the bottom of your mobile screen, you will find 4 primary navigation tabs:
+    </p>
+
+    <!-- Visual Mobile Bottom Nav Mock -->
+    <div class="mobile-nav-mock avoid-break">
+      <div class="mobile-nav-mock-item active">
+        <span style="font-size: 15px;">🏠</span>
+        <span>Home</span>
+      </div>
+      <div class="mobile-nav-mock-item">
+        <span style="font-size: 15px;">📁</span>
+        <span>Projects</span>
+      </div>
+      <div class="mobile-nav-mock-item">
+        <span style="font-size: 15px;">💬</span>
+        <span>Messages</span>
+      </div>
+      <div class="mobile-nav-mock-item">
+        <span style="font-size: 15px;">💳</span>
+        <span>Invoices</span>
+      </div>
+    </div>
+
+    <table class="custom-table avoid-break">
+      <thead>
+        <tr>
+          <th style="width: 25%;">Bottom Tab</th>
+          <th style="width: 45%;">Function & View</th>
+          <th style="width: 30%;">Highlights</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>🏠 Home</strong></td>
+          <td>Opens your overview dashboard, 4 metric cards, and recent sprint status.</td>
+          <td>Fastest way to get a live status check on your phone.</td>
+        </tr>
+        <tr>
+          <td><strong>📁 Projects</strong></td>
+          <td>Opens your full project list and interactive project workspace.</td>
+          <td>Inspect checklists and progress bars comfortably on mobile.</td>
+        </tr>
+        <tr>
+          <td><strong>💬 Messages</strong></td>
+          <td>Collaboration hub & direct thread preview with your agency lead.</td>
+          <td>Quick preview of upcoming real-time communication tools.</td>
+        </tr>
+        <tr>
+          <td><strong>💳 Invoices</strong></td>
+          <td>Fully functional financial ledger and billing statements.</td>
+          <td>Review itemized bills, check balances, and download PDFs on mobile.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 style="font-size: 11pt; font-weight: 800; color: #0f172a; margin: 16px 0 6px;">Mobile User Profile & Logout Menu</h3>
+    <p class="paragraph">
+      In mobile view, your account options are located directly in the top header. Simply tap your <strong>Avatar Circle</strong> at the top right of the screen to reveal:
+    </p>
+    <ul style="margin-left: 20px; font-size: 9.5pt; color: #334155; line-height: 1.6;" class="avoid-break">
+      <li>Your registered Client Name & Company Organization</li>
+      <li>Your registered Client Email address</li>
+      <li>The <strong>🚪 Log Out</strong> button for signing out safely from your mobile phone</li>
+    </ul>
+
+    <div class="callout-box callout-info avoid-break" style="margin-top: 14px;">
+      <div class="callout-title">📱 Zero Zooming or Side-Scrolling</div>
+      All tables, modal dialogs, and workspace cards automatically collapse into vertical card layouts on mobile, ensuring seamless operation on screens from iPhone 5 up to Samsung S26 Ultra.
+    </div>
+  </div>
+
+  <!-- =============================================================
+       PAGE 8: SECTION 6 - BEST PRACTICES & SUPPORT
+  ============================================================= -->
+  <div class="avoid-break">
+    <div class="content-header">
+      <div class="module-tag">Module 06 &bull; Client Success</div>
+      <h2 class="module-title">Best Practices, Security & Support</h2>
+    </div>
+
+    <p class="paragraph">
+      To ensure smooth collaboration, prompt project delivery, and optimal use of your Remotale Client Portal, please follow these recommended best practices:
+    </p>
+
+    <div class="feature-grid avoid-break">
+      <div class="feature-box">
+        <span class="feature-box-icon">⚡</span>
+        <div class="feature-box-title">Prompt Milestone Review</div>
+        <div class="feature-box-desc">
+          When a sprint moves to <em>In Review</em>, check the deliverables and task checklist promptly so our engineers can transition directly to final QA and launch.
+        </div>
+      </div>
+      <div class="feature-box">
+        <span class="feature-box-icon">📝</span>
+        <div class="feature-box-title">Detailed Scope Submissions</div>
+        <div class="feature-box-desc">
+          When clicking <em>+ New Project</em>, provide target reference links, brand goals, and specific deadline expectations to expedite scope approval.
+        </div>
+      </div>
+      <div class="feature-box">
+        <span class="feature-box-icon">📑</span>
+        <div class="feature-box-title">Download Invoices for Records</div>
+        <div class="feature-box-desc">
+          Download PDF invoices immediately after milestone sign-off for your internal tax, audit, and expense reconciliation.
+        </div>
+      </div>
+      <div class="feature-box">
+        <span class="feature-box-icon">🔒</span>
+        <div class="feature-box-title">Secure Session Management</div>
+        <div class="feature-box-desc">
+          Always use the <em>Log Out</em> button in your profile menu when accessing the portal from shared or public computers.
+        </div>
+      </div>
+    </div>
+
+    <h3 style="font-size: 11pt; font-weight: 800; color: #0f172a; margin: 16px 0 8px;">Agency Support & Contact Information</h3>
+    <p class="paragraph">
+      If you have questions about your projects, need to adjust milestone deadlines, or require additional account credentials for your team, please contact your Remotale team:
+    </p>
+
+    <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 14px; margin: 12px 0;" class="avoid-break">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">
+        <div>
+          <span style="font-weight: 800; font-size: 11pt; color: #0f172a;">Remotale Agency Lead</span>
+          <span style="display: block; font-size: 9pt; color: #64748b;">Technical & Creative Client Management</span>
+        </div>
+        <span class="status-pill green">Active Support</span>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 9.5pt;">
+        <div>
+          <strong style="color: #334155;">Primary Support Email:</strong><br>
+          <span style="color: #4f46e5; font-weight: 700;">admin@remotale.com</span>
+        </div>
+        <div>
+          <strong style="color: #334155;">Client Success Lead:</strong><br>
+          <span style="color: #0f172a; font-weight: 700;">Awais / Agency Operations</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout-box callout-success avoid-break" style="margin-top: 16px;">
+      <div class="callout-title">🎉 Thank You for Partnering with Remotale</div>
+      We are dedicated to engineering world-class digital experiences and software for your business. We look forward to delivering excellence on every milestone!
+    </div>
+  </div>
+
+</body>
+</html>
