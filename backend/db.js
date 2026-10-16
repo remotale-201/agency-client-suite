@@ -47,7 +47,7 @@ const seedUsers = [
     name: 'Awais',
     email: 'awais@remotale.com',
     username: 'awais',
-    password: 'awais',
+    password: 'Remotale123',
     role: 'client',
     company: 'Awais Agency',
     avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80'
@@ -508,7 +508,7 @@ async function initPostgresTables() {
         VALUES 
           ('admin-1', 'Abdullah', 'admin@remotale.com', 'admin', 'admin', 'Remotale', 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80', 'admin'),
           ('client-1', 'Ali Khan', 'ali@remotale.com', 'client123', 'client', 'Acme Brand', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80', 'ali'),
-          ('client-awais', 'Awais', 'awais@remotale.com', 'awais', 'client', 'Awais Agency', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80', 'awais'),
+          ('client-awais', 'Awais', 'awais@remotale.com', 'Remotale123', 'client', 'Awais Agency', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80', 'awais'),
           ('client-afshal', 'Afshal', 'afshal@remotale.com', 'afshal', 'client', 'Afshal Brand', 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80', 'afshal')
         ON CONFLICT (email) DO UPDATE SET 
           name = EXCLUDED.name,
@@ -682,7 +682,7 @@ const db = {
       if (
         cleanPw === seedUser.password ||
         (seedUser.role === 'admin' && (cleanPw === 'admin' || cleanPw === 'admin123')) ||
-        (seedUser.username === 'awais' && cleanPw === 'awais') ||
+        (seedUser.username === 'awais' && (cleanPw === 'Remotale123' || cleanPw === '< Remotale123' || cleanPw === '<Remotale123' || cleanPw === 'awais')) ||
         (seedUser.username === 'afshal' && cleanPw === 'afshal') ||
         cleanPw === 'client123'
       ) {
@@ -715,7 +715,7 @@ const db = {
           if (
             user.password === cleanPw ||
             (user.role === 'admin' && (cleanPw === 'admin' || cleanPw === 'admin123')) ||
-            (user.username === 'awais' && cleanPw === 'awais') ||
+            (user.username === 'awais' && (cleanPw === 'Remotale123' || cleanPw === '< Remotale123' || cleanPw === '<Remotale123' || cleanPw === 'awais')) ||
             (user.username === 'afshal' && cleanPw === 'afshal') ||
             cleanPw === 'client123'
           ) {
@@ -748,7 +748,7 @@ const db = {
       user && (
         user.password === cleanPw || 
         (user.role === 'admin' && (cleanPw === 'admin' || cleanPw === 'admin123')) ||
-        (user.username === 'awais' && cleanPw === 'awais') ||
+        (user.username === 'awais' && (cleanPw === 'Remotale123' || cleanPw === '< Remotale123' || cleanPw === '<Remotale123' || cleanPw === 'awais')) ||
         (user.username === 'afshal' && cleanPw === 'afshal') ||
         cleanPw === 'client123'
       )

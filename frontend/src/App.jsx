@@ -342,7 +342,7 @@ export default function App() {
     const portalParam = params.get('portal');
 
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', width: '100%' }}>
+      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', width: '100%', maxWidth: '100vw', overflowX: 'hidden' }}>
         {toast && (
           <div className="toast-container">
             <div className={`toast ${toast.type}`}>

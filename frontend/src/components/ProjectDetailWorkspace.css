@@ -4,11 +4,14 @@
    ========================================================================== */
 
 .pdw-container {
+  width: 100%;
   max-width: 960px;
   margin: 0 auto;
-  padding: 18px 20px 100px 20px;
+  padding: 18px 20px 115px 20px;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   color: #0f172a;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 /* Top App Bar */
@@ -18,14 +21,18 @@
   justify-content: space-between;
   margin-bottom: 20px;
   position: relative;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .pdw-back-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
   border-radius: 12px;
   background: #ffffff;
   border: 1px solid #e2e8f0;
@@ -33,6 +40,9 @@
   cursor: pointer;
   transition: all 0.18s ease;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  flex-shrink: 0;
 }
 
 .pdw-back-btn:hover {
@@ -307,8 +317,13 @@
   gap: 8px;
   margin-bottom: 22px;
   overflow-x: auto;
-  padding-bottom: 4px;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x;
+  padding-bottom: 6px;
   scrollbar-width: none;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .pdw-tabs-bar::-webkit-scrollbar {
@@ -330,6 +345,9 @@
   transition: all 0.18s ease;
   white-space: nowrap;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  flex-shrink: 0;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .pdw-tab-btn:hover {
@@ -517,26 +535,38 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 5px 0;
+  padding: 6px 0;
   border-top: 1px solid #edf2f7;
   font-size: 12.5px;
+  gap: 8px;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .pdw-cred-field-lbl {
   color: #64748b;
   font-weight: 500;
+  flex-shrink: 0;
 }
 
 .pdw-cred-field-val-wrap {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
+  min-width: 0;
+  flex: 1;
+  justify-content: flex-end;
 }
 
 .pdw-cred-field-val {
   font-weight: 600;
   color: #0f172a;
   font-family: inherit;
+  word-break: break-all;
+  overflow-wrap: anywhere;
+  text-align: right;
+  min-width: 0;
 }
 
 .pdw-btn-copy {
@@ -601,6 +631,10 @@
   background: #f8fafc;
   border: 1px solid #edf2f7;
   transition: all 0.15s ease;
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+  gap: 8px;
 }
 
 .pdw-task-row:hover {
@@ -621,15 +655,17 @@
   border-radius: 5px;
   accent-color: #6366f1;
   cursor: pointer;
+  flex-shrink: 0;
 }
 
 .pdw-task-title {
   font-size: 13px;
   font-weight: 500;
   color: #1e293b;
-  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  word-break: break-word;
+  min-width: 0;
 }
 
 .pdw-task-title.completed {
@@ -640,8 +676,8 @@
 .pdw-task-right {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-left: 10px;
+  gap: 8px;
+  flex-shrink: 0;
 }
 
 .pdw-task-date {
@@ -672,6 +708,10 @@
   border-radius: 12px;
   border: 1px solid #f1f5f9;
   transition: all 0.15s ease;
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+  gap: 8px;
 }
 
 .pdw-file-row:hover {
@@ -834,4 +874,238 @@
   font-size: 11px;
   color: #94a3b8;
   white-space: nowrap;
+}
+
+/* ==========================================================================
+   COMPREHENSIVE MOBILE RESPONSIVENESS (ALL DEVICES: iPhone 5 to S26 Ultra)
+   ========================================================================== */
+.pdw-logout-desktop-btn {
+  display: inline-flex;
+}
+
+/* Ensure mobile card wrapper context always adapts */
+.remotale-mobile-card .pdw-logout-desktop-btn {
+  display: none !important;
+}
+
+.remotale-mobile-card .pdw-stats-row {
+  grid-template-columns: 1fr !important;
+  gap: 12px !important;
+}
+
+.remotale-mobile-card .pdw-cards-grid {
+  grid-template-columns: 1fr !important;
+  gap: 14px !important;
+}
+
+.remotale-mobile-card .pdw-hero-top {
+  flex-direction: column !important;
+  gap: 12px !important;
+}
+
+@media (max-width: 640px) {
+  .pdw-logout-desktop-btn {
+    display: none !important;
+  }
+
+  .pdw-container {
+    padding: 12px 12px 125px 12px !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    overflow-x: hidden !important;
+  }
+
+  .pdw-topbar {
+    margin-bottom: 14px !important;
+    width: 100% !important;
+  }
+
+  .pdw-topbar-brand {
+    font-size: 17px !important;
+  }
+
+  .pdw-hero-top {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+    margin-bottom: 16px !important;
+  }
+
+  .pdw-hero-icon-box {
+    width: 48px !important;
+    height: 48px !important;
+    border-radius: 14px !important;
+  }
+
+  .pdw-hero-title {
+    font-size: 20px !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+  }
+
+  .pdw-hero-desc {
+    font-size: 13px !important;
+    word-break: break-word !important;
+  }
+
+  .pdw-hero-card {
+    padding: 16px 14px !important;
+    margin-bottom: 16px !important;
+    border-radius: 16px !important;
+  }
+
+  .pdw-stats-row {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  .pdw-cards-grid {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+
+  .pdw-card {
+    padding: 16px 14px !important;
+    border-radius: 16px !important;
+  }
+
+  .pdw-tabs-bar {
+    gap: 6px !important;
+    margin-bottom: 16px !important;
+  }
+
+  .pdw-tab-btn {
+    padding: 7px 13px !important;
+    font-size: 12.5px !important;
+  }
+
+  .pdw-cred-field-row {
+    gap: 8px !important;
+  }
+
+  .pdw-cred-field-val {
+    word-break: break-all !important;
+    overflow-wrap: anywhere !important;
+    max-width: 180px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .pdw-task-row {
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    padding: 10px !important;
+  }
+
+  .pdw-task-left {
+    width: 100% !important;
+  }
+
+  .pdw-task-right {
+    width: 100% !important;
+    justify-content: flex-end !important;
+    border-top: 1px dashed #e2e8f0 !important;
+    padding-top: 6px !important;
+    margin-top: 2px !important;
+  }
+
+  .pdw-file-row {
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+    padding: 10px !important;
+  }
+
+  .pdw-file-left {
+    width: 100% !important;
+  }
+
+  .pdw-file-right {
+    width: 100% !important;
+    justify-content: flex-end !important;
+    border-top: 1px dashed #e2e8f0 !important;
+    padding-top: 6px !important;
+    margin-top: 2px !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .pdw-info-grid-2x2 {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  .pdw-hero-title {
+    font-size: 18px !important;
+  }
+
+  .pdw-hero-desc {
+    font-size: 12.5px !important;
+  }
+
+  .pdw-stat-col {
+    gap: 8px !important;
+  }
+
+  .pdw-cred-field-val {
+    max-width: 150px !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .pdw-container {
+    padding: 10px 8px 125px 8px !important;
+  }
+
+  .pdw-hero-card {
+    padding: 12px 10px !important;
+  }
+
+  .pdw-hero-title {
+    font-size: 16.5px !important;
+  }
+
+  .pdw-card {
+    padding: 12px 10px !important;
+  }
+
+  .pdw-tab-btn {
+    padding: 6px 10px !important;
+    font-size: 11.5px !important;
+  }
+
+  .pdw-cred-field-val {
+    max-width: 130px !important;
+  }
+}
+
+@media (max-width: 330px) {
+  .pdw-container {
+    padding: 8px 6px 125px 6px !important;
+  }
+
+  .pdw-hero-card {
+    padding: 10px 8px !important;
+  }
+
+  .pdw-hero-title {
+    font-size: 15.5px !important;
+  }
+
+  .pdw-card {
+    padding: 10px 8px !important;
+  }
+
+  .pdw-topbar-brand {
+    font-size: 15px !important;
+  }
+
+  .pdw-back-btn,
+  .pdw-dots-btn {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    min-height: 36px !important;
+    border-radius: 10px !important;
+  }
 }

@@ -214,7 +214,18 @@ export default function RemotaleDashboard({ user, onLogout }) {
   const selectedProjectRef = useRef(selectedProject);
   useEffect(() => {
     selectedProjectRef.current = selectedProject;
+    if (selectedProject) {
+      window.scrollTo(0, 0);
+    }
   }, [selectedProject]);
+
+  // Robust project selector that bundles tasks and scrolls to top smoothly
+  const handleSelectProject = (proj) => {
+    if (!proj) return;
+    const projTasks = Array.isArray(tasks) ? tasks.filter(t => t.project_id === proj.id) : (proj.tasks || []);
+    setSelectedProject({ ...proj, tasks: projTasks });
+    window.scrollTo(0, 0);
+  };
 
   // Project to Edit in Modal
   const [projectToEdit, setProjectToEdit] = useState(null);
@@ -1050,7 +1061,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
         ) : activeTab === 'projects' ? (
           <MyProjectsView
             projects={visibleProjects}
-            onSelectProject={(proj) => setSelectedProject(proj)}
+            onSelectProject={handleSelectProject}
             onOpenAddProject={() => {
               setProjectToEdit(null);
               setIsNewProjectModalOpen(true);
@@ -1269,7 +1280,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
                   key={proj.id}
                   className="remotale-project-card"
                   style={{ cursor: 'pointer' }}
-                  onClick={() => setSelectedProject(proj)}
+                  onClick={() => handleSelectProject(proj)}
                 >
                   <div className="remotale-proj-top">
                     <div className={`remotale-proj-icon-box ${getProjectIconBg(idx)}`}>
@@ -1654,7 +1665,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
         ) : activeTab === 'projects' ? (
           <MyProjectsView
             projects={projects}
-            onSelectProject={(proj) => setSelectedProject(proj)}
+            onSelectProject={handleSelectProject}
             onOpenAddProject={() => {
               setProjectToEdit(null);
               setIsNewProjectModalOpen(true);
@@ -1934,7 +1945,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
                   key={proj.id}
                   className="remotale-admin-list-item"
                   style={{ cursor: 'pointer' }}
-                  onClick={() => setSelectedProject(proj)}
+                  onClick={() => handleSelectProject(proj)}
                 >
                   <div className="remotale-admin-item-left">
                     <div className={`remotale-proj-icon-box ${getProjectIconBg(idx)}`} style={{ width: '36px', height: '36px' }}>
@@ -2177,7 +2188,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
 
             <MyProjectsView
               projects={visibleProjects}
-              onSelectProject={(proj) => setSelectedProject(proj)}
+              onSelectProject={handleSelectProject}
               onOpenAddProject={() => {
                 setProjectToEdit(null);
                 setIsNewProjectModalOpen(true);
@@ -2426,7 +2437,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
         {/* Body */}
         <div className="remotale-mobile-body">
           {/* Greeting */}
-          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+          <div className="remotale-mobile-greeting-row">
             <div>
               <h2 style={{ fontSize: '18px', fontWeight: 800, margin: '0 0 2px 0', color: '#0f172a' }}>
                 Welcome Back, Abdullah
@@ -2456,7 +2467,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
           </div>
 
           {/* 4 Stat Cards with Percentage Badges */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
+          <div className="remotale-mobile-stats-grid">
             {/* 1. Clients */}
             <div className="remotale-stat-card" style={{ padding: '10px 8px', gap: '6px' }}>
               <div className="remotale-stat-icon-box purple" style={{ width: '28px', height: '28px' }}>
@@ -2587,7 +2598,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
                 <div
                   key={p.id}
                   style={{ marginBottom: '10px', cursor: 'pointer' }}
-                  onClick={() => setSelectedProject(p)}
+                  onClick={() => handleSelectProject(p)}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -2929,7 +2940,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
 
             <MyProjectsView
               projects={visibleProjects}
-              onSelectProject={(proj) => setSelectedProject(proj)}
+              onSelectProject={handleSelectProject}
               onOpenAddProject={() => {
                 setProjectToEdit(null);
                 setIsNewProjectModalOpen(true);
@@ -3188,7 +3199,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
           {/* Body */}
           <div className="remotale-mobile-body">
             {/* Greeting */}
-            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+            <div className="remotale-mobile-greeting-row">
               <div>
                 <h2 style={{ fontSize: '18px', fontWeight: 800, margin: '0 0 2px 0', color: '#0f172a' }}>
                   Hello, {currentClientUser?.name?.split(' ')[0] || 'Client'} 👋
@@ -3211,7 +3222,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
             </div>
 
             {/* 4 Stat Cards */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
+            <div className="remotale-mobile-stats-grid">
               <div className="remotale-stat-card" style={{ padding: '10px 8px', gap: '4px' }}>
                 <div className="remotale-stat-icon-box purple" style={{ width: '28px', height: '28px' }}>
                   <FolderIcon size={14} color="#4F46E5" />
@@ -3294,7 +3305,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
                       key={proj.id}
                       className="remotale-project-card"
                       style={{ padding: '12px', marginBottom: '10px', cursor: 'pointer', position: 'relative' }}
-                      onClick={() => setSelectedProject(proj)}
+                      onClick={() => handleSelectProject(proj)}
                     >
                       <div className="remotale-proj-top" style={{ gap: '8px', marginBottom: '6px', justifyContent: 'space-between' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -3377,7 +3388,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
             )}
 
             {/* Project Deadlines & Recent Messages 2-Column Split (Image 3) */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+            <div className="remotale-mobile-split-grid">
               {/* Project Deadlines Section (Nearest to Farthest) */}
               <section className="remotale-card-container" style={{ padding: '12px' }}>
                 <div className="remotale-card-header" style={{ marginBottom: '8px' }}>
@@ -3397,7 +3408,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
                     return (
                       <div
                         key={p.id}
-                        onClick={() => setSelectedProject(p)}
+                        onClick={() => handleSelectProject(p)}
                         style={{ padding: '6px 0', borderBottom: '1px solid #f8fafc', cursor: 'pointer' }}
                       >
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2px' }}>

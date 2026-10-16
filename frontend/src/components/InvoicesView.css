@@ -2236,3 +2236,318 @@
     margin: 4mm;
   }
 }
+
+/* ==========================================================================
+   COMPREHENSIVE MOBILE RESPONSIVENESS (ALL DEVICES: iPhone 5 to S26 Ultra)
+   ========================================================================== */
+@media (max-width: 768px) {
+  .invoices-view-container {
+    padding: 14px 14px 105px 14px !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .invoices-header {
+    margin-bottom: 16px;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .invoices-title {
+    font-size: 20px;
+  }
+
+  .invoices-subtitle {
+    font-size: 12.5px;
+  }
+
+  .invoices-btn-create {
+    padding: 8px 14px;
+    font-size: 13px;
+    border-radius: 10px;
+  }
+
+  .invoices-stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+    margin-bottom: 16px;
+  }
+
+  .inv-stat-card {
+    padding: 12px 14px;
+  }
+
+  .inv-stat-val {
+    font-size: 17px;
+  }
+
+  .invoices-controls-row {
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .inv-search-wrap {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    flex: none;
+  }
+
+  .inv-filters-wrap {
+    width: 100% !important;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .inv-filter-pills {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .inv-filter-btn {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+
+  .inv-client-select {
+    padding: 6px 10px;
+    font-size: 12px;
+    flex: 1;
+    min-width: 110px;
+  }
+
+  .inv-item-card {
+    padding: 14px !important;
+    gap: 12px !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  .inv-card-left {
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+
+  .inv-card-title {
+    font-size: 15px !important;
+    word-break: break-word;
+  }
+
+  .inv-card-right {
+    width: 100% !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    border-top: 1px solid #f1f5f9;
+    padding-top: 10px;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .inv-card-price-box {
+    min-width: 0 !important;
+    text-align: left !important;
+  }
+
+  .inv-price-val {
+    font-size: 17px !important;
+  }
+
+  .inv-card-actions {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .inv-action-btn {
+    padding: 6px 10px;
+    font-size: 11.5px;
+  }
+
+  /* Modals */
+  .inv-modal-overlay {
+    padding: 8px 6px !important;
+  }
+
+  .inv-create-modal {
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 14px !important;
+    margin: 0;
+  }
+
+  .inv-create-header {
+    padding: 14px 14px !important;
+  }
+
+  .inv-create-title {
+    font-size: 17px !important;
+  }
+
+  .inv-create-sub {
+    font-size: 12px !important;
+  }
+
+  .inv-create-body {
+    padding: 14px 12px !important;
+    max-height: calc(90vh - 110px) !important;
+  }
+
+  .inv-form-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  .inv-calc-row {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  .inv-items-section {
+    padding: 12px 10px !important;
+  }
+
+  .inv-items-table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+  }
+
+  .inv-editor-table {
+    min-width: 440px;
+  }
+
+  .inv-modal-actions-bar {
+    padding: 10px 10px !important;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .inv-terracotta-sheet, .inv-theme-sheet {
+    padding: 16px 12px 20px !important;
+    border-radius: 0 0 14px 14px !important;
+  }
+
+  .inv-tc-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+  }
+
+  .inv-tc-meta-box {
+    flex-direction: column !important;
+    gap: 12px !important;
+    padding: 14px 12px !important;
+  }
+
+  .inv-tc-meta-right {
+    align-items: flex-start !important;
+    text-align: left !important;
+  }
+
+  .inv-tc-table-wrap {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    width: 100% !important;
+  }
+
+  .inv-tc-table {
+    min-width: 420px !important;
+  }
+
+  .inv-tc-bottom-grid {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+
+  .inv-theme-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 10px !important;
+  }
+
+  .inv-theme-meta-right {
+    align-items: flex-start !important;
+  }
+
+  .inv-theme-cards-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  .inv-theme-table-wrap {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    width: 100% !important;
+  }
+
+  .inv-theme-table {
+    min-width: 420px !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .invoices-view-container {
+    padding: 10px 10px 105px 10px !important;
+  }
+
+  .invoices-stats-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 6px !important;
+  }
+
+  .inv-stat-card {
+    padding: 10px 8px !important;
+    gap: 8px !important;
+  }
+
+  .inv-stat-icon {
+    width: 34px !important;
+    height: 34px !important;
+    font-size: 15px !important;
+  }
+
+  .inv-stat-val {
+    font-size: 15px !important;
+  }
+
+  .inv-stat-lbl {
+    font-size: 10.5px !important;
+  }
+
+  .inv-card-number {
+    font-size: 11px !important;
+  }
+
+  .inv-status-pill {
+    font-size: 10.5px !important;
+  }
+}
+
+@media (max-width: 330px) {
+  .invoices-view-container {
+    padding: 8px 6px 105px 8px !important;
+  }
+
+  .invoices-title {
+    font-size: 18px !important;
+  }
+
+  .inv-item-card {
+    padding: 10px 8px !important;
+  }
+
+  .inv-card-title {
+    font-size: 13.5px !important;
+  }
+
+  .inv-price-val {
+    font-size: 15px !important;
+  }
+
+  .inv-action-btn {
+    padding: 5px 7px !important;
+    font-size: 11px !important;
+  }
+}

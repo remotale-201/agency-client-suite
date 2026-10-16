@@ -241,6 +241,8 @@
   transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
   position: relative;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .my-project-card:hover {
@@ -853,5 +855,47 @@
 
   .my-projects-btn-add {
     padding: 8px 10px;
+  }
+}
+
+@media (max-width: 340px) {
+  .my-projects-container {
+    padding: 8px 6px 105px 6px !important;
+  }
+
+  .my-project-card {
+    padding: 10px 8px !important;
+  }
+
+  .my-project-card-top {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+  }
+
+  .my-project-card-top-right {
+    margin-left: 0 !important;
+    width: 100% !important;
+    justify-content: space-between !important;
+  }
+
+  .my-project-title {
+    font-size: 14px !important;
+  }
+
+  .my-project-pill {
+    padding: 5px 8px !important;
+    font-size: 11px !important;
+  }
+
+  .my-project-card-bottom {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 6px !important;
+  }
+
+  .my-project-card-actions {
+    width: 100% !important;
+    justify-content: flex-end !important;
   }
 }

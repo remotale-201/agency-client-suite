@@ -580,3 +580,130 @@
   cursor: not-allowed;
   transform: none;
 }
+
+/* ==========================================================================
+   COMPREHENSIVE MOBILE RESPONSIVENESS (ALL DEVICES: iPhone 5 to S26 Ultra)
+   ========================================================================== */
+@media (max-width: 640px) {
+  .anp-overlay {
+    padding: 8px 6px !important;
+  }
+
+  .anp-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 18px 16px 28px !important;
+    border-radius: 16px !important;
+    margin: 0 !important;
+  }
+
+  .anp-top-bar {
+    margin-bottom: 16px !important;
+    gap: 8px !important;
+    flex-wrap: wrap !important;
+  }
+
+  .anp-title-area h2 {
+    font-size: 20px !important;
+  }
+
+  .anp-title-area p {
+    font-size: 12.5px !important;
+  }
+
+  .anp-types-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+  }
+
+  .anp-type-card {
+    padding: 14px 10px 12px !important;
+  }
+
+  .anp-timeline-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  .anp-cred-row {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+
+  .anp-files-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  .anp-submit-btn {
+    padding: 13px 18px !important;
+    font-size: 14px !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .anp-container {
+    padding: 14px 12px 24px !important;
+  }
+
+  .anp-brand-name {
+    font-size: 16px !important;
+  }
+
+  .anp-user-pill {
+    padding: 4px 8px 4px 5px !important;
+    font-size: 11px !important;
+  }
+
+  .anp-avatar-circle {
+    width: 26px !important;
+    height: 26px !important;
+    font-size: 11px !important;
+  }
+
+  .anp-type-name {
+    font-size: 12.5px !important;
+  }
+
+  .anp-type-desc {
+    font-size: 10px !important;
+  }
+}
+
+@media (max-width: 340px) {
+  .anp-overlay {
+    padding: 6px 4px !important;
+  }
+
+  .anp-container {
+    padding: 12px 8px 20px !important;
+  }
+
+  .anp-title-area h2 {
+    font-size: 17px !important;
+  }
+
+  .anp-types-grid {
+    grid-template-columns: 1fr !important;
+    gap: 6px !important;
+  }
+
+  .anp-type-card {
+    padding: 10px 8px !important;
+    flex-direction: row !important;
+    gap: 10px !important;
+    text-align: left !important;
+    align-items: center !important;
+  }
+
+  .anp-type-icon-wrapper {
+    margin-bottom: 0 !important;
+    width: 32px !important;
+    height: 32px !important;
+  }
+
+  .anp-submit-btn {
+    padding: 11px 14px !important;
+    font-size: 13px !important;
+  }
+}

@@ -453,6 +453,13 @@ export default function ProjectDetailWorkspace({
     }
   };
 
+  const handleBack = () => {
+    if (onBack) {
+      window.scrollTo(0, 0);
+      onBack();
+    }
+  };
+
   return (
     <div className="pdw-container">
       {/* Top Bar with Back, Logo, and 3-dots */}
@@ -460,7 +467,7 @@ export default function ProjectDetailWorkspace({
         <button
           type="button"
           className="pdw-back-btn"
-          onClick={onBack}
+          onClick={handleBack}
           title="Back to Projects"
         >
           <ArrowLeftIcon size={19} color="#0F172A" />
@@ -475,6 +482,7 @@ export default function ProjectDetailWorkspace({
           {onLogout && (
             <button
               type="button"
+              className="pdw-logout-desktop-btn"
               onClick={onLogout}
               style={{
                 display: 'inline-flex',

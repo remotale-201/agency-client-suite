@@ -11,7 +11,7 @@ The system is pre-configured with verified credentials for **Super Admin** and a
 | Role | User / Client | Username | Email | Password | Assigned Projects | Access Scope |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | **👑 Super Admin** | Abdullah | `admin` | `admin@remotale.com` | `admin` *(or `admin123`)* | **All 10 Projects** | Full Agency Access (All Clients & Projects) |
-| **👤 Client** | Awais (Awais Agency) | `awais` | `awais@remotale.com` | `awais` | **8 Projects Only** | Strictly Awais's 8 Assigned Projects |
+| **👤 Client** | Awais (Awais Agency) | `awais` | `awais@remotale.com` | `Remotale123` | **8 Projects Only** | Strictly Awais's 8 Assigned Projects |
 | **👤 Client** | Afshal (Afshal Brand) | `afshal` | `afshal@remotale.com` | `afshal` | **2 Projects Only** | Strictly Afshal's 2 Assigned Projects |
 | **👤 Client** | Ali Khan (Acme Brand) | `ali` | `ali@remotale.com` | `client123` | **Client Projects** | Strictly Ali Khan's Projects |
 

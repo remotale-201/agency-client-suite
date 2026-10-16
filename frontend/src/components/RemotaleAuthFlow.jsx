@@ -267,7 +267,7 @@ export default function RemotaleAuthFlow({ onLogin, onRegister, initialPortalTok
     } else if (accountKey === 'awais') {
       setSelectedRole('client');
       setLoginEmail('awais');
-      setLoginPassword('awais');
+      setLoginPassword('Remotale123');
     } else if (accountKey === 'afshal') {
       setSelectedRole('client');
       setLoginEmail('afshal');
