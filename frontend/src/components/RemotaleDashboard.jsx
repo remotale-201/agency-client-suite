@@ -214,9 +214,6 @@ export default function RemotaleDashboard({ user, onLogout }) {
   const selectedProjectRef = useRef(selectedProject);
   useEffect(() => {
     selectedProjectRef.current = selectedProject;
-    if (selectedProject) {
-      window.scrollTo(0, 0);
-    }
   }, [selectedProject]);
 
   // Robust project selector that bundles tasks and scrolls to top smoothly
@@ -393,11 +390,28 @@ export default function RemotaleDashboard({ user, onLogout }) {
         if (found) {
           const projTasks = Array.isArray(tasksRes) ? tasksRes.filter(t => t.project_id === found.id) : (found.tasks || []);
           const is100 = Number(found.progress) >= 100;
-          setSelectedProject({
-            ...found,
-            progress: is100 ? 100 : found.progress,
-            status: is100 ? 'completed' : found.status,
-            tasks: projTasks
+          const nextProgress = is100 ? 100 : found.progress;
+          const nextStatus = is100 ? 'completed' : found.status;
+
+          setSelectedProject(prev => {
+            if (!prev) return null;
+            // Avoid creating new object reference if data hasn't changed
+            if (
+              prev.progress === nextProgress &&
+              prev.status === nextStatus &&
+              prev.title === found.title &&
+              prev.description === found.description &&
+              JSON.stringify(prev.tasks || []) === JSON.stringify(projTasks) &&
+              JSON.stringify(prev.credentials || []) === JSON.stringify(found.credentials || [])
+            ) {
+              return prev;
+            }
+            return {
+              ...found,
+              progress: nextProgress,
+              status: nextStatus,
+              tasks: projTasks
+            };
           });
         }
       }
