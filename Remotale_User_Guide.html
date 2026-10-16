@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Remotale - Agency & Client Suite User Guide</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+  @page {
+    size: A4;
+    margin: 18mm 16mm 20mm 16mm;
+    @bottom-right {
+      content: counter(page);
+    }
+  }
+
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: #0f172a;
+    background: #ffffff;
+    font-size: 11pt;
+    line-height: 1.6;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .page-break {
+    page-break-after: always;
+  }
+
+  .avoid-break {
+    page-break-inside: avoid;
+  }
+
+  /* -------------------------------------------------------------
+     COVER PAGE
+  ------------------------------------------------------------- */
+  .cover-page {
+    min-height: 250mm;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 20mm 10mm 10mm;
+    border-bottom: 2px solid #e2e8f0;
+  }
+
+  .cover-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo-box {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 24px;
+    box-shadow: 0 10px 25px rgba(79, 70, 229, 0.3);
+  }
+
+  .brand-title {
+    font-size: 26pt;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: -0.8px;
+  }
+
+  .cover-body {
+    margin-top: 40mm;
+  }
+
+  .badge-suite {
+    display: inline-block;
+    background: #eef2ff;
+    color: #4f46e5;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 10pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 16px;
+    border: 1px solid #c7d2fe;
+  }
+
+  .cover-main-title {
+    font-size: 34pt;
+    font-weight: 800;
+    line-height: 1.15;
+    color: #0f172a;
+    letter-spacing: -1.2px;
+    margin-bottom: 16px;
+  }
+
+  .cover-main-title span {
+    background: linear-gradient(135deg, #4f46e5 0%, #2563eb 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .cover-subtitle {
+    font-size: 14pt;
+    color: #475569;
+    font-weight: 400;
+    max-width: 500px;
+    line-height: 1.5;
+    margin-bottom: 30px;
+  }
+
+  .cover-meta-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    padding: 16px 20px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    margin-top: 25mm;
+  }
+
+  .meta-item h4 {
+    font-size: 8.5pt;
+    text-transform: uppercase;
+    color: #64748b;
+    margin-bottom: 4px;
+    letter-spacing: 0.4px;
+  }
+
+  .meta-item p {
+    font-size: 11pt;
+    font-weight: 700;
+    color: #0f172a;
+  }
+
+  /* -------------------------------------------------------------
+     TABLE OF CONTENTS
+  ------------------------------------------------------------- */
+  .toc-container {
+    padding-top: 10mm;
+  }
+
+  .section-heading {
+    font-size: 20pt;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: -0.5px;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-sub {
+    font-size: 11pt;
+    color: #64748b;
+    margin-bottom: 24px;
+  }
+
+  .toc-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .toc-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: #f8fafc;
+    border: 1px solid #eef2f6;
+    border-radius: 12px;
+  }
+
+  .toc-title {
+    font-weight: 700;
+    color: #1e293b;
+    font-size: 11.5pt;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .toc-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    background: #ede9fe;
+    color: #4f46e5;
+    border-radius: 8px;
+    font-size: 9.5pt;
+    font-weight: 800;
+  }
+
+  .toc-page {
+    font-weight: 700;
+    color: #64748b;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* -------------------------------------------------------------
+     SECTIONS & CONTENT
+  ------------------------------------------------------------- */
+  .content-header {
+    margin-bottom: 22px;
+    padding-bottom: 12px;
+    border-bottom: 1.5px solid #f1f5f9;
+  }
+
+  .module-tag {
+    font-size: 9pt;
+    font-weight: 800;
+    color: #4f46e5;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 4px;
+  }
+
+  .module-title {
+    font-size: 18pt;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: -0.4px;
+  }
+
+  .paragraph {
+    font-size: 10.5pt;
+    color: #334155;
+    margin-bottom: 14px;
+    line-height: 1.6;
+  }
+
+  /* Callout Boxes */
+  .callout-box {
+    padding: 14px 18px;
+    border-radius: 12px;
+    margin: 16px 0;
+    font-size: 10pt;
+    line-height: 1.55;
+    border-left: 4px solid;
+  }
+
+  .callout-tip {
+    background: #f0fdf4;
+    border-color: #16a34a;
+    color: #166534;
+  }
+
+  .callout-info {
+    background: #eff6ff;
+    border-color: #2563eb;
+    color: #1e40af;
+  }
+
+  .callout-warn {
+    background: #fffbeb;
+    border-color: #f59e0b;
+    color: #92400e;
+  }
+
+  .callout-title {
+    font-weight: 800;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* Styled Tables */
+  .styled-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 16px 0 20px 0;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .styled-table th {
+    background: #f8fafc;
+    color: #0f172a;
+    font-weight: 700;
+    font-size: 9.5pt;
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 1px solid #e2e8f0;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+
+  .styled-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 10pt;
+    color: #334155;
+  }
+
+  .styled-table tr:last-child td {
+    border-bottom: none;
+  }
+
+  .styled-table tr:nth-child(even) td {
+    background: #fafafa;
+  }
+
+  .code-badge {
+    font-family: 'JetBrains Mono', monospace;
+    background: #ede9fe;
+    color: #4338ca;
+    padding: 2px 7px;
+    border-radius: 6px;
+    font-size: 9pt;
+    font-weight: 600;
+  }
+
+  /* Steps Grid */
+  .steps-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 16px 0;
+  }
+
+  .step-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 12px 16px;
+    background: #ffffff;
+    border: 1px solid #edf2f7;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  }
+
+  .step-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #4f46e5;
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 10pt;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .step-content h4 {
+    font-size: 11pt;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 2px;
+  }
+
+  .step-content p {
+    font-size: 9.8pt;
+    color: #475569;
+    line-height: 1.45;
+  }
+
+  /* 2-Column Feature Cards */
+  .feature-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin: 16px 0;
+  }
+
+  .feature-card {
+    background: #f8fafc;
+    border: 1px solid #eef2f6;
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+
+  .feature-card-icon {
+    font-size: 20px;
+    margin-bottom: 8px;
+  }
+
+  .feature-card h4 {
+    font-size: 11pt;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 4px;
+  }
+
+  .feature-card p {
+    font-size: 9.5pt;
+    color: #475569;
+    line-height: 1.45;
+  }
+
+  /* Footer */
+  .page-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 12mm;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 8.5pt;
+    color: #94a3b8;
+    border-top: 1px solid #f1f5f9;
+    padding: 0 2mm;
+  }
+</style>
+</head>
+<body>
+
+  <!-- =========================================================
+       PAGE 1: COVER
+  ========================================================== -->
+  <div class="cover-page page-break">
+    <div class="cover-header">
+      <div class="logo-box">R</div>
+      <div class="brand-title">Remotale</div>
+    </div>
+
+    <div class="cover-body">
+      <span class="badge-suite">Complete Operating Manual</span>
+      <h1 class="cover-main-title">Agency & Client <span>Portal Suite</span></h1>
+      <p class="cover-subtitle">Official step-by-step user guide for Super Admin and Clients covering all active modules, live tracking, credentials vault, and mobile workflows.</p>
+    </div>
+
+    <div class="cover-meta-grid">
+      <div class="meta-item">
+        <h4>System Version</h4>
+        <p>Remotale v2.4 (Production)</p>
+      </div>
+      <div class="meta-item">
+        <h4>Target Audience</h4>
+        <p>Agency Admins & Clients</p>
+      </div>
+      <div class="meta-item">
+        <h4>Release Date</h4>
+        <p>October 2026</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       PAGE 2: TABLE OF CONTENTS & QUICK START
+  ========================================================== -->
+  <div class="toc-container page-break">
+    <h2 class="section-heading">Table of Contents</h2>
+    <p class="section-sub">Overview of active software modules and operational guides</p>
+
+    <div class="toc-list" style="margin-bottom: 24px;">
+      <div class="toc-item">
+        <span class="toc-title"><span class="toc-num">1</span> Authentication & Role-Based Access</span>
+        <span class="toc-page">Page 3</span>
+      </div>
+      <div class="toc-item">
+        <span class="toc-title"><span class="toc-num">2</span> Executive Dashboard & Real-Time Tracking</span>
+        <span class="toc-page">Page 4</span>
+      </div>
+      <div class="toc-item">
+        <span class="toc-title"><span class="toc-num">3</span> Project Management & Workflow (My Projects)</span>
+        <span class="toc-page">Page 5</span>
+      </div>
+      <div class="toc-item">
+        <span class="toc-title"><span class="toc-num">4</span> Deep-Dive Workspace (Credentials, To-Do, Files & Notes)</span>
+        <span class="toc-page">Page 6</span>
+      </div>
+      <div class="toc-item">
+        <span class="toc-title"><span class="toc-num">5</span> Invoices & Financial Management (Billing)</span>
+        <span class="toc-page">Page 7</span>
+      </div>
+      <div class="toc-item">
+        <span class="toc-title"><span class="toc-num">6</span> Mobile Experience & Device Compatibility</span>
+        <span class="toc-page">Page 8</span>
+      </div>
+    </div>
+
+    <div class="callout-box callout-info avoid-break">
+      <div class="callout-title">ℹ️ Scope Constraint Notice</div>
+      As requested, this guide covers <strong>ONLY active, live, production modules</strong>. Placeholder sections under development (such as standalone Calendar or Integrations) have been omitted so you have a 100% actionable operating manual.
+    </div>
+
+    <div class="callout-box callout-tip avoid-break" style="margin-top: 14px;">
+      <div class="callout-title">💡 System Architecture Summary</div>
+      Remotale is designed with dual-access visibility: <strong>Super Admins</strong> oversee all client portfolios, create deliverables, and track revenue, while <strong>Clients</strong> log in to an isolated, secure workspace showing exclusively their projects, credentials, and billing.
+    </div>
+  </div>
+
+  <!-- =========================================================
+       PAGE 3: MODULE 1 - AUTHENTICATION
+  ========================================================== -->
+  <div class="page-break">
+    <div class="content-header">
+      <div class="module-tag">Module 01</div>
+      <h2 class="module-title">Authentication & Account Access</h2>
+    </div>
+
+    <p class="paragraph">Remotale features a secure authentication gateway that automatically distinguishes between Agency Super Admins and Clients, rendering the appropriate permission matrix upon sign-in.</p>
+
+    <h3 style="font-size: 13pt; font-weight: 700; margin: 18px 0 10px;">1.1 Active User Credentials</h3>
+    <table class="styled-table avoid-break">
+      <thead>
+        <tr>
+          <th>User / Persona</th>
+          <th>Role</th>
+          <th>Username</th>
+          <th>Password</th>
+          <th>Access Level</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Abdullah</strong></td>
+          <td><span class="code-badge" style="background:#fee2e2; color:#dc2626;">Super Admin</span></td>
+          <td><span class="code-badge">admin</span></td>
+          <td><span class="code-badge">admin</span></td>
+          <td>Full System Oversight (All 10+ Projects)</td>
+        </tr>
+        <tr>
+          <td><strong>Awais</strong></td>
+          <td><span class="code-badge" style="background:#e0e7ff; color:#4338ca;">Client</span></td>
+          <td><span class="code-badge">awais</span></td>
+          <td><span class="code-badge">Remotale123</span></td>
+          <td>Awais Agency Dedicated Portal</td>
+        </tr>
+        <tr>
+          <td><strong>Afshal</strong></td>
+          <td><span class="code-badge" style="background:#e0e7ff; color:#4338ca;">Client</span></td>
+          <td><span class="code-badge">afshal</span></td>
+          <td><span class="code-badge">afshal</span></td>
+          <td>Afshal Brand Portal</td>
+        </tr>
+        <tr>
+          <td><strong>Ali Khan</strong></td>
+          <td><span class="code-badge" style="background:#e0e7ff; color:#4338ca;">Client</span></td>
+          <td><span class="code-badge">ali</span></td>
+          <td><span class="code-badge">client123</span></td>
+          <td>Acme Brand Portal</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 style="font-size: 13pt; font-weight: 700; margin: 18px 0 10px;">1.2 Signing In Step-by-Step</h3>
+    <div class="steps-container avoid-break">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h4>Open the Remotale Application</h4>
+          <p>Navigate to the web address or mobile URL. The sign-in screen presents two clean fields: Username and Password.</p>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h4>Enter Your Credentials or Use Quick-Fill</h4>
+          <p>Type your assigned username and password. For rapid testing, click any pill button (e.g. <em>"Awais (Remotale123)"</em>) to auto-fill credentials instantly.</p>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h4>Click "Sign In"</h4>
+          <p>The system validates your account against the PostgreSQL database and immediately opens your customized dashboard.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout-box callout-warn avoid-break">
+      <div class="callout-title">🔒 Security Notice</div>
+      Always click <strong>Log Out</strong> from the user profile dropdown or top-bar before closing your browser session on shared devices.
+    </div>
+  </div>
+
+  <!-- =========================================================
+       PAGE 4: MODULE 2 - EXECUTIVE DASHBOARD
+  ========================================================== -->
+  <div class="page-break">
+    <div class="content-header">
+      <div class="module-tag">Module 02</div>
+      <h2 class="module-title">Executive Dashboard & Live Tracking</h2>
+    </div>
+
+    <p class="paragraph">The dashboard serves as the central control room. It consolidates key operational KPIs, upcoming deadlines, recent team activities, and project statuses into one view.</p>
+
+    <h3 style="font-size: 13pt; font-weight: 700; margin: 18px 0 10px;">2.1 Key Metrics Overview Cards</h3>
+    <div class="feature-grid-2 avoid-break">
+      <div class="feature-card">
+        <div class="feature-card-icon">📁</div>
+        <h4>Active Projects Card</h4>
+        <p>Displays total projects currently active in the system, with percentage variance from the preceding week.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-card-icon">✅</div>
+        <h4>Completed Deliverables</h4>
+        <p>Summarizes total finished milestones and 100% delivered customer projects.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-card-icon">💰</div>
+        <h4>Financial / Budget KPI</h4>
+        <p>For Admins: Total agency revenue. For Clients: Total allocated budget across active contracts.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-card-icon">⚡</div>
+        <h4>Team Capacity & Tasks</h4>
+        <p>Real-time metric of tasks in flight and available capacity of lead project engineers.</p>
+      </div>
+    </div>
+
+    <h3 style="font-size: 13pt; font-weight: 700; margin: 20px 0 10px;">2.2 Interactive Dashboard Controls</h3>
+    <div class="steps-container avoid-break">
+      <div class="step-card">
+        <div class="step-num">📅</div>
+        <div class="step-content">
+          <h4>Dynamic Date Filter Dropdown</h4>
+          <p>Located in the top right. Click the calendar pill to toggle between <strong>Today</strong>, <strong>This Week</strong>, <strong>This Month</strong>, or select a custom date using the calendar picker.</p>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">🚀</div>
+        <div class="step-content">
+          <h4>Recent Projects Quick Access</h4>
+          <p>Click any project row in the dashboard to launch the <strong>Project Detail Workspace</strong> instantly with full task checklist and credentials.</p>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">⏰</div>
+        <div class="step-content">
+          <h4>Upcoming Deadlines Widget</h4>
+          <p>Highlights deliverables due within the next 7 days with dynamic badges: <em>Due in 2 days</em>, <em>Due tomorrow</em>, or <em>On track</em>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       PAGE 5: MODULE 3 - PROJECT MANAGEMENT
+  ========================================================== -->
+  <div class="page-break">
+    <div class="content-header">
+      <div class="module-tag">Module 03</div>
+      <h2 class="module-title">Project Management & Workflow</h2>
+    </div>
+
+    <p class="paragraph">The <strong>My Projects</strong> view allows you to search, filter, create, edit, and organize all deliverables with categorized badges and progress tracking.</p>
+
+    <h3 style="font-size: 13pt; font-weight: 700; margin: 18px 0 10px;">3.1 Filter Tabs & Search Controls</h3>
+    <div class="steps-container avoid-break">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h4>Status Filter Pills</h4>
+          <p>Switch between <strong>All Projects</strong>, <strong>In Progress</strong>, <strong>Under Review</strong>, and <strong>Completed</strong>. Each pill shows a live numerical counter badge.</p>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h4>Real-time Search Bar</h4>
+          <p>Type any keyword (e.g. <em>"White Label"</em> or <em>"Fytnex"</em>) to filter matching projects instantly across titles, descriptions, and tags.</p>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h4>Sort By Toggle</h4>
+          <p>Click the sort button to arrange deliverables by <strong>Latest Created</strong> or <strong>Progress Percentage</strong>.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="font-size: 13pt; font-weight: 700; margin: 20px 0 10px;">3.2 Project Categories & Icons</h3>
+    <table class="styled-table avoid-break">
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>Color Badge</th>
+          <th>Typical Deliverables</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Web Development</strong></td>
+          <td><span class="code-badge" style="background:#e0e7ff; color:#4338ca;">Indigo</span></td>
+          <td>Shopify store build, custom theme development, WordPress sites</td>
+        </tr>
+        <tr>
+          <td><strong>Graphics & UI/UX</strong></td>
+          <td><span class="code-badge" style="background:#fce7f3; color:#be185d;">Pink</span></td>
+          <td>Logo design, product banners, packaging, Figma mockups</td>
+        </tr>
+        <tr>
+          <td><strong>Video Production</strong></td>
+          <td><span class="code-badge" style="background:#f3e8ff; color:#7e22ce;">Purple</span></td>
+          <td>Promotional videos, reels, product motion clips</td>
+        </tr>
+        <tr>
+          <td><strong>SEO & Marketing</strong></td>
+          <td><span class="code-badge" style="background:#dcfce7; color:#15803d;">Green</span></td>
+          <td>On-page SEO, speed optimization, keyword ranking</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 style="font-size: 13pt; font-weight: 700; margin: 20px 0 10px;">3.3 Creating or Editing a Project</h3>
+    <p class="paragraph">Click <strong>"+ Add Project"</strong> at top right. Fill in Title, Description, Type, Deadline, Budget, and (for Admins) assign the Client. Click <strong>"Create Project"</strong> to save to the database.</p>
+  </div>
+
+  <!-- =========================================================
+       PAGE 6: MODULE 4 - PROJECT DETAIL WORKSPACE
+  ========================================================== -->
+  <div class="page-break">
+    <div class="content-header">
+      <div class="module-tag">Module 04</div>
+      <h2 class="module-title">Deep-Dive Workspace (Detail View)</h2>
+    </div>
+
+    <p class="paragraph">Clicking any project card opens the full <strong>ProjectDetailWorkspace</strong>. This view is divided into 5 focused tabs:</p>
+
+    <div class="steps-container avoid-break">
+      <div class="step-card">
+        <div class="step-num">📄</div>
+        <div class="step-content">
+          <h4>Tab 1: Overview</h4>
+          <p>Displays full project specifications, start and end dates, priority level, assigned Admin Lead (Abdullah), and calculated live progress.</p>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">☑️</div>
+        <div class="step-content">
+          <h4>Tab 2: To Do List (Interactive Checklist)</h4>
+          <p>Tick any task checkbox to instantly toggle completion. The project progress bar updates in real time. Click <strong>"+ Add Task"</strong> to insert new tasks with target deadlines.</p>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">📁</div>
+        <div class="step-content">
+          <h4>Tab 3: Files & Assets</h4>
+          <p>Repository of deliverables including Figma mockups (<code>.fig</code>), zip packages (<code>.zip</code>), RAR brand kits, and preview links. Click the download icon on any row to retrieve files.</p>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">🔐</div>
+        <div class="step-content">
+          <h4>Tab 4: Credentials Vault (Encrypted Platform Logins)</h4>
+          <p>Secure repository for store admin logins (Shopify, WordPress, cPanel). Features <strong>One-Click Copy</strong> for usernames and passwords with visual checkmark confirmation.</p>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">📝</div>
+        <div class="step-content">
+          <h4>Tab 5: Notepad (Shared Briefs)</h4>
+          <p>Bulleted project requirements and notes. Click <strong>"Edit"</strong> to update notes with zero latency and automatic cloud sync.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout-box callout-tip avoid-break">
+      <div class="callout-title">💡 One-Click Credentials Copying</div>
+      In the Credentials tab, clicking the copy icon next to any username or password copies the value directly to your device clipboard for instant pasting into Shopify Admin or CMS portals.
+    </div>
+  </div>
+
+  <!-- =========================================================
+       PAGE 7: MODULE 5 - INVOICES & FINANCIALS
+  ========================================================== -->
+  <div class="page-break">
+    <div class="content-header">
+      <div class="module-tag">Module 05</div>
+      <h2 class="module-title">Invoices & Financial Management</h2>
+    </div>
+
+    <p class="paragraph">The <strong>Invoices View</strong> provides agency-grade billing transparency. Both Admins and Clients can view payment histories, outstanding balances, and official invoices.</p>
+
+    <h3 style="font-size: 13pt; font-weight: 700; margin: 18px 0 10px;">5.1 Financial Summary Cards</h3>
+    <div class="feature-grid-2 avoid-break">
+      <div class="feature-card">
+        <div class="feature-card-icon">💳</div>
+        <h4>Total Billed</h4>
+        <p>Gross amount of all invoices generated across projects.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-card-icon">🟢</div>
+        <h4>Paid to Date</h4>
+        <p>Total confirmed cleared payments received.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-card-icon">🟡</div>
+        <h4>Outstanding Balance</h4>
+        <p>Pending dues awaiting settlement before milestone release.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-card-icon">🔴</div>
+        <h4>Overdue Amount</h4>
+        <p>Invoices past their designated due dates flagged for follow-up.</p>
+      </div>
+    </div>
+
+    <h3 style="font-size: 13pt; font-weight: 700; margin: 20px 0 10px;">5.2 Managing Invoices</h3>
+    <div class="steps-container avoid-break">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h4>Filter by Status</h4>
+          <p>Click tabs: <strong>All Invoices</strong>, <strong>Paid</strong>, <strong>Pending</strong>, or <strong>Overdue</strong> to isolate specific billing states.</p>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h4>Create New Invoices (Admins)</h4>
+          <p>Click <strong>"+ Create Invoice"</strong>. Select Client, due date, enter line items with unit prices and quantities. Tax and discounts are automatically calculated.</p>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h4>View / Download PDF Invoices</h4>
+          <p>Click <strong>"Download"</strong> on any invoice row to export the branded invoice for accounting and tax records.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       PAGE 8: MODULE 6 - MOBILE USABILITY & COMPATIBILITY
+  ========================================================== -->
+  <div class="page-break">
+    <div class="content-header">
+      <div class="module-tag">Module 06</div>
+      <h2 class="module-title">Mobile Experience & Compatibility</h2>
+    </div>
+
+    <p class="paragraph">Remotale is optimized for full touch responsiveness across all screen sizes—from legacy devices like iPhone 5 and Samsung J5 up to ultra-modern flagship phones (iPhone 18 Pro Max, Samsung S26 Ultra) and desktop monitors.</p>
+
+    <h3 style="font-size: 13pt; font-weight: 700; margin: 18px 0 10px;">6.1 Mobile Bottom Navigation Bar</h3>
+    <p class="paragraph">On mobile devices, a sleek glassmorphism sticky navigation bar is fixed at the bottom for thumb-friendly navigation:</p>
+
+    <div class="feature-grid-2 avoid-break">
+      <div class="feature-card">
+        <div class="feature-card-icon">🏠</div>
+        <h4>Home Icon</h4>
+        <p>Returns to the executive dashboard, KPI cards, and recent projects list.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-card-icon">📂</div>
+        <h4>Projects Icon</h4>
+        <p>Opens the full My Projects list with filter pills and search bar.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-card-icon">💬</div>
+        <h4>Messages Icon</h4>
+        <p>Opens quick communication and admin support threads.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-card-icon">👤</div>
+        <h4>Profile Icon</h4>
+        <p>Opens user information, assigned company name, and one-tap Log Out.</p>
+      </div>
+    </div>
+
+    <h3 style="font-size: 13pt; font-weight: 700; margin: 20px 0 10px;">6.2 Device Verification Matrix</h3>
+    <table class="styled-table avoid-break">
+      <thead>
+        <tr>
+          <th>Device Family</th>
+          <th>Screen Width</th>
+          <th>Layout Behavior</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>iPhone 5 / SE (Legacy)</td>
+          <td>320px</td>
+          <td>Single-column stack, compact pills, zero overflow</td>
+          <td><span class="code-badge" style="background:#dcfce7; color:#15803d;">Verified 100%</span></td>
+        </tr>
+        <tr>
+          <td>Samsung Galaxy J5 / A series</td>
+          <td>360px</td>
+          <td>Full-width responsive cards, optimized touch targets</td>
+          <td><span class="code-badge" style="background:#dcfce7; color:#15803d;">Verified 100%</span></td>
+        </tr>
+        <tr>
+          <td>iPhone 14 / 15 / 16 / 18 Pro Max</td>
+          <td>390px - 430px</td>
+          <td>Spacious 2x2 grid stats, glassmorphism bottom bar</td>
+          <td><span class="code-badge" style="background:#dcfce7; color:#15803d;">Verified 100%</span></td>
+        </tr>
+        <tr>
+          <td>Samsung Galaxy S24 / S25 / S26 Ultra</td>
+          <td>412px - 440px</td>
+          <td>High-DPI optimized, smooth horizontal tab scrolling</td>
+          <td><span class="code-badge" style="background:#dcfce7; color:#15803d;">Verified 100%</span></td>
+        </tr>
+        <tr>
+          <td>iPads & Tablets</td>
+          <td>768px - 1024px</td>
+          <td>Dual-column card grid with fluid side drawer</td>
+          <td><span class="code-badge" style="background:#dcfce7; color:#15803d;">Verified 100%</span></td>
+        </tr>
+        <tr>
+          <td>Desktop & Laptops</td>
+          <td>1200px+</td>
+          <td>Full desktop command center with sticky sidebar</td>
+          <td><span class="code-badge" style="background:#dcfce7; color:#15803d;">Verified 100%</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout-box callout-tip avoid-break">
+      <div class="callout-title">💡 Technical Support & Help</div>
+      If you experience any issues, have custom requirement requests, or require password updates, please reach out to the Remotale Agency Lead: <strong>admin@remotale.com</strong>.
+    </div>
+  </div>
+
+</body>
+</html>
