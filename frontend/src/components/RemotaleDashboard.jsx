@@ -1763,11 +1763,15 @@ export default function RemotaleDashboard({ user, onLogout }) {
                   boxShadow: '0 1px 4px rgba(0,0,0,0.06)'
                 }}
                 title="Switch between Super Admin and specific Client Portals"
-              >
-                <option value="admin" style={{ background: '#0f172a', color: '#ffffff' }}>👑 Super Admin (All 10 Projects)</option>
-                <option value="client-awais" style={{ background: '#0f172a', color: '#ffffff' }}>👤 Client Portal: Awais (8 Projects)</option>
-                <option value="client-afshal" style={{ background: '#0f172a', color: '#ffffff' }}>👤 Client Portal: Afshal (2 Projects)</option>
-                <option value="client-1" style={{ background: '#0f172a', color: '#ffffff' }}>👤 Client Portal: Ali Khan</option>
+                <option value="admin" style={{ background: '#0f172a', color: '#ffffff' }}>👑 Super Admin (All {projects.length} Projects)</option>
+                {clients.map(cl => {
+                  const count = projects.filter(p => (p.client_id === cl.id || p.clientId === cl.id)).length;
+                  return (
+                    <option key={cl.id} value={cl.id} style={{ background: '#0f172a', color: '#ffffff' }}>
+                      👤 Client Portal: {cl.name} ({count} {count === 1 ? 'Project' : 'Projects'})
+                    </option>
+                  );
+                })}
               </select>
             )}
 

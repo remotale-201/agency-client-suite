@@ -375,13 +375,42 @@ export default function ProjectDetailWorkspace({
     }
   };
 
-  // Safe files list matching Image 2
-  const filesList = [
-    { id: 'f-1', name: 'Homepage Design.fig', meta: 'Figma File • 12 MB', date: '12 Oct 2024', type: 'figma' },
-    { id: 'f-2', name: 'Product Banners.zip', meta: 'ZIP File • 24 MB', date: '14 Oct 2024', type: 'zip' },
-    { id: 'f-3', name: 'Logo & Brand Kit.rar', meta: 'RAR File • 8 MB', date: '15 Oct 2024', type: 'rar' },
-    { id: 'f-4', name: 'Reference Website.url', meta: 'URL Link', date: '16 Oct 2024', type: 'url' }
-  ];
+  // Dynamic files & assets state (Empty by default until user uploads)
+  const [localFiles, setLocalFiles] = useState(() => project?.files || []);
+  useEffect(() => {
+    setLocalFiles(project?.files || []);
+  }, [project?.id, project?.files]);
+
+  const handleFileUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const ext = (file.name.split('.').pop() || '').toLowerCase();
+    let type = 'zip';
+    if (['fig', 'figma'].includes(ext)) type = 'figma';
+    else if (['rar'].includes(ext)) type = 'rar';
+    else if (['url', 'link', 'html'].includes(ext)) type = 'url';
+    else type = 'zip';
+
+    const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
+    const meta = `${ext.toUpperCase()} File • ${Number(sizeMB) > 0.1 ? `${sizeMB} MB` : `${Math.round(file.size / 1024) || 1} KB`}`;
+    const todayDate = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+
+    const newFile = {
+      id: `f-${Date.now()}`,
+      name: file.name,
+      meta,
+      date: todayDate,
+      type
+    };
+
+    const updated = [newFile, ...localFiles];
+    setLocalFiles(updated);
+    if (onUpdateProject && project?.id) {
+      onUpdateProject(project.id, { files: updated });
+    }
+    e.target.value = '';
+  };
 
   // Dynamic project activity timeline
   const activityList = useMemo(() => {
@@ -1159,41 +1188,56 @@ export default function ProjectDetailWorkspace({
               <label className="pdw-card-btn-action" style={{ cursor: 'pointer' }}>
                 <UploadIcon size={13} />
                 <span>Upload</span>
-                <input type="file" style={{ display: 'none' }} onChange={() => alert('File uploaded successfully to project files!')} />
+                <input type="file" style={{ display: 'none' }} onChange={handleFileUpload} />
               </label>
             </div>
 
             <div className="pdw-files-list">
-              {filesList.map((file) => (
-                <div key={file.id} className="pdw-file-row">
-                  <div className="pdw-file-left">
-                    {file.type === 'figma' ? (
-                      <FigmaFileIcon />
-                    ) : file.type === 'zip' ? (
-                      <ZipFileIcon />
-                    ) : file.type === 'rar' ? (
-                      <RarFileIcon />
-                    ) : (
-                      <UrlFileIcon />
-                    )}
+              {localFiles.length === 0 ? (
+                <div style={{ padding: '24px 12px', textAlign: 'center', color: '#94a3b8', fontSize: '13px' }}>
+                  No files or assets uploaded yet. Click <strong>Upload</strong> above to attach files.
+                </div>
+              ) : (
+                localFiles.map((file) => (
+                  <div key={file.id} className="pdw-file-row">
+                    <div className="pdw-file-left">
+                      {file.type === 'figma' ? (
+                        <FigmaFileIcon />
+                      ) : file.type === 'rar' ? (
+                        <RarFileIcon />
+                      ) : file.type === 'url' ? (
+                        <UrlFileIcon />
+                      ) : (
+                        <ZipFileIcon />
+                      )}
 
-                    <div className="pdw-file-info">
-                      <span className="pdw-file-name">{file.name}</span>
-                      <span className="pdw-file-meta">{file.meta}</span>
+                      <div className="pdw-file-info">
+                        <span className="pdw-file-name">{file.name}</span>
+                        <span className="pdw-file-meta">{file.meta}</span>
+                      </div>
+                    </div>
+
+                    <div className="pdw-file-right">
+                      <span className="pdw-file-date">{file.date}</span>
+                      <button
+                        type="button"
+                        className="pdw-file-download-btn"
+                        title="Delete file"
+                        style={{ color: '#ef4444' }}
+                        onClick={() => {
+                          const updated = localFiles.filter(f => f.id !== file.id);
+                          setLocalFiles(updated);
+                          if (onUpdateProject && project?.id) {
+                            onUpdateProject(project.id, { files: updated });
+                          }
+                        }}
+                      >
+                        <TrashIcon size={14} color="#EF4444" />
+                      </button>
                     </div>
                   </div>
-
-                  <div className="pdw-file-right">
-                    <span className="pdw-file-date">{file.date}</span>
-                    <button type="button" className="pdw-file-download-btn" title="Download file" onClick={() => alert(`Downloading ${file.name}...`)}>
-                      <DownloadIcon size={15} />
-                    </button>
-                    <button type="button" className="pdw-file-download-btn">
-                      <MoreVerticalIcon size={15} />
-                    </button>
-                  </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
         )}

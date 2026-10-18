@@ -91,6 +91,7 @@ const realProjects = [
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
     "progress": 25,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-1-1",
@@ -153,7 +154,8 @@ const realProjects = [
     "priority": "High",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 0,
+    "progress": 25,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-2-1",
@@ -173,11 +175,11 @@ const realProjects = [
     "tasks": [
       {
         "title": "Header & Navigation Setup",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Hero & Banner Graphics",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Page Design",
@@ -216,7 +218,8 @@ const realProjects = [
     "priority": "Medium",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 13,
+    "progress": 25,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-3-1",
@@ -240,7 +243,7 @@ const realProjects = [
       },
       {
         "title": "Hero & Banner Graphics",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Page Design",
@@ -280,6 +283,7 @@ const realProjects = [
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
     "progress": 25,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-4-1",
@@ -336,13 +340,14 @@ const realProjects = [
     "clientId": "client-awais",
     "title": "Zam Zam Royal WL",
     "description": "Full Web Development project. Connected domain: zamzamroyal.com",
-    "notes": "Domain: zamzamroyal.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: zamzamroyal.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "projectType": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "Medium",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 13,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-5-1",
@@ -366,31 +371,31 @@ const realProjects = [
       },
       {
         "title": "Hero & Banner Graphics",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Buy and Connect Domain (zamzamroyal.com)",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -399,13 +404,14 @@ const realProjects = [
     "clientId": "client-awais",
     "title": "Riyyah",
     "description": "Full Web Development project. Connected domain: riyyah.store",
-    "notes": "Domain: riyyah.store\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: riyyah.store\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "projectType": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "Medium",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 0,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-6-1",
@@ -425,35 +431,35 @@ const realProjects = [
     "tasks": [
       {
         "title": "Header & Navigation Setup",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Hero & Banner Graphics",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Buy and Connect Domain (riyyah.store)",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -469,6 +475,7 @@ const realProjects = [
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
     "progress": 25,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-7-1",
@@ -525,13 +532,14 @@ const realProjects = [
     "clientId": "client-awais",
     "title": "Bacha World",
     "description": "Full Web Development project. Connected domain: bachaworld.pk",
-    "notes": "Domain: bachaworld.pk\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: bachaworld.pk\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "projectType": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "High",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 0,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-8-1",
@@ -551,35 +559,35 @@ const realProjects = [
     "tasks": [
       {
         "title": "Header & Navigation Setup",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Hero & Banner Graphics",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Buy and Connect Domain (bachaworld.pk)",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -588,13 +596,14 @@ const realProjects = [
     "clientId": "client-awais",
     "title": "KSA Usama Ali",
     "description": "Full Web Development project. Connected domain: arreja.com",
-    "notes": "Domain: arreja.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: arreja.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "projectType": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "High",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 13,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-9-1",
@@ -618,31 +627,31 @@ const realProjects = [
       },
       {
         "title": "Hero & Banner Graphics",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Buy and Connect Domain (arreja.com)",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -651,13 +660,14 @@ const realProjects = [
     "clientId": "client-awais",
     "title": "Oxytees",
     "description": "Full Web Development project. Connected domain: oxytees.com",
-    "notes": "Domain: oxytees.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: oxytees.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "projectType": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "Medium",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 25,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-10-1",
@@ -685,27 +695,27 @@ const realProjects = [
       },
       {
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Buy and Connect Domain (oxytees.com)",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -714,13 +724,14 @@ const realProjects = [
     "clientId": "client-awais",
     "title": "Al Injaz Mart",
     "description": "Full Web Development project. Connected domain: alinjazmar.com",
-    "notes": "Domain: alinjazmar.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: alinjazmar.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "projectType": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "Medium",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 13,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-11-1",
@@ -744,31 +755,31 @@ const realProjects = [
       },
       {
         "title": "Hero & Banner Graphics",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Buy and Connect Domain (alinjazmar.com)",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -777,13 +788,14 @@ const realProjects = [
     "clientId": "client-awais",
     "title": "Shahnawaz PK",
     "description": "Full Web Development project. Connected domain: aazaar.com",
-    "notes": "Domain: aazaar.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: aazaar.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "projectType": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "Medium",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 0,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-12-1",
@@ -803,35 +815,35 @@ const realProjects = [
     "tasks": [
       {
         "title": "Header & Navigation Setup",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Hero & Banner Graphics",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Buy and Connect Domain (aazaar.com)",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -840,13 +852,14 @@ const realProjects = [
     "clientId": "client-awais",
     "title": "Wearphere Gym Wear",
     "description": "Full Web Development project. Connected domain: wearphere.com",
-    "notes": "Domain: wearphere.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: wearphere.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "projectType": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "Urgent",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 25,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-13-1",
@@ -874,27 +887,27 @@ const realProjects = [
       },
       {
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Buy and Connect Domain (wearphere.com)",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -903,13 +916,14 @@ const realProjects = [
     "clientId": "client-awais",
     "title": "Seebase",
     "description": "Full Web Development project. Connected domain: seebase.store",
-    "notes": "Domain: seebase.store\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: seebase.store\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "projectType": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "Medium",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 0,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-14-1",
@@ -929,35 +943,35 @@ const realProjects = [
     "tasks": [
       {
         "title": "Header & Navigation Setup",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Hero & Banner Graphics",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Buy and Connect Domain (seebase.store)",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -966,13 +980,14 @@ const realProjects = [
     "clientId": "client-awais",
     "title": "MrGymWear",
     "description": "Full Web Development project. Connected domain: mrgymwear.com",
-    "notes": "Domain: mrgymwear.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: mrgymwear.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "projectType": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "High",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 13,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-15-1",
@@ -996,31 +1011,31 @@ const realProjects = [
       },
       {
         "title": "Hero & Banner Graphics",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Buy and Connect Domain (mrgymwear.com)",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -1029,13 +1044,14 @@ const realProjects = [
     "clientId": "client-awais",
     "title": "Project WL (Canada)",
     "description": "Full Web Development project. Connected domain: projectwl-canada.com",
-    "notes": "Domain: projectwl-canada.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: projectwl-canada.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "projectType": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "Medium",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 25,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-16-1",
@@ -1063,27 +1079,27 @@ const realProjects = [
       },
       {
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Buy and Connect Domain (projectwl-canada.com)",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -1098,7 +1114,8 @@ const realProjects = [
     "priority": "Medium",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 13,
+    "progress": 25,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-17-1",
@@ -1122,7 +1139,7 @@ const realProjects = [
       },
       {
         "title": "Hero & Banner Graphics",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Page Design",
@@ -1155,13 +1172,14 @@ const realProjects = [
     "clientId": "client-awais",
     "title": "Project Saudi Excellence",
     "description": "Full Web Development project. Connected domain: saudiexcellence.com",
-    "notes": "Domain: saudiexcellence.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: saudiexcellence.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "projectType": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "High",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 0,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-18-1",
@@ -1181,35 +1199,35 @@ const realProjects = [
     "tasks": [
       {
         "title": "Header & Navigation Setup",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Hero & Banner Graphics",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Buy and Connect Domain (saudiexcellence.com)",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -1218,13 +1236,14 @@ const realProjects = [
     "clientId": "client-awais",
     "title": "Onlaro Team",
     "description": "Full Web Development project. Connected domain: onlaro.com",
-    "notes": "Domain: onlaro.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: onlaro.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "projectType": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "Medium",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 25,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-19-1",
@@ -1252,27 +1271,27 @@ const realProjects = [
       },
       {
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Buy and Connect Domain (onlaro.com)",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -1281,13 +1300,14 @@ const realProjects = [
     "clientId": "client-awais",
     "title": "Project Gymvare",
     "description": "Full Web Development project. Connected domain: gymvare.pk",
-    "notes": "Domain: gymvare.pk\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: gymvare.pk\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "projectType": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "Medium",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 0,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-20-1",
@@ -1307,35 +1327,35 @@ const realProjects = [
     "tasks": [
       {
         "title": "Header & Navigation Setup",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Hero & Banner Graphics",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Buy and Connect Domain (gymvare.pk)",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -1344,13 +1364,14 @@ const realProjects = [
     "clientId": "client-awais",
     "title": "KSA Project (Sundas)",
     "description": "Full Web Development project. Connected domain: stylinpakistan.myshopify.com",
-    "notes": "Domain: stylinpakistan.myshopify.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: stylinpakistan.myshopify.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "projectType": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "High",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 13,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-21-1",
@@ -1374,31 +1395,31 @@ const realProjects = [
       },
       {
         "title": "Hero & Banner Graphics",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Buy and Connect Domain (stylinpakistan.myshopify.com)",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -1407,13 +1428,14 @@ const realProjects = [
     "clientId": "client-awais",
     "title": "Project Jafra Roots Co",
     "description": "Full Web Development project. Connected domain: jafrarootsco.com",
-    "notes": "Domain: jafrarootsco.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: jafrarootsco.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "projectType": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "Medium",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 25,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-22-1",
@@ -1441,27 +1463,27 @@ const realProjects = [
       },
       {
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Buy and Connect Domain (jafrarootsco.com)",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -1470,13 +1492,14 @@ const realProjects = [
     "clientId": "client-awais",
     "title": "Project Kiddora",
     "description": "Full Web Development project. Connected domain: kiddorahub.com",
-    "notes": "Domain: kiddorahub.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: kiddorahub.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "projectType": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "Medium",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 13,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-23-1",
@@ -1500,31 +1523,31 @@ const realProjects = [
       },
       {
         "title": "Hero & Banner Graphics",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Buy and Connect Domain (kiddorahub.com)",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -1533,13 +1556,14 @@ const realProjects = [
     "clientId": "client-awais",
     "title": "Beavy-Tale Website Conversation",
     "description": "Full Web Development project. Connected domain: beavital.com",
-    "notes": "Domain: beavital.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: beavital.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "projectType": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "Medium",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 0,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-24-1",
@@ -1559,35 +1583,35 @@ const realProjects = [
     "tasks": [
       {
         "title": "Header & Navigation Setup",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Hero & Banner Graphics",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Buy and Connect Domain (beavital.com)",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -1596,13 +1620,14 @@ const realProjects = [
     "clientId": "client-awais",
     "title": "Project Amzefi",
     "description": "Full Web Development project. Connected domain: amzefi.com",
-    "notes": "Domain: amzefi.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: amzefi.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "projectType": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "High",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 25,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-25-1",
@@ -1630,27 +1655,27 @@ const realProjects = [
       },
       {
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Buy and Connect Domain (amzefi.com)",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -1659,13 +1684,14 @@ const realProjects = [
     "clientId": "client-awais",
     "title": "Vera&Co Website Redesigned",
     "description": "Full Web Development project. Connected domain: veranco.pk",
-    "notes": "Domain: veranco.pk\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: veranco.pk\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "projectType": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "Medium",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 0,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-26-1",
@@ -1685,35 +1711,35 @@ const realProjects = [
     "tasks": [
       {
         "title": "Header & Navigation Setup",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Hero & Banner Graphics",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Buy and Connect Domain (veranco.pk)",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -1722,13 +1748,14 @@ const realProjects = [
     "clientId": "client-awais",
     "title": "A-Z Fashion Mart",
     "description": "Full Web Development project. Connected domain: azfashionmart.com",
-    "notes": "Domain: azfashionmart.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: azfashionmart.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "projectType": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "Medium",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 13,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-27-1",
@@ -1752,31 +1779,31 @@ const realProjects = [
       },
       {
         "title": "Hero & Banner Graphics",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Buy and Connect Domain (azfashionmart.com)",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -1785,13 +1812,14 @@ const realProjects = [
     "clientId": "client-awais",
     "title": "Project USA (Ali)",
     "description": "Full Web Development project. Connected domain: projectusa-ali.com",
-    "notes": "Domain: projectusa-ali.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: projectusa-ali.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "projectType": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "High",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 25,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-28-1",
@@ -1819,27 +1847,27 @@ const realProjects = [
       },
       {
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Buy and Connect Domain (projectusa-ali.com)",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -1848,13 +1876,14 @@ const realProjects = [
     "clientId": "client-awais",
     "title": "Project Youngla.pk",
     "description": "Full Web Development project. Connected domain: youngla.pk",
-    "notes": "Domain: youngla.pk\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: youngla.pk\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "projectType": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "High",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 13,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-29-1",
@@ -1878,31 +1907,31 @@ const realProjects = [
       },
       {
         "title": "Hero & Banner Graphics",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Buy and Connect Domain (youngla.pk)",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -1911,13 +1940,14 @@ const realProjects = [
     "clientId": "client-awais",
     "title": "KSA Project (Sundas) 2",
     "description": "Full Web Development project. Connected domain: sundas-ksa.store",
-    "notes": "Domain: sundas-ksa.store\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: sundas-ksa.store\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "projectType": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "Medium",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 0,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-30-1",
@@ -1937,35 +1967,35 @@ const realProjects = [
     "tasks": [
       {
         "title": "Header & Navigation Setup",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Hero & Banner Graphics",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Buy and Connect Domain (sundas-ksa.store)",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -1974,13 +2004,14 @@ const realProjects = [
     "clientId": "client-awais",
     "title": "Clients Daily Status & Pending Projects",
     "description": "Full Web Development project. Connected domain: client-status-portal.com",
-    "notes": "Domain: client-status-portal.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: client-status-portal.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "projectType": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "Medium",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 25,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-31-1",
@@ -2008,27 +2039,27 @@ const realProjects = [
       },
       {
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Buy and Connect Domain (client-status-portal.com)",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -2037,13 +2068,14 @@ const realProjects = [
     "clientId": "client-awais",
     "title": "Project Australia",
     "description": "Full Web Development project. Connected domain: project-australia.com.au",
-    "notes": "Domain: project-australia.com.au\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: project-australia.com.au\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "projectType": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "Medium",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 0,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-32-1",
@@ -2063,35 +2095,35 @@ const realProjects = [
     "tasks": [
       {
         "title": "Header & Navigation Setup",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Hero & Banner Graphics",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Buy and Connect Domain (project-australia.com.au)",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -2100,13 +2132,14 @@ const realProjects = [
     "clientId": "client-awais",
     "title": "Project Ireland",
     "description": "Full Web Development project. Connected domain: project-ireland.ie",
-    "notes": "Domain: project-ireland.ie\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: project-ireland.ie\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "projectType": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "Medium",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 13,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-33-1",
@@ -2130,31 +2163,31 @@ const realProjects = [
       },
       {
         "title": "Hero & Banner Graphics",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Buy and Connect Domain (project-ireland.ie)",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -2163,13 +2196,14 @@ const realProjects = [
     "clientId": "client-awais",
     "title": "Shopify Apps Reviews",
     "description": "Full Web Development project. Connected domain: shopify-apps-review.com",
-    "notes": "Domain: shopify-apps-review.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: shopify-apps-review.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "projectType": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "Low",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 25,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-34-1",
@@ -2197,27 +2231,27 @@ const realProjects = [
       },
       {
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Buy and Connect Domain (shopify-apps-review.com)",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -2226,13 +2260,14 @@ const realProjects = [
     "clientId": "client-awais",
     "title": "SA Ecom Services",
     "description": "Full Web Development project. Connected domain: sa-ecomservices.com",
-    "notes": "Domain: sa-ecomservices.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: sa-ecomservices.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "projectType": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "Medium",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 13,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-35-1",
@@ -2256,31 +2291,31 @@ const realProjects = [
       },
       {
         "title": "Hero & Banner Graphics",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Buy and Connect Domain (sa-ecomservices.com)",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -2289,13 +2324,14 @@ const realProjects = [
     "clientId": "client-awais",
     "title": "KSA & Pakistan Working",
     "description": "Full Web Development project. Connected domain: ksapak-working.com",
-    "notes": "Domain: ksapak-working.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: ksapak-working.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "projectType": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "Medium",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 0,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-36-1",
@@ -2315,35 +2351,35 @@ const realProjects = [
     "tasks": [
       {
         "title": "Header & Navigation Setup",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Hero & Banner Graphics",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Buy and Connect Domain (ksapak-working.com)",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -2352,13 +2388,14 @@ const realProjects = [
     "clientId": "client-awais",
     "title": "MD Shadat eCommerce",
     "description": "Full Web Development project. Connected domain: mdshadat-ecom.com",
-    "notes": "Domain: mdshadat-ecom.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: mdshadat-ecom.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "projectType": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "High",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 25,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-37-1",
@@ -2386,27 +2423,27 @@ const realProjects = [
       },
       {
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Buy and Connect Domain (mdshadat-ecom.com)",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -2415,13 +2452,14 @@ const realProjects = [
     "clientId": "client-awais",
     "title": "Pk Wave Project WL",
     "description": "Full Web Development project. Connected domain: pkwave-wl.com",
-    "notes": "Domain: pkwave-wl.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: pkwave-wl.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "projectType": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "Medium",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 0,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-38-1",
@@ -2441,35 +2479,35 @@ const realProjects = [
     "tasks": [
       {
         "title": "Header & Navigation Setup",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Hero & Banner Graphics",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Buy and Connect Domain (pkwave-wl.com)",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -2478,13 +2516,14 @@ const realProjects = [
     "clientId": "client-awais",
     "title": "Project Amzefi 2",
     "description": "Full Web Development project. Connected domain: amzefi-v2.com",
-    "notes": "Domain: amzefi-v2.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: amzefi-v2.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "projectType": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "Medium",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 13,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-39-1",
@@ -2508,31 +2547,31 @@ const realProjects = [
       },
       {
         "title": "Hero & Banner Graphics",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Buy and Connect Domain (amzefi-v2.com)",
-        "completed": false
+        "completed": true
       },
       {
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -2548,6 +2587,7 @@ const realProjects = [
     "deadline": "17/10/2026",
     "startDate": "15/10/2026",
     "progress": 0,
+    "files": [],
     "credentials": [],
     "tasks": [
       {
@@ -2576,6 +2616,7 @@ const realProjects = [
     "deadline": "20/10/2026",
     "startDate": "15/10/2026",
     "progress": 0,
+    "files": [],
     "credentials": [],
     "tasks": [
       {

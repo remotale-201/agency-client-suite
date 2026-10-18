@@ -14,6 +14,7 @@ export const SEED_PROJECTS = [
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
     "progress": 25,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-1-1",
@@ -110,7 +111,8 @@ export const SEED_PROJECTS = [
     "priority": "High",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 0,
+    "progress": 25,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-2-1",
@@ -134,7 +136,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Header & Navigation Setup",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-10",
@@ -142,7 +144,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Hero & Banner Graphics",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-11",
@@ -207,7 +209,8 @@ export const SEED_PROJECTS = [
     "priority": "Medium",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 13,
+    "progress": 25,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-3-1",
@@ -239,7 +242,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Hero & Banner Graphics",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-19",
@@ -305,6 +308,7 @@ export const SEED_PROJECTS = [
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
     "progress": 25,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-4-1",
@@ -395,13 +399,14 @@ export const SEED_PROJECTS = [
     "clientName": "Awais",
     "title": "Zam Zam Royal WL",
     "description": "Full Web Development project. Connected domain: zamzamroyal.com",
-    "notes": "Domain: zamzamroyal.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: zamzamroyal.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "project_type": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "Medium",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 13,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-5-1",
@@ -433,7 +438,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Hero & Banner Graphics",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-35",
@@ -441,7 +446,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-36",
@@ -449,7 +454,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-37",
@@ -457,7 +462,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-38",
@@ -465,7 +470,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-39",
@@ -473,7 +478,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Buy and Connect Domain (zamzamroyal.com)",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-40",
@@ -481,7 +486,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -492,13 +497,14 @@ export const SEED_PROJECTS = [
     "clientName": "Awais",
     "title": "Riyyah",
     "description": "Full Web Development project. Connected domain: riyyah.store",
-    "notes": "Domain: riyyah.store\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: riyyah.store\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "project_type": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "Medium",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 0,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-6-1",
@@ -522,7 +528,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Header & Navigation Setup",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-42",
@@ -530,7 +536,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Hero & Banner Graphics",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-43",
@@ -538,7 +544,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-44",
@@ -546,7 +552,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-45",
@@ -554,7 +560,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-46",
@@ -562,7 +568,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-47",
@@ -570,7 +576,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Buy and Connect Domain (riyyah.store)",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-48",
@@ -578,7 +584,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -596,6 +602,7 @@ export const SEED_PROJECTS = [
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
     "progress": 25,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-7-1",
@@ -686,13 +693,14 @@ export const SEED_PROJECTS = [
     "clientName": "Awais",
     "title": "Bacha World",
     "description": "Full Web Development project. Connected domain: bachaworld.pk",
-    "notes": "Domain: bachaworld.pk\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: bachaworld.pk\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "project_type": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "High",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 0,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-8-1",
@@ -716,7 +724,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Header & Navigation Setup",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-58",
@@ -724,7 +732,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Hero & Banner Graphics",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-59",
@@ -732,7 +740,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-60",
@@ -740,7 +748,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-61",
@@ -748,7 +756,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-62",
@@ -756,7 +764,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-63",
@@ -764,7 +772,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Buy and Connect Domain (bachaworld.pk)",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-64",
@@ -772,7 +780,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -783,13 +791,14 @@ export const SEED_PROJECTS = [
     "clientName": "Awais",
     "title": "KSA Usama Ali",
     "description": "Full Web Development project. Connected domain: arreja.com",
-    "notes": "Domain: arreja.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: arreja.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "project_type": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "High",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 13,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-9-1",
@@ -821,7 +830,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Hero & Banner Graphics",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-67",
@@ -829,7 +838,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-68",
@@ -837,7 +846,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-69",
@@ -845,7 +854,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-70",
@@ -853,7 +862,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-71",
@@ -861,7 +870,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Buy and Connect Domain (arreja.com)",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-72",
@@ -869,7 +878,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -880,13 +889,14 @@ export const SEED_PROJECTS = [
     "clientName": "Awais",
     "title": "Oxytees",
     "description": "Full Web Development project. Connected domain: oxytees.com",
-    "notes": "Domain: oxytees.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: oxytees.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "project_type": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "Medium",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 25,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-10-1",
@@ -926,7 +936,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-76",
@@ -934,7 +944,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-77",
@@ -942,7 +952,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-78",
@@ -950,7 +960,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-79",
@@ -958,7 +968,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Buy and Connect Domain (oxytees.com)",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-80",
@@ -966,7 +976,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -977,13 +987,14 @@ export const SEED_PROJECTS = [
     "clientName": "Awais",
     "title": "Al Injaz Mart",
     "description": "Full Web Development project. Connected domain: alinjazmar.com",
-    "notes": "Domain: alinjazmar.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: alinjazmar.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "project_type": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "Medium",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 13,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-11-1",
@@ -1015,7 +1026,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Hero & Banner Graphics",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-83",
@@ -1023,7 +1034,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-84",
@@ -1031,7 +1042,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-85",
@@ -1039,7 +1050,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-86",
@@ -1047,7 +1058,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-87",
@@ -1055,7 +1066,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Buy and Connect Domain (alinjazmar.com)",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-88",
@@ -1063,7 +1074,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -1074,13 +1085,14 @@ export const SEED_PROJECTS = [
     "clientName": "Awais",
     "title": "Shahnawaz PK",
     "description": "Full Web Development project. Connected domain: aazaar.com",
-    "notes": "Domain: aazaar.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: aazaar.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "project_type": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "Medium",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 0,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-12-1",
@@ -1104,7 +1116,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Header & Navigation Setup",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-90",
@@ -1112,7 +1124,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Hero & Banner Graphics",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-91",
@@ -1120,7 +1132,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-92",
@@ -1128,7 +1140,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-93",
@@ -1136,7 +1148,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-94",
@@ -1144,7 +1156,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-95",
@@ -1152,7 +1164,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Buy and Connect Domain (aazaar.com)",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-96",
@@ -1160,7 +1172,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -1171,13 +1183,14 @@ export const SEED_PROJECTS = [
     "clientName": "Awais",
     "title": "Wearphere Gym Wear",
     "description": "Full Web Development project. Connected domain: wearphere.com",
-    "notes": "Domain: wearphere.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: wearphere.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "project_type": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "Urgent",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 25,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-13-1",
@@ -1217,7 +1230,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-100",
@@ -1225,7 +1238,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-101",
@@ -1233,7 +1246,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-102",
@@ -1241,7 +1254,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-103",
@@ -1249,7 +1262,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Buy and Connect Domain (wearphere.com)",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-104",
@@ -1257,7 +1270,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -1268,13 +1281,14 @@ export const SEED_PROJECTS = [
     "clientName": "Awais",
     "title": "Seebase",
     "description": "Full Web Development project. Connected domain: seebase.store",
-    "notes": "Domain: seebase.store\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: seebase.store\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "project_type": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "Medium",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 0,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-14-1",
@@ -1298,7 +1312,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Header & Navigation Setup",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-106",
@@ -1306,7 +1320,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Hero & Banner Graphics",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-107",
@@ -1314,7 +1328,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-108",
@@ -1322,7 +1336,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-109",
@@ -1330,7 +1344,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-110",
@@ -1338,7 +1352,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-111",
@@ -1346,7 +1360,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Buy and Connect Domain (seebase.store)",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-112",
@@ -1354,7 +1368,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -1365,13 +1379,14 @@ export const SEED_PROJECTS = [
     "clientName": "Awais",
     "title": "MrGymWear",
     "description": "Full Web Development project. Connected domain: mrgymwear.com",
-    "notes": "Domain: mrgymwear.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: mrgymwear.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "project_type": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "High",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 13,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-15-1",
@@ -1403,7 +1418,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Hero & Banner Graphics",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-115",
@@ -1411,7 +1426,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-116",
@@ -1419,7 +1434,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-117",
@@ -1427,7 +1442,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-118",
@@ -1435,7 +1450,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-119",
@@ -1443,7 +1458,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Buy and Connect Domain (mrgymwear.com)",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-120",
@@ -1451,7 +1466,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -1462,13 +1477,14 @@ export const SEED_PROJECTS = [
     "clientName": "Awais",
     "title": "Project WL (Canada)",
     "description": "Full Web Development project. Connected domain: projectwl-canada.com",
-    "notes": "Domain: projectwl-canada.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: projectwl-canada.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "project_type": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "Medium",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 25,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-16-1",
@@ -1508,7 +1524,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-124",
@@ -1516,7 +1532,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-125",
@@ -1524,7 +1540,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-126",
@@ -1532,7 +1548,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-127",
@@ -1540,7 +1556,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Buy and Connect Domain (projectwl-canada.com)",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-128",
@@ -1548,7 +1564,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -1565,7 +1581,8 @@ export const SEED_PROJECTS = [
     "priority": "Medium",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 13,
+    "progress": 25,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-17-1",
@@ -1597,7 +1614,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Hero & Banner Graphics",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-131",
@@ -1656,13 +1673,14 @@ export const SEED_PROJECTS = [
     "clientName": "Awais",
     "title": "Project Saudi Excellence",
     "description": "Full Web Development project. Connected domain: saudiexcellence.com",
-    "notes": "Domain: saudiexcellence.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: saudiexcellence.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "project_type": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "High",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 0,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-18-1",
@@ -1686,7 +1704,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Header & Navigation Setup",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-138",
@@ -1694,7 +1712,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Hero & Banner Graphics",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-139",
@@ -1702,7 +1720,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-140",
@@ -1710,7 +1728,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-141",
@@ -1718,7 +1736,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-142",
@@ -1726,7 +1744,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-143",
@@ -1734,7 +1752,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Buy and Connect Domain (saudiexcellence.com)",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-144",
@@ -1742,7 +1760,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -1753,13 +1771,14 @@ export const SEED_PROJECTS = [
     "clientName": "Awais",
     "title": "Onlaro Team",
     "description": "Full Web Development project. Connected domain: onlaro.com",
-    "notes": "Domain: onlaro.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: onlaro.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "project_type": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "Medium",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 25,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-19-1",
@@ -1799,7 +1818,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-148",
@@ -1807,7 +1826,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-149",
@@ -1815,7 +1834,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-150",
@@ -1823,7 +1842,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-151",
@@ -1831,7 +1850,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Buy and Connect Domain (onlaro.com)",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-152",
@@ -1839,7 +1858,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -1850,13 +1869,14 @@ export const SEED_PROJECTS = [
     "clientName": "Awais",
     "title": "Project Gymvare",
     "description": "Full Web Development project. Connected domain: gymvare.pk",
-    "notes": "Domain: gymvare.pk\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: gymvare.pk\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "project_type": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "Medium",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 0,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-20-1",
@@ -1880,7 +1900,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Header & Navigation Setup",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-154",
@@ -1888,7 +1908,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Hero & Banner Graphics",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-155",
@@ -1896,7 +1916,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-156",
@@ -1904,7 +1924,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-157",
@@ -1912,7 +1932,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-158",
@@ -1920,7 +1940,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-159",
@@ -1928,7 +1948,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Buy and Connect Domain (gymvare.pk)",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-160",
@@ -1936,7 +1956,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -1947,13 +1967,14 @@ export const SEED_PROJECTS = [
     "clientName": "Awais",
     "title": "KSA Project (Sundas)",
     "description": "Full Web Development project. Connected domain: stylinpakistan.myshopify.com",
-    "notes": "Domain: stylinpakistan.myshopify.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: stylinpakistan.myshopify.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "project_type": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "High",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 13,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-21-1",
@@ -1985,7 +2006,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Hero & Banner Graphics",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-163",
@@ -1993,7 +2014,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-164",
@@ -2001,7 +2022,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-165",
@@ -2009,7 +2030,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-166",
@@ -2017,7 +2038,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-167",
@@ -2025,7 +2046,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Buy and Connect Domain (stylinpakistan.myshopify.com)",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-168",
@@ -2033,7 +2054,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -2044,13 +2065,14 @@ export const SEED_PROJECTS = [
     "clientName": "Awais",
     "title": "Project Jafra Roots Co",
     "description": "Full Web Development project. Connected domain: jafrarootsco.com",
-    "notes": "Domain: jafrarootsco.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: jafrarootsco.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "project_type": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "Medium",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 25,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-22-1",
@@ -2090,7 +2112,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-172",
@@ -2098,7 +2120,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-173",
@@ -2106,7 +2128,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-174",
@@ -2114,7 +2136,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-175",
@@ -2122,7 +2144,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Buy and Connect Domain (jafrarootsco.com)",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-176",
@@ -2130,7 +2152,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -2141,13 +2163,14 @@ export const SEED_PROJECTS = [
     "clientName": "Awais",
     "title": "Project Kiddora",
     "description": "Full Web Development project. Connected domain: kiddorahub.com",
-    "notes": "Domain: kiddorahub.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: kiddorahub.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "project_type": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "Medium",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 13,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-23-1",
@@ -2179,7 +2202,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Hero & Banner Graphics",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-179",
@@ -2187,7 +2210,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-180",
@@ -2195,7 +2218,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-181",
@@ -2203,7 +2226,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-182",
@@ -2211,7 +2234,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-183",
@@ -2219,7 +2242,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Buy and Connect Domain (kiddorahub.com)",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-184",
@@ -2227,7 +2250,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -2238,13 +2261,14 @@ export const SEED_PROJECTS = [
     "clientName": "Awais",
     "title": "Beavy-Tale Website Conversation",
     "description": "Full Web Development project. Connected domain: beavital.com",
-    "notes": "Domain: beavital.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: beavital.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "project_type": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "Medium",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 0,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-24-1",
@@ -2268,7 +2292,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Header & Navigation Setup",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-186",
@@ -2276,7 +2300,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Hero & Banner Graphics",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-187",
@@ -2284,7 +2308,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-188",
@@ -2292,7 +2316,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-189",
@@ -2300,7 +2324,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-190",
@@ -2308,7 +2332,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-191",
@@ -2316,7 +2340,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Buy and Connect Domain (beavital.com)",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-192",
@@ -2324,7 +2348,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -2335,13 +2359,14 @@ export const SEED_PROJECTS = [
     "clientName": "Awais",
     "title": "Project Amzefi",
     "description": "Full Web Development project. Connected domain: amzefi.com",
-    "notes": "Domain: amzefi.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: amzefi.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "project_type": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "High",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 25,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-25-1",
@@ -2381,7 +2406,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-196",
@@ -2389,7 +2414,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-197",
@@ -2397,7 +2422,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-198",
@@ -2405,7 +2430,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-199",
@@ -2413,7 +2438,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Buy and Connect Domain (amzefi.com)",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-200",
@@ -2421,7 +2446,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -2432,13 +2457,14 @@ export const SEED_PROJECTS = [
     "clientName": "Awais",
     "title": "Vera&Co Website Redesigned",
     "description": "Full Web Development project. Connected domain: veranco.pk",
-    "notes": "Domain: veranco.pk\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: veranco.pk\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "project_type": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "Medium",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 0,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-26-1",
@@ -2462,7 +2488,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Header & Navigation Setup",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-202",
@@ -2470,7 +2496,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Hero & Banner Graphics",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-203",
@@ -2478,7 +2504,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-204",
@@ -2486,7 +2512,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-205",
@@ -2494,7 +2520,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-206",
@@ -2502,7 +2528,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-207",
@@ -2510,7 +2536,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Buy and Connect Domain (veranco.pk)",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-208",
@@ -2518,7 +2544,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -2529,13 +2555,14 @@ export const SEED_PROJECTS = [
     "clientName": "Awais",
     "title": "A-Z Fashion Mart",
     "description": "Full Web Development project. Connected domain: azfashionmart.com",
-    "notes": "Domain: azfashionmart.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: azfashionmart.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "project_type": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "Medium",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 13,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-27-1",
@@ -2567,7 +2594,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Hero & Banner Graphics",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-211",
@@ -2575,7 +2602,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-212",
@@ -2583,7 +2610,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-213",
@@ -2591,7 +2618,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-214",
@@ -2599,7 +2626,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-215",
@@ -2607,7 +2634,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Buy and Connect Domain (azfashionmart.com)",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-216",
@@ -2615,7 +2642,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -2626,13 +2653,14 @@ export const SEED_PROJECTS = [
     "clientName": "Awais",
     "title": "Project USA (Ali)",
     "description": "Full Web Development project. Connected domain: projectusa-ali.com",
-    "notes": "Domain: projectusa-ali.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: projectusa-ali.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "project_type": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "High",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 25,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-28-1",
@@ -2672,7 +2700,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-220",
@@ -2680,7 +2708,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-221",
@@ -2688,7 +2716,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-222",
@@ -2696,7 +2724,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-223",
@@ -2704,7 +2732,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Buy and Connect Domain (projectusa-ali.com)",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-224",
@@ -2712,7 +2740,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -2723,13 +2751,14 @@ export const SEED_PROJECTS = [
     "clientName": "Awais",
     "title": "Project Youngla.pk",
     "description": "Full Web Development project. Connected domain: youngla.pk",
-    "notes": "Domain: youngla.pk\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: youngla.pk\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "project_type": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "High",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 13,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-29-1",
@@ -2761,7 +2790,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Hero & Banner Graphics",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-227",
@@ -2769,7 +2798,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-228",
@@ -2777,7 +2806,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-229",
@@ -2785,7 +2814,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-230",
@@ -2793,7 +2822,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-231",
@@ -2801,7 +2830,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Buy and Connect Domain (youngla.pk)",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-232",
@@ -2809,7 +2838,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -2820,13 +2849,14 @@ export const SEED_PROJECTS = [
     "clientName": "Awais",
     "title": "KSA Project (Sundas) 2",
     "description": "Full Web Development project. Connected domain: sundas-ksa.store",
-    "notes": "Domain: sundas-ksa.store\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: sundas-ksa.store\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "project_type": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "Medium",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 0,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-30-1",
@@ -2850,7 +2880,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Header & Navigation Setup",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-234",
@@ -2858,7 +2888,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Hero & Banner Graphics",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-235",
@@ -2866,7 +2896,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-236",
@@ -2874,7 +2904,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-237",
@@ -2882,7 +2912,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-238",
@@ -2890,7 +2920,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-239",
@@ -2898,7 +2928,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Buy and Connect Domain (sundas-ksa.store)",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-240",
@@ -2906,7 +2936,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -2917,13 +2947,14 @@ export const SEED_PROJECTS = [
     "clientName": "Awais",
     "title": "Clients Daily Status & Pending Projects",
     "description": "Full Web Development project. Connected domain: client-status-portal.com",
-    "notes": "Domain: client-status-portal.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: client-status-portal.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "project_type": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "Medium",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 25,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-31-1",
@@ -2963,7 +2994,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-244",
@@ -2971,7 +3002,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-245",
@@ -2979,7 +3010,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-246",
@@ -2987,7 +3018,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-247",
@@ -2995,7 +3026,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Buy and Connect Domain (client-status-portal.com)",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-248",
@@ -3003,7 +3034,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -3014,13 +3045,14 @@ export const SEED_PROJECTS = [
     "clientName": "Awais",
     "title": "Project Australia",
     "description": "Full Web Development project. Connected domain: project-australia.com.au",
-    "notes": "Domain: project-australia.com.au\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: project-australia.com.au\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "project_type": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "Medium",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 0,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-32-1",
@@ -3044,7 +3076,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Header & Navigation Setup",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-250",
@@ -3052,7 +3084,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Hero & Banner Graphics",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-251",
@@ -3060,7 +3092,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-252",
@@ -3068,7 +3100,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-253",
@@ -3076,7 +3108,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-254",
@@ -3084,7 +3116,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-255",
@@ -3092,7 +3124,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Buy and Connect Domain (project-australia.com.au)",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-256",
@@ -3100,7 +3132,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -3111,13 +3143,14 @@ export const SEED_PROJECTS = [
     "clientName": "Awais",
     "title": "Project Ireland",
     "description": "Full Web Development project. Connected domain: project-ireland.ie",
-    "notes": "Domain: project-ireland.ie\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: project-ireland.ie\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "project_type": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "Medium",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 13,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-33-1",
@@ -3149,7 +3182,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Hero & Banner Graphics",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-259",
@@ -3157,7 +3190,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-260",
@@ -3165,7 +3198,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-261",
@@ -3173,7 +3206,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-262",
@@ -3181,7 +3214,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-263",
@@ -3189,7 +3222,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Buy and Connect Domain (project-ireland.ie)",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-264",
@@ -3197,7 +3230,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -3208,13 +3241,14 @@ export const SEED_PROJECTS = [
     "clientName": "Awais",
     "title": "Shopify Apps Reviews",
     "description": "Full Web Development project. Connected domain: shopify-apps-review.com",
-    "notes": "Domain: shopify-apps-review.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: shopify-apps-review.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "project_type": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "Low",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 25,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-34-1",
@@ -3254,7 +3288,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-268",
@@ -3262,7 +3296,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-269",
@@ -3270,7 +3304,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-270",
@@ -3278,7 +3312,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-271",
@@ -3286,7 +3320,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Buy and Connect Domain (shopify-apps-review.com)",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-272",
@@ -3294,7 +3328,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -3305,13 +3339,14 @@ export const SEED_PROJECTS = [
     "clientName": "Awais",
     "title": "SA Ecom Services",
     "description": "Full Web Development project. Connected domain: sa-ecomservices.com",
-    "notes": "Domain: sa-ecomservices.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: sa-ecomservices.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "project_type": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "Medium",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 13,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-35-1",
@@ -3343,7 +3378,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Hero & Banner Graphics",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-275",
@@ -3351,7 +3386,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-276",
@@ -3359,7 +3394,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-277",
@@ -3367,7 +3402,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-278",
@@ -3375,7 +3410,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-279",
@@ -3383,7 +3418,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Buy and Connect Domain (sa-ecomservices.com)",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-280",
@@ -3391,7 +3426,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -3402,13 +3437,14 @@ export const SEED_PROJECTS = [
     "clientName": "Awais",
     "title": "KSA & Pakistan Working",
     "description": "Full Web Development project. Connected domain: ksapak-working.com",
-    "notes": "Domain: ksapak-working.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: ksapak-working.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "project_type": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "Medium",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 0,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-36-1",
@@ -3432,7 +3468,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Header & Navigation Setup",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-282",
@@ -3440,7 +3476,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Hero & Banner Graphics",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-283",
@@ -3448,7 +3484,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-284",
@@ -3456,7 +3492,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-285",
@@ -3464,7 +3500,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-286",
@@ -3472,7 +3508,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-287",
@@ -3480,7 +3516,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Buy and Connect Domain (ksapak-working.com)",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-288",
@@ -3488,7 +3524,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -3499,13 +3535,14 @@ export const SEED_PROJECTS = [
     "clientName": "Awais",
     "title": "MD Shadat eCommerce",
     "description": "Full Web Development project. Connected domain: mdshadat-ecom.com",
-    "notes": "Domain: mdshadat-ecom.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: mdshadat-ecom.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "project_type": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "High",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 25,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-37-1",
@@ -3545,7 +3582,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-292",
@@ -3553,7 +3590,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-293",
@@ -3561,7 +3598,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-294",
@@ -3569,7 +3606,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-295",
@@ -3577,7 +3614,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Buy and Connect Domain (mdshadat-ecom.com)",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-296",
@@ -3585,7 +3622,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -3596,13 +3633,14 @@ export const SEED_PROJECTS = [
     "clientName": "Awais",
     "title": "Pk Wave Project WL",
     "description": "Full Web Development project. Connected domain: pkwave-wl.com",
-    "notes": "Domain: pkwave-wl.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: pkwave-wl.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "project_type": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "Medium",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 0,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-38-1",
@@ -3626,7 +3664,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Header & Navigation Setup",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-298",
@@ -3634,7 +3672,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Hero & Banner Graphics",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-299",
@@ -3642,7 +3680,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-300",
@@ -3650,7 +3688,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-301",
@@ -3658,7 +3696,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-302",
@@ -3666,7 +3704,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-303",
@@ -3674,7 +3712,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Buy and Connect Domain (pkwave-wl.com)",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-304",
@@ -3682,7 +3720,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -3693,13 +3731,14 @@ export const SEED_PROJECTS = [
     "clientName": "Awais",
     "title": "Project Amzefi 2",
     "description": "Full Web Development project. Connected domain: amzefi-v2.com",
-    "notes": "Domain: amzefi-v2.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: In Progress",
+    "notes": "Domain: amzefi-v2.com\nType: Web Development\nAdmin Lead: Abdullah\nAssigned Client: Awais\nStatus: Completed",
     "project_type": "Web Development",
-    "status": "in-progress",
+    "status": "completed",
     "priority": "Medium",
     "deadline": "26/10/2026",
     "startDate": "15/10/2026",
-    "progress": 13,
+    "progress": 100,
+    "files": [],
     "credentials": [
       {
         "id": "cred-proj-awais-39-1",
@@ -3731,7 +3770,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Hero & Banner Graphics",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-307",
@@ -3739,7 +3778,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Page Design",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-308",
@@ -3747,7 +3786,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Product Cards & Pricing Badges",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-309",
@@ -3755,7 +3794,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Information & Policy Pages",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-310",
@@ -3763,7 +3802,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Footer & Contact Details",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-311",
@@ -3771,7 +3810,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Buy and Connect Domain (amzefi-v2.com)",
-        "completed": false
+        "completed": true
       },
       {
         "id": "t-awais-312",
@@ -3779,7 +3818,7 @@ export const SEED_PROJECTS = [
         "clientId": "client-awais",
         "client_id": "client-awais",
         "title": "Final Client Revisions & Launch",
-        "completed": false
+        "completed": true
       }
     ]
   },
@@ -3797,6 +3836,7 @@ export const SEED_PROJECTS = [
     "deadline": "17/10/2026",
     "startDate": "15/10/2026",
     "progress": 0,
+    "files": [],
     "tasks": [
       {
         "id": "t-afshal-1",
@@ -3832,6 +3872,7 @@ export const SEED_PROJECTS = [
     "deadline": "20/10/2026",
     "startDate": "15/10/2026",
     "progress": 0,
+    "files": [],
     "tasks": [
       {
         "id": "t-afshal-4",
@@ -3888,9 +3929,9 @@ export const SEED_CLIENTS = [
 export const SEED_STATS = {
   "totalClients": 3,
   "totalProjects": 41,
-  "inProgress": 41,
+  "inProgress": 8,
   "underReview": 0,
-  "completed": 0,
+  "completed": 33,
   "totalRevenue": 0
 };
 
@@ -3900,15 +3941,15 @@ export const SEED_ACTIVITIES = [
   {
     id: 'act-1',
     member_name: 'Abdullah',
-    action: 'initialized 39 Web Development projects for',
+    action: 'marked 33 completed projects as Finished for',
     details: 'Awais (Awais Agency)',
     created_at: new Date().toISOString()
   },
   {
     id: 'act-2',
     member_name: 'Abdullah',
-    action: 'configured domains & deliverable tasks for',
-    details: 'Fytnix.pk, Dfynex & Emanzay',
-    created_at: new Date(Date.now() - 30 * 60000).toISOString()
+    action: 'managing active development on 6 pending stores:',
+    details: 'Fytnix.pk, Dfynex, Abdul Saboor, Faisal Zubair, Al Zaria, Huggo',
+    created_at: new Date(Date.now() - 15 * 60000).toISOString()
   }
 ];
