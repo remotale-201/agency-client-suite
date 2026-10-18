@@ -17,6 +17,7 @@
     "start:backend": "npm run start --prefix backend"
   },
   "devDependencies": {
-    "concurrently": "^8.2.2"
+    "concurrently": "^8.2.2",
+    "puppeteer-core": "^25.14.0"
   }
 }

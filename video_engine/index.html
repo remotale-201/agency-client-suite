@@ -1,0 +1,1671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1080, height=1920, initial-scale=1.0">
+<title>Remotale SaaS Promo Video</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    width: 1080px;
+    height: 1920px;
+    overflow: hidden;
+    background: #030509;
+    font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+    color: #ffffff;
+    user-select: none;
+    position: relative;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Deep Space Ambient Lighting */
+  .ambient-light {
+    position: absolute;
+    width: 950px;
+    height: 950px;
+    border-radius: 50%;
+    filter: blur(140px);
+    opacity: 0.45;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .ambient-1 {
+    top: -120px;
+    left: -120px;
+    background: radial-gradient(circle, #4f46e5 0%, rgba(99, 102, 241, 0) 70%);
+  }
+  .ambient-2 {
+    bottom: 80px;
+    right: -120px;
+    background: radial-gradient(circle, #06b6d4 0%, rgba(6, 182, 212, 0) 70%);
+  }
+  .ambient-center {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(circle, #8b5cf6 0%, rgba(139, 92, 246, 0) 70%);
+    opacity: 0.32;
+  }
+
+  /* Grid lines overlay */
+  .grid-overlay {
+    position: absolute;
+    inset: 0;
+    background-image: 
+      linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 1;
+    mask-image: radial-gradient(circle at 50% 50%, black 45%, transparent 88%);
+  }
+
+  /* Main Stage Container */
+  #stage {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    perspective: 1400px;
+  }
+
+  /* Scene Wrappers */
+  .scene {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.95);
+    transition: none;
+  }
+
+  /* =========================================================
+     SCENE 1: Brand Intro Hook
+     ========================================================= */
+  #scene-1 .logo-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .logo-icon-3d {
+    width: 144px;
+    height: 144px;
+    border-radius: 38px;
+    background: linear-gradient(135deg, #6366f1 0%, #3b82f6 50%, #06b6d4 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 
+      0 0 70px rgba(99, 102, 241, 0.65),
+      0 24px 48px rgba(0, 0, 0, 0.6),
+      inset 0 2px 4px rgba(255, 255, 255, 0.45);
+    margin-bottom: 38px;
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .logo-icon-3d svg {
+    width: 84px;
+    height: 84px;
+    fill: #ffffff;
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.35));
+  }
+
+  .brand-badge {
+    padding: 9px 24px;
+    border-radius: 999px;
+    background: rgba(99, 102, 241, 0.16);
+    border: 1px solid rgba(129, 140, 248, 0.4);
+    color: #a5b4fc;
+    font-size: 19px;
+    font-weight: 700;
+    letter-spacing: 2.2px;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    box-shadow: 0 0 24px rgba(99, 102, 241, 0.25);
+  }
+
+  .brand-title {
+    font-size: 78px;
+    font-weight: 900;
+    letter-spacing: -2px;
+    background: linear-gradient(180deg, #ffffff 0%, #cbd5e1 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 18px;
+  }
+
+  .brand-subtitle {
+    font-size: 29px;
+    font-weight: 500;
+    color: #94a3b8;
+    max-width: 740px;
+    line-height: 1.42;
+  }
+
+  .brand-sweep {
+    width: 260px;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #6366f1, #06b6d4, transparent);
+    margin-top: 36px;
+    border-radius: 2px;
+  }
+
+  /* =========================================================
+     SCENE 2: The Neon Prompt Interface (Reference Video Style)
+     ========================================================= */
+  #scene-2 {
+    padding: 60px 48px;
+  }
+
+  .prompt-wrapper {
+    width: 980px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+  }
+
+  .prompt-card {
+    width: 100%;
+    background: #090d16;
+    border-radius: 30px;
+    padding: 38px 42px 30px;
+    position: relative;
+    box-shadow: 
+      0 35px 90px rgba(0, 0, 0, 0.75),
+      0 0 55px rgba(99, 102, 241, 0.28);
+    border: 2px solid transparent;
+    background-image: 
+      linear-gradient(#0a0e1a, #0a0e1a),
+      linear-gradient(135deg, #10b981, #6366f1, #ec4899, #f59e0b);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+  }
+
+  .prompt-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 26px;
+  }
+
+  .prompt-chip-category {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    padding: 9px 20px;
+    border-radius: 12px;
+    font-size: 20px;
+    font-weight: 600;
+    color: #f1f5f9;
+  }
+
+  .prompt-chip-category svg {
+    width: 24px;
+    height: 24px;
+    fill: #10b981;
+  }
+
+  .prompt-input-text {
+    font-size: 35px;
+    font-weight: 500;
+    color: #ffffff;
+    line-height: 1.45;
+    min-height: 140px;
+    word-break: break-word;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+
+  .typing-cursor {
+    display: inline-block;
+    width: 4px;
+    height: 40px;
+    background: #38bdf8;
+    vertical-align: middle;
+    margin-left: 4px;
+    animation: blink 0.8s infinite;
+    box-shadow: 0 0 12px #38bdf8;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  .prompt-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 26px;
+    padding-top: 22px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .prompt-tools {
+    display: flex;
+    gap: 16px;
+  }
+
+  .tool-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
+  }
+
+  .build-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    font-size: 22px;
+    font-weight: 700;
+    padding: 13px 30px;
+    border-radius: 14px;
+    transition: all 0.2s ease;
+  }
+
+  .build-btn.active {
+    background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
+    box-shadow: 0 0 35px rgba(79, 70, 229, 0.75);
+    border-color: rgba(255, 255, 255, 0.45);
+    transform: scale(1.05);
+  }
+
+  /* Quick Pills Bar */
+  .prompt-pills {
+    display: flex;
+    gap: 18px;
+    margin-top: 28px;
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .pill-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px 24px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    font-size: 20px;
+    font-weight: 600;
+    color: #cbd5e1;
+    backdrop-filter: blur(10px);
+    transition: all 0.2s ease;
+  }
+
+  .pill-item.selected {
+    background: rgba(16, 185, 129, 0.16);
+    border-color: #10b981;
+    color: #ffffff;
+    box-shadow: 0 0 25px rgba(16, 185, 129, 0.35);
+    transform: translateY(-2px);
+  }
+
+  /* =========================================================
+     SCENE 3 & 4: Dashboard Mockup & Workspace
+     ========================================================= */
+  .device-window {
+    width: 1000px;
+    background: #090d16;
+    border-radius: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 
+      0 45px 120px rgba(0, 0, 0, 0.85),
+      0 0 70px rgba(99, 102, 241, 0.25);
+    overflow: hidden;
+    position: relative;
+  }
+
+  .window-header {
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(20px);
+    padding: 20px 28px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .traffic-dots {
+    display: flex;
+    gap: 10px;
+  }
+
+  .traffic-dot {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+  }
+  .dot-red { background: #ef4444; }
+  .dot-yellow { background: #f59e0b; }
+  .dot-green { background: #10b981; }
+
+  .window-url-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    padding: 8px 26px;
+    border-radius: 12px;
+    font-size: 18px;
+    font-family: 'JetBrains Mono', monospace;
+    color: #94a3b8;
+  }
+
+  .window-url-bar svg {
+    width: 16px;
+    height: 16px;
+    fill: #10b981;
+  }
+
+  .window-user-badge {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(99, 102, 241, 0.16);
+    border: 1px solid rgba(99, 102, 241, 0.4);
+    padding: 7px 18px;
+    border-radius: 999px;
+    font-size: 17px;
+    font-weight: 700;
+    color: #c7d2fe;
+  }
+
+  .window-body {
+    padding: 34px 40px;
+  }
+
+  /* Persona Selector Banner */
+  .persona-selector-bar {
+    margin-bottom: 26px;
+    background: linear-gradient(90deg, rgba(99, 102, 241, 0.16), rgba(6, 182, 212, 0.16));
+    border: 1px solid rgba(99, 102, 241, 0.35);
+    border-radius: 18px;
+    padding: 15px 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .persona-tabs {
+    display: flex;
+    gap: 12px;
+  }
+
+  .persona-tab {
+    padding: 9px 20px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    background: rgba(255, 255, 255, 0.05);
+    color: #94a3b8;
+    border: 1px solid transparent;
+    transition: all 0.25s ease;
+  }
+
+  .persona-tab.active {
+    background: #6366f1;
+    color: #ffffff;
+    box-shadow: 0 0 22px rgba(99, 102, 241, 0.6);
+  }
+
+  /* Stats Row */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+    margin-bottom: 30px;
+  }
+
+  .stat-card {
+    background: rgba(255, 255, 255, 0.035);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 22px;
+    padding: 24px 26px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #6366f1, #06b6d4);
+  }
+
+  .stat-label {
+    font-size: 16px;
+    font-weight: 600;
+    color: #94a3b8;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+  }
+
+  .stat-number {
+    font-size: 40px;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: -1px;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+
+  .stat-badge {
+    font-size: 15px;
+    font-weight: 700;
+    color: #10b981;
+    background: rgba(16, 185, 129, 0.16);
+    padding: 4px 9px;
+    border-radius: 6px;
+  }
+
+  /* Project Cards List */
+  .projects-section-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 22px;
+  }
+
+  .section-heading {
+    font-size: 24px;
+    font-weight: 800;
+    color: #f1f5f9;
+  }
+
+  .projects-list {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .project-item {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 22px 26px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.3s ease;
+  }
+
+  .project-item.highlighted {
+    background: rgba(99, 102, 241, 0.12);
+    border-color: rgba(99, 102, 241, 0.45);
+    box-shadow: 0 0 35px rgba(99, 102, 241, 0.22);
+  }
+
+  .project-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .project-avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: 800;
+    color: #ffffff;
+  }
+
+  .av-blue { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+  .av-purple { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
+  .av-emerald { background: linear-gradient(135deg, #10b981, #047857); }
+
+  .project-info h4 {
+    font-size: 21px;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 6px;
+  }
+
+  .project-info p {
+    font-size: 16px;
+    color: #94a3b8;
+  }
+
+  .project-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+    width: 250px;
+  }
+
+  .progress-wrap {
+    width: 100%;
+    height: 10px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #6366f1, #10b981);
+    border-radius: 999px;
+    width: 45%;
+    transition: width 0.4s ease;
+  }
+
+  .progress-meta {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    font-size: 15px;
+    font-weight: 600;
+    color: #cbd5e1;
+  }
+
+  /* Deliverable Toast Popup */
+  .deliverable-toast {
+    position: absolute;
+    top: 96px;
+    right: 32px;
+    width: 460px;
+    background: #0f172a;
+    border: 1px solid rgba(16, 185, 129, 0.5);
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.75), 0 0 35px rgba(16, 185, 129, 0.25);
+    border-radius: 22px;
+    padding: 22px 26px;
+    z-index: 100;
+    transform: translateY(-20px);
+    opacity: 0;
+    transition: all 0.3s ease;
+  }
+
+  .deliverable-toast.show {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .toast-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 16px;
+    font-weight: 800;
+    color: #34d399;
+    margin-bottom: 8px;
+    letter-spacing: 0.5px;
+  }
+
+  .toast-body {
+    font-size: 19px;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 16px;
+    line-height: 1.4;
+  }
+
+  .toast-action-btn {
+    width: 100%;
+    padding: 12px 20px;
+    border-radius: 14px;
+    background: #10b981;
+    color: #ffffff;
+    font-size: 17px;
+    font-weight: 700;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
+  }
+
+  /* =========================================================
+     SCENE 5: Automated Invoicing & Stripe Card
+     ========================================================= */
+  .invoice-card {
+    width: 920px;
+    background: #0a0f1d;
+    border-radius: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 45px 120px rgba(0, 0, 0, 0.85), 0 0 70px rgba(16, 185, 129, 0.22);
+    padding: 42px 48px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .invoice-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #10b981, #06b6d4, #6366f1);
+  }
+
+  .invoice-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 32px;
+  }
+
+  .inv-brand {
+    font-size: 32px;
+    font-weight: 800;
+    color: #ffffff;
+  }
+
+  .inv-status-pill {
+    padding: 9px 24px;
+    border-radius: 999px;
+    font-size: 18px;
+    font-weight: 700;
+    background: rgba(245, 158, 11, 0.16);
+    color: #fbbf24;
+    border: 1px solid rgba(245, 158, 11, 0.35);
+  }
+
+  .inv-status-pill.paid {
+    background: rgba(16, 185, 129, 0.22);
+    color: #34d399;
+    border-color: rgba(16, 185, 129, 0.45);
+    box-shadow: 0 0 30px rgba(16, 185, 129, 0.35);
+  }
+
+  .inv-meta-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 30px;
+    background: rgba(255, 255, 255, 0.025);
+    padding: 20px 24px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .inv-meta-item label {
+    display: block;
+    font-size: 14px;
+    color: #94a3b8;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+
+  .inv-meta-item span {
+    font-size: 19px;
+    font-weight: 700;
+    color: #f1f5f9;
+  }
+
+  .inv-items-table {
+    margin-bottom: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .inv-item-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 12px;
+    font-size: 17px;
+  }
+
+  .inv-item-row .desc {
+    color: #e2e8f0;
+    font-weight: 600;
+  }
+
+  .inv-item-row .price {
+    color: #ffffff;
+    font-weight: 700;
+  }
+
+  .inv-amount-box {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(16, 185, 129, 0.12));
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 22px;
+    padding: 26px 34px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .inv-amount-label {
+    font-size: 20px;
+    color: #cbd5e1;
+    font-weight: 700;
+  }
+
+  .inv-amount-val {
+    font-size: 52px;
+    font-weight: 900;
+    color: #ffffff;
+    letter-spacing: -1px;
+  }
+
+  /* =========================================================
+     SCENE 6: 3D Feature Grid Orbit
+     ========================================================= */
+  .feature-orbit-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 440px);
+    gap: 26px;
+  }
+
+  .feature-orbit-card {
+    background: rgba(15, 23, 42, 0.82);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border-radius: 26px;
+    padding: 34px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.55);
+  }
+
+  .feature-orbit-card.highlight {
+    border-color: rgba(99, 102, 241, 0.55);
+    box-shadow: 0 0 45px rgba(99, 102, 241, 0.35);
+  }
+
+  .orbit-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .orbit-title {
+    font-size: 26px;
+    font-weight: 800;
+    color: #ffffff;
+  }
+
+  .orbit-desc {
+    font-size: 18px;
+    color: #94a3b8;
+    line-height: 1.48;
+  }
+
+  /* =========================================================
+     SCENE 7: High-Impact Outro & CTA
+     ========================================================= */
+  #scene-7 {
+    text-align: center;
+  }
+
+  .outro-logo {
+    width: 140px;
+    height: 140px;
+    border-radius: 38px;
+    background: linear-gradient(135deg, #6366f1 0%, #3b82f6 50%, #06b6d4 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 90px rgba(99, 102, 241, 0.75);
+    margin: 0 auto 38px;
+    border: 2px solid rgba(255, 255, 255, 0.35);
+  }
+
+  .outro-headline {
+    font-size: 80px;
+    font-weight: 900;
+    line-height: 1.1;
+    letter-spacing: -2px;
+    margin-bottom: 22px;
+    background: linear-gradient(180deg, #ffffff 0%, #cbd5e1 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .outro-sub {
+    font-size: 31px;
+    color: #94a3b8;
+    max-width: 780px;
+    margin: 0 auto 40px;
+    line-height: 1.42;
+  }
+
+  .rating-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 20px;
+    border-radius: 999px;
+    background: rgba(245, 158, 11, 0.15);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    color: #fbbf24;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 24px;
+  }
+
+  .cta-btn-glow {
+    display: inline-flex;
+    align-items: center;
+    gap: 16px;
+    padding: 24px 60px;
+    border-radius: 999px;
+    font-size: 29px;
+    font-weight: 800;
+    color: #ffffff;
+    background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    box-shadow: 
+      0 0 55px rgba(79, 70, 229, 0.65),
+      0 20px 40px rgba(0, 0, 0, 0.5);
+    text-decoration: none;
+    margin-bottom: 28px;
+  }
+
+  .outro-url {
+    font-size: 27px;
+    font-weight: 700;
+    color: #60a5fa;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 1.2px;
+  }
+
+  /* =========================================================
+     VIRTUAL CURSOR (Animated Mouse pointer)
+     ========================================================= */
+  #virtual-cursor {
+    position: absolute;
+    width: 44px;
+    height: 44px;
+    z-index: 9999;
+    pointer-events: none;
+    transform: translate(-999px, -999px);
+    filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.6));
+    transition: none;
+  }
+
+  #virtual-cursor svg {
+    width: 44px;
+    height: 44px;
+    fill: #10b981;
+    stroke: #ffffff;
+    stroke-width: 1.5;
+  }
+
+  .click-ripple {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 2px solid #10b981;
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 9998;
+  }
+
+</style>
+</head>
+<body>
+
+<!-- Ambient lights -->
+<div class="ambient-light ambient-1" id="amb-1"></div>
+<div class="ambient-light ambient-2" id="amb-2"></div>
+<div class="ambient-light ambient-center" id="amb-c"></div>
+<div class="grid-overlay"></div>
+
+<!-- Stage -->
+<div id="stage">
+
+  <!-- SCENE 1: Brand Intro -->
+  <div class="scene" id="scene-1">
+    <div class="logo-container">
+      <div class="logo-icon-3d">
+        <!-- Modern R Monogram Logo -->
+        <svg viewBox="0 0 24 24">
+          <path d="M6 3h8a5 5 0 0 1 3.5 8.5L20 21h-4l-2.2-8.5H10V21H6V3zm4 4v4.5h4a2.25 2.25 0 0 0 0-4.5H10z"/>
+        </svg>
+      </div>
+      <div class="brand-badge">Remotale OS • Suite</div>
+      <h1 class="brand-title">Remotale</h1>
+      <p class="brand-subtitle">The Modern Operating System for Digital Agencies & Client Portals</p>
+      <div class="brand-sweep"></div>
+    </div>
+  </div>
+
+  <!-- SCENE 2: The Neon Prompt Interface -->
+  <div class="scene" id="scene-2">
+    <div class="prompt-wrapper" id="prompt-box">
+      <div class="prompt-card">
+        <div class="prompt-header">
+          <div class="prompt-chip-category">
+            <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            <span>Agency Workspace Builder</span>
+          </div>
+          <div style="font-size: 17px; color: #64748b; font-weight: 600;">AI Engine v2.4</div>
+        </div>
+
+        <div class="prompt-input-text" id="prompt-typing-area">
+          <span id="prompt-text"></span><span class="typing-cursor" id="prompt-cursor"></span>
+        </div>
+
+        <div class="prompt-footer">
+          <div class="prompt-tools">
+            <div class="tool-btn">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg>
+            </div>
+            <div class="tool-btn">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </div>
+          </div>
+          <div class="build-btn" id="build-btn">
+            <span>Build Workspace</span>
+            <span style="font-family: monospace; font-size: 19px; opacity: 0.8;">⌘ ↵</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Action Pills -->
+      <div class="prompt-pills">
+        <div class="pill-item" id="pill-1">
+          <span>✨</span>
+          <span>Deploy Client Portal</span>
+        </div>
+        <div class="pill-item" id="pill-2">
+          <span>⚡</span>
+          <span>Milestone Billing</span>
+        </div>
+        <div class="pill-item" id="pill-3">
+          <span>🔒</span>
+          <span>100% Data Isolation</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENE 3 & 4: Dashboard & Client Isolation -->
+  <div class="scene" id="scene-3">
+    <div class="device-window" id="device-win">
+      <div class="window-header">
+        <div class="traffic-dots">
+          <div class="traffic-dot dot-red"></div>
+          <div class="traffic-dot dot-yellow"></div>
+          <div class="traffic-dot dot-green"></div>
+        </div>
+        <div class="window-url-bar" id="window-url">
+          <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+          <span id="url-text">remotale.app/agency/dashboard</span>
+        </div>
+        <div class="window-user-badge" id="user-badge">
+          <span id="user-icon">👑</span>
+          <span id="user-name">Abdullah (Super Admin)</span>
+        </div>
+      </div>
+
+      <div class="window-body">
+        <!-- Persona Selector Banner -->
+        <div class="persona-selector-bar" id="persona-bar">
+          <div style="font-size: 16px; font-weight: 700; color: #cbd5e1; display:flex; align-items:center; gap:8px;">
+            <span>🛡️ Persona Switcher:</span>
+          </div>
+          <div class="persona-tabs">
+            <div class="persona-tab active" id="tab-admin">Super Admin (All 10 Projects)</div>
+            <div class="persona-tab" id="tab-awais">Awais Portal (8 Projects)</div>
+            <div class="persona-tab" id="tab-afshal">Afshal Portal (2 Projects)</div>
+          </div>
+        </div>
+
+        <!-- Stats Row -->
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-label">Monthly Retainers</div>
+            <div class="stat-number">
+              <span id="stat-revenue">$0</span>
+              <span class="stat-badge">+34.8% ↑</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Active Projects</div>
+            <div class="stat-number">
+              <span id="stat-projects">0</span>
+              <span class="stat-badge">100% On Time</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Milestone Acceptance</div>
+            <div class="stat-number">
+              <span id="stat-csat">99.4%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Projects List -->
+        <div class="projects-section-title">
+          <div class="section-heading" id="projects-heading">Client Projects Overview</div>
+          <div style="font-size: 15px; color: #64748b; font-weight: 600;">Real-time sync active</div>
+        </div>
+
+        <div class="projects-list">
+          <div class="project-item highlighted" id="p-item-1">
+            <div class="project-left">
+              <div class="project-avatar av-blue">PW</div>
+              <div class="project-info">
+                <h4 id="p1-title">Pak White Label Abdul Saboor</h4>
+                <p id="p1-sub">Web Development • Client: Awais Agency</p>
+              </div>
+            </div>
+            <div class="project-right">
+              <div class="progress-wrap">
+                <div class="progress-bar-fill" id="p1-prog" style="width: 45%;"></div>
+              </div>
+              <div class="progress-meta">
+                <span id="p1-status">In Progress</span>
+                <span id="p1-pct">45%</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="project-item" id="p-item-2">
+            <div class="project-left">
+              <div class="project-avatar av-purple">FL</div>
+              <div class="project-info">
+                <h4>Farjah — Luxury Decor Items</h4>
+                <p>Full Brand Redesign • Priority Urgent</p>
+              </div>
+            </div>
+            <div class="project-right">
+              <div class="progress-wrap">
+                <div class="progress-bar-fill" style="width: 85%; background: linear-gradient(90deg, #8b5cf6, #ec4899);"></div>
+              </div>
+              <div class="progress-meta">
+                <span>Final Review</span>
+                <span>85%</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="project-item" id="p-item-3">
+            <div class="project-left">
+              <div class="project-avatar av-emerald">FY</div>
+              <div class="project-info">
+                <h4>Fytnex Products Designing</h4>
+                <p>Graphics & Packaging • Awais Agency</p>
+              </div>
+            </div>
+            <div class="project-right">
+              <div class="progress-wrap">
+                <div class="progress-bar-fill" style="width: 60%;"></div>
+              </div>
+              <div class="progress-meta">
+                <span>Active Sprint</span>
+                <span>60%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Deliverable Toast Notification -->
+      <div class="deliverable-toast" id="deliv-toast">
+        <div class="toast-header">
+          <span>⚡ NEW DELIVERABLE READY FOR SIGN-OFF</span>
+        </div>
+        <div class="toast-body">
+          Homepage UI Redesign V2.fig (Awais Agency)
+        </div>
+        <button class="toast-action-btn" id="toast-btn">
+          <span>Approve Deliverable</span>
+          <span>✓</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SCENE 5: Invoicing & Billing -->
+  <div class="scene" id="scene-5">
+    <div class="invoice-card" id="inv-card">
+      <div class="invoice-top">
+        <div>
+          <div class="inv-brand">Remotale Invoicing Suite</div>
+          <div style="font-size: 17px; color: #94a3b8; margin-top: 4px;">Automated Client Milestone Billing</div>
+        </div>
+        <div class="inv-status-pill" id="inv-status">
+          <span>● Awaiting Payment</span>
+        </div>
+      </div>
+
+      <div class="inv-meta-grid">
+        <div class="inv-meta-item">
+          <label>INVOICE NO.</label>
+          <span>#INV-2026-089</span>
+        </div>
+        <div class="inv-meta-item">
+          <label>CLIENT</label>
+          <span>Afshal Brand Ltd.</span>
+        </div>
+        <div class="inv-meta-item">
+          <label>PROJECT</label>
+          <span>Farjah Decor UI Sprint</span>
+        </div>
+      </div>
+
+      <div class="inv-items-table">
+        <div class="inv-item-row">
+          <span class="desc">UI/UX Design Systems & High-Fidelity Prototypes</span>
+          <span class="price">$2,850.00</span>
+        </div>
+        <div class="inv-item-row">
+          <span class="desc">Frontend Component Architecture & React Codebase</span>
+          <span class="price">$2,000.00</span>
+        </div>
+      </div>
+
+      <div class="inv-amount-box">
+        <div>
+          <div class="inv-amount-label">Total Amount Settled</div>
+          <div style="font-size: 15px; color: #34d399; font-weight: 600; margin-top: 4px;">Instant Stripe & Bank Payout</div>
+        </div>
+        <div class="inv-amount-val" id="inv-val">$4,850.00</div>
+      </div>
+
+      <div style="margin-top: 24px; display: flex; align-items: center; justify-content: space-between; color: #94a3b8; font-size: 16px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span>🔒 256-bit Encrypted Settlement</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 6px; color: #38bdf8; font-weight: 700;">
+          <span>Powered by Remotale Pay</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENE 6: 3D Feature Grid Orbit -->
+  <div class="scene" id="scene-6">
+    <div style="text-align: center; margin-bottom: 38px;">
+      <div class="brand-badge">Engineered for High-Growth Agencies</div>
+      <h2 style="font-size: 58px; font-weight: 900; letter-spacing: -1.5px;">All-in-One Agency Control</h2>
+    </div>
+
+    <div class="feature-orbit-grid">
+      <div class="feature-orbit-card highlight">
+        <div class="orbit-icon" style="background: rgba(99, 102, 241, 0.2); color: #818cf8;">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div class="orbit-title">100% Client Isolation</div>
+        <div class="orbit-desc">Each client logs into their dedicated private portal. Strict isolation guarantees complete privacy.</div>
+      </div>
+
+      <div class="feature-orbit-card">
+        <div class="orbit-icon" style="background: rgba(16, 185, 129, 0.2); color: #34d399;">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        </div>
+        <div class="orbit-title">Live Deliverables Tracking</div>
+        <div class="orbit-desc">Interactive review cycles, Figma & asset previews, and client sign-offs in seconds.</div>
+      </div>
+
+      <div class="feature-orbit-card">
+        <div class="orbit-icon" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24;">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        </div>
+        <div class="orbit-title">Automated Billing</div>
+        <div class="orbit-desc">Generate branded PDF invoices, track milestone retainers, and get paid directly.</div>
+      </div>
+
+      <div class="feature-orbit-card">
+        <div class="orbit-icon" style="background: rgba(6, 182, 212, 0.2); color: #22d3ee;">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        </div>
+        <div class="orbit-title">Zero-Friction Deployment</div>
+        <div class="orbit-desc">Cloud native, instantaneous setup, and zero maintenance overhead.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENE 7: Grand Outro & Call to Action -->
+  <div class="scene" id="scene-7">
+    <div class="outro-logo">
+      <svg viewBox="0 0 24 24" width="74" height="74" fill="#ffffff">
+        <path d="M6 3h8a5 5 0 0 1 3.5 8.5L20 21h-4l-2.2-8.5H10V21H6V3zm4 4v4.5h4a2.25 2.25 0 0 0 0-4.5H10z"/>
+      </svg>
+    </div>
+    <h2 class="outro-headline">Your Agency.<br>Supercharged.</h2>
+    <p class="outro-sub">Unify your projects, delight your clients, and automate operations with Remotale OS.</p>
+    
+    <div class="rating-badge">
+      <span>★★★★★</span>
+      <span>Rated 4.9/5 by 250+ Digital Agencies</span>
+    </div>
+
+    <div>
+      <div class="cta-btn-glow">
+        <span>Get Started Free</span>
+        <span style="font-size: 28px;">→</span>
+      </div>
+    </div>
+    <div class="outro-url">remotale.com</div>
+  </div>
+
+</div>
+
+<!-- Virtual Cursor -->
+<div id="virtual-cursor">
+  <svg viewBox="0 0 24 24">
+    <path d="M3 3l7 18 3-7 7-3L3 3z"/>
+  </svg>
+</div>
+
+<!-- Click Ripple Effect -->
+<div class="click-ripple" id="ripple"></div>
+
+<script>
+  // Helper animation functions
+  function clamp(val, min, max) {
+    return Math.max(min, Math.min(max, val));
+  }
+
+  function lerp(start, end, t) {
+    return start + (end - start) * t;
+  }
+
+  function easeOutCubic(t) {
+    return (--t) * t * t + 1;
+  }
+
+  function easeInOutCubic(t) {
+    return t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
+  }
+
+  // Full Prompt Text for Scene 2
+  const FULL_PROMPT = "Deploy isolated client portal for Awais Agency with real-time milestones, deliverables, and automated invoices.";
+
+  // Scene Elements
+  const scenes = [
+    document.getElementById('scene-1'),
+    document.getElementById('scene-2'),
+    document.getElementById('scene-3'),
+    document.getElementById('scene-5'),
+    document.getElementById('scene-6'),
+    document.getElementById('scene-7'),
+  ];
+
+  const cursor = document.getElementById('virtual-cursor');
+  const ripple = document.getElementById('ripple');
+  const promptText = document.getElementById('prompt-text');
+  const pill1 = document.getElementById('pill-1');
+  const buildBtn = document.getElementById('build-btn');
+  const deviceWin = document.getElementById('device-win');
+  const windowUrl = document.getElementById('url-text');
+  const userBadgeName = document.getElementById('user-name');
+  const userIcon = document.getElementById('user-icon');
+  const tabAdmin = document.getElementById('tab-admin');
+  const tabAwais = document.getElementById('tab-awais');
+  const delivToast = document.getElementById('deliv-toast');
+  const toastBtn = document.getElementById('toast-btn');
+  const statRevenue = document.getElementById('stat-revenue');
+  const statProjects = document.getElementById('stat-projects');
+  const p1Prog = document.getElementById('p1-prog');
+  const p1Pct = document.getElementById('p1-pct');
+  const p1Status = document.getElementById('p1-status');
+  const invStatus = document.getElementById('inv-status');
+  const invCard = document.getElementById('inv-card');
+
+  function showRipple(x, y) {
+    ripple.style.left = x + 'px';
+    ripple.style.top = y + 'px';
+    ripple.style.transform = 'translate(-50%, -50%) scale(1.6)';
+    ripple.style.opacity = '0.9';
+    ripple.style.transition = 'transform 0.4s ease-out, opacity 0.4s ease-out';
+  }
+  function hideRipple() {
+    ripple.style.transform = 'translate(-50%, -50%) scale(0)';
+    ripple.style.opacity = '0';
+  }
+
+  function setCursor(x, y, visible = true) {
+    if (!visible) {
+      cursor.style.opacity = '0';
+    } else {
+      cursor.style.opacity = '1';
+      cursor.style.transform = `translate(${x}px, ${y}px)`;
+    }
+  }
+
+  /**
+   * Main deterministic frame renderer
+   * Frame rate: 30 FPS
+   * Total frames: 945 (31.5 seconds)
+   */
+  window.seekFrame = function(frame, totalFrames = 945) {
+    // Reset default scenes opacity
+    scenes.forEach(s => {
+      s.style.opacity = '0';
+      s.style.transform = 'scale(0.95)';
+    });
+    setCursor(-999, -999, false);
+    hideRipple();
+
+    // =========================================================
+    // SCENE 1: Brand Intro (0.0s to 3.2s | frames 0 to 95)
+    // =========================================================
+    if (frame <= 95) {
+      const s1 = document.getElementById('scene-1');
+      s1.style.opacity = '1';
+      
+      let prog = frame / 95;
+      let scale = lerp(0.85, 1.05, easeOutCubic(clamp(prog * 1.2, 0, 1)));
+      let op = 1;
+      if (frame < 15) {
+        op = frame / 15;
+      } else if (frame > 80) {
+        op = 1 - (frame - 80) / 15;
+        scale = lerp(1.05, 1.2, (frame - 80) / 15);
+      }
+      s1.style.opacity = op;
+      s1.style.transform = `scale(${scale})`;
+      return;
+    }
+
+    // =========================================================
+    // SCENE 2: The Neon Prompt Box & Typing (3.2s to 8.8s | frames 96 to 264)
+    // =========================================================
+    if (frame <= 264) {
+      const s2 = document.getElementById('scene-2');
+      s2.style.opacity = '1';
+      let f = frame - 96; // 0 to 168 (5.6s)
+
+      let scale = 1;
+      let op = 1;
+      if (f < 15) {
+        op = f / 15;
+        scale = lerp(0.88, 1, easeOutCubic(f / 15));
+      } else if (f > 152) {
+        op = 1 - (f - 152) / 16;
+        scale = lerp(1, 1.15, (f - 152) / 16);
+      }
+      s2.style.opacity = op;
+      s2.style.transform = `scale(${scale})`;
+
+      // Cursor movement 1: Move from bottom (540, 1400) to Pill 1 (240, 1130)
+      if (f >= 10 && f < 45) {
+        let t = easeInOutCubic((f - 10) / 35);
+        let cx = lerp(540, 240, t);
+        let cy = lerp(1400, 1130, t);
+        setCursor(cx, cy, true);
+        pill1.classList.remove('selected');
+      } else if (f >= 45 && f < 60) {
+        setCursor(240, 1130, true);
+        pill1.classList.add('selected');
+        if (f === 47) showRipple(240, 1130);
+      } else if (f >= 60 && f < 85) {
+        pill1.classList.add('selected');
+        let t = easeInOutCubic((f - 60) / 25);
+        let cx = lerp(240, 320, t);
+        let cy = lerp(1130, 920, t);
+        setCursor(cx, cy, true);
+      } else if (f >= 85 && f < 140) {
+        pill1.classList.add('selected');
+        setCursor(320, 920, false);
+      } else if (f >= 140 && f <= 168) {
+        pill1.classList.add('selected');
+        let t = easeInOutCubic(clamp((f - 140) / 18, 0, 1));
+        let cx = lerp(450, 890, t);
+        let cy = lerp(920, 1020, t);
+        setCursor(cx, cy, true);
+        if (f >= 155) {
+          buildBtn.classList.add('active');
+          if (f === 155) showRipple(890, 1020);
+        }
+      }
+
+      // Typing animation
+      if (f < 50) {
+        promptText.innerText = "";
+      } else {
+        let typeProg = clamp((f - 50) / 85, 0, 1);
+        let charCount = Math.floor(typeProg * FULL_PROMPT.length);
+        promptText.innerText = FULL_PROMPT.substring(0, charCount);
+      }
+      return;
+    }
+
+    // =========================================================
+    // SCENE 3 & 4: Dashboard & Client Isolation (8.8s to 20.4s | frames 265 to 612)
+    // =========================================================
+    if (frame <= 612) {
+      const s3 = document.getElementById('scene-3');
+      s3.style.opacity = '1';
+      let f = frame - 265; // 0 to 347 (11.6 seconds)
+
+      let scale = 1.05; // slightly larger for vertical prominence!
+      let rotX = 0;
+      let op = 1;
+
+      if (f < 20) {
+        op = f / 20;
+        scale = lerp(0.85, 1.05, easeOutCubic(f / 20));
+        rotX = lerp(14, 2, easeOutCubic(f / 20));
+      } else if (f > 330) {
+        op = 1 - (f - 330) / 17;
+        scale = lerp(1.05, 1.18, (f - 330) / 17);
+      }
+      s3.style.opacity = op;
+      deviceWin.style.transform = `rotateX(${rotX}deg) scale(${scale})`;
+
+      // Sub-Phase A: Admin Overview & Stats Counting (f: 0 to 140 | 8.8s to 13.5s)
+      if (f < 140) {
+        tabAdmin.classList.add('active');
+        tabAwais.classList.remove('active');
+        windowUrl.innerText = "remotale.app/agency/dashboard";
+        userBadgeName.innerText = "Abdullah (Super Admin)";
+        userIcon.innerText = "👑";
+        delivToast.classList.remove('show');
+
+        // Counting revenue: $0 to $58,400
+        let revProg = easeOutCubic(clamp(f / 80, 0, 1));
+        let revVal = Math.floor(revProg * 58400);
+        statRevenue.innerText = "$" + revVal.toLocaleString();
+
+        // Projects counter: 0 to 10
+        let projProg = easeOutCubic(clamp(f / 60, 0, 1));
+        statProjects.innerText = Math.floor(projProg * 10);
+
+        // Progress bar animates
+        let pb = lerp(20, 65, clamp(f / 90, 0, 1));
+        p1Prog.style.width = pb + "%";
+        p1Pct.innerText = Math.round(pb) + "%";
+
+        // Virtual cursor hovers over stats
+        if (f >= 30 && f < 90) {
+          let t = easeInOutCubic((f - 30) / 60);
+          let cx = lerp(200, 600, t);
+          let cy = lerp(600, 750, t);
+          setCursor(cx, cy, true);
+        }
+      } 
+      // Sub-Phase B: Switch to Awais Portal (f: 140 to 347 | 13.5s to 20.4s)
+      else {
+        statRevenue.innerText = "$58,400";
+        statProjects.innerText = "8"; // Awais's 8 projects
+
+        // Cursor moves to click "Awais Portal" tab
+        if (f >= 140 && f < 170) {
+          let t = easeInOutCubic((f - 140) / 30);
+          let cx = lerp(600, 520, t);
+          let cy = lerp(750, 680, t);
+          setCursor(cx, cy, true);
+        } else if (f >= 170 && f < 200) {
+          setCursor(520, 680, true);
+          if (f === 172) showRipple(520, 680);
+          tabAdmin.classList.remove('active');
+          tabAwais.classList.add('active');
+          windowUrl.innerText = "remotale.app/portal/awais";
+          userBadgeName.innerText = "Awais (Client Portal)";
+          userIcon.innerText = "👤";
+          document.getElementById('projects-heading').innerText = "Awais Agency • 8 Assigned Projects";
+          document.getElementById('p1-sub').innerText = "Web Development • 100% Isolated Workspace";
+        }
+
+        // Deliverable Toast appears at f: 195
+        if (f >= 195) {
+          tabAdmin.classList.remove('active');
+          tabAwais.classList.add('active');
+          windowUrl.innerText = "remotale.app/portal/awais";
+          userBadgeName.innerText = "Awais (Client Portal)";
+          userIcon.innerText = "👤";
+          document.getElementById('projects-heading').innerText = "Awais Agency • 8 Assigned Projects";
+          document.getElementById('p1-sub').innerText = "Web Development • 100% Isolated Workspace";
+          delivToast.classList.add('show');
+        }
+
+        // Cursor moves to click "Approve Deliverable" button on toast
+        if (f >= 210 && f < 250) {
+          let t = easeInOutCubic((f - 210) / 40);
+          let cx = lerp(520, 800, t);
+          let cy = lerp(680, 560, t);
+          setCursor(cx, cy, true);
+        } else if (f >= 250) {
+          setCursor(800, 560, true);
+          if (f === 252) showRipple(800, 560);
+
+          toastBtn.style.background = "#059669";
+          toastBtn.innerHTML = "<span>✓ Deliverable Approved!</span>";
+          p1Prog.style.width = "100%";
+          p1Prog.style.background = "#10b981";
+          p1Pct.innerText = "100%";
+          p1Status.innerText = "Completed ✓";
+          p1Status.style.color = "#34d399";
+        }
+      }
+      return;
+    }
+
+    // =========================================================
+    // SCENE 5: Automated Invoicing & Stripe Payout (20.4s to 25.8s | frames 613 to 774)
+    // =========================================================
+    if (frame <= 774) {
+      const s5 = document.getElementById('scene-5');
+      s5.style.opacity = '1';
+      let f = frame - 613; // 0 to 161 (5.4s)
+
+      let scale = 1.05;
+      let op = 1;
+      if (f < 18) {
+        op = f / 18;
+        scale = lerp(0.85, 1.05, easeOutCubic(f / 18));
+      } else if (f > 145) {
+        op = 1 - (f - 145) / 16;
+        scale = lerp(1.05, 1.15, (f - 145) / 16);
+      }
+      s5.style.opacity = op;
+      invCard.style.transform = `scale(${scale})`;
+
+      // Status changes to PAID at f = 60
+      if (f < 60) {
+        invStatus.classList.remove('paid');
+        invStatus.innerHTML = "<span>● Awaiting Client Payment</span>";
+      } else {
+        invStatus.classList.add('paid');
+        invStatus.innerHTML = "<span>✓ PAID IN FULL VIA STRIPE</span>";
+        if (f === 62) {
+          showRipple(760, 860);
+        }
+      }
+
+      // Cursor movement over invoice
+      if (f >= 20 && f < 80) {
+        let t = easeInOutCubic((f - 20) / 60);
+        let cx = lerp(300, 750, t);
+        let cy = lerp(1100, 880, t);
+        setCursor(cx, cy, true);
+      }
+      return;
+    }
+
+    // =========================================================
+    // SCENE 6: 3D Feature Grid Orbit (25.8s to 28.8s | frames 775 to 864)
+    // =========================================================
+    if (frame <= 864) {
+      const s6 = document.getElementById('scene-6');
+      s6.style.opacity = '1';
+      let f = frame - 775; // 0 to 89 (3.0s)
+
+      let scale = 1.04;
+      let rotY = 0;
+      let op = 1;
+      if (f < 15) {
+        op = f / 15;
+        scale = lerp(0.88, 1.04, easeOutCubic(f / 15));
+        rotY = lerp(-10, 0, easeOutCubic(f / 15));
+      } else if (f > 75) {
+        op = 1 - (f - 75) / 14;
+        scale = lerp(1.04, 1.16, (f - 75) / 14);
+      }
+      s6.style.opacity = op;
+      s6.style.transform = `scale(${scale}) rotateY(${rotY}deg)`;
+      return;
+    }
+
+    // =========================================================
+    // SCENE 7: Outro & Call to Action (28.8s to 31.5s | frames 865 to 945)
+    // =========================================================
+    const s7 = document.getElementById('scene-7');
+    s7.style.opacity = '1';
+    let f = frame - 865; // 0 to 80 (2.6s)
+
+    let scale = 1;
+    let op = 1;
+    if (f < 15) {
+      op = f / 15;
+      scale = lerp(0.85, 1, easeOutCubic(f / 15));
+    } else if (frame > 930) {
+      op = 1 - (frame - 930) / 15;
+    }
+    s7.style.opacity = op;
+    s7.style.transform = `scale(${scale})`;
+  };
+</script>
+</body>
+</html>

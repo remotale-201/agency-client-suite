@@ -79,168 +79,2280 @@ const seedAssignees = [
 ];
 
 const realProjects = [
-  // 8 Projects for Awais
   {
-    id: 'proj-awais-1',
-    clientId: 'client-awais',
-    title: 'Pak White Label Abdul Saboor',
-    description: "Normal White Label Pakistan Store. Store name and domain are pending from the client's end.",
-    notes: "Normal White Label Pakistan Store. Store name and domain are pending from the client's end.",
-    projectType: 'Web Development',
-    status: 'in-progress',
-    priority: 'Medium',
-    deadline: '18/10/2026',
-    startDate: '15/10/2026',
-    progress: 10,
-    tasks: ['Header', 'Graphics', 'Product Page', 'Product Card', 'Other Pages', 'Footer', 'Buy and Connect Domain', 'Final Changes']
-  },
-  {
-    id: 'proj-awais-2',
-    clientId: 'client-awais',
-    title: 'Pak White Label Store (Latest)',
-    description: 'Normal Pakistan White Label Store.',
-    notes: 'Normal Pakistan White Label Store.',
-    projectType: 'Web Development',
-    status: 'in-progress',
-    priority: 'Medium',
-    deadline: '19/10/2026',
-    startDate: '15/10/2026',
-    progress: 10,
-    tasks: ['Header', 'Graphics', 'Product Page', 'Product Card', 'Other Pages', 'Footer', 'Buy and Connect Domain', 'Final Changes']
-  },
-  {
-    id: 'proj-awais-3',
-    clientId: 'client-awais',
-    title: 'Fytnex Products Designing',
-    description: 'In Working.',
-    notes: 'In Working.',
-    projectType: 'Graphics',
-    status: 'in-progress',
-    priority: 'High',
-    deadline: '22/10/2026',
-    startDate: '15/10/2026',
-    progress: 25,
-    tasks: [
-      { title: '25% Done', completed: true },
-      { title: '50% Done', completed: false },
-      { title: '75% Done', completed: false },
-      { title: '100% Done', completed: false }
+    "id": "proj-awais-1",
+    "clientId": "client-awais",
+    "title": "Pak White Label Abdul Saboor",
+    "description": "Normal White Label Pakistan Store. Store name and domain are pending from the client's end.",
+    "notes": "Normal White Label Pakistan Store. Store name and domain are pending from the client end.",
+    "projectType": "Web Development",
+    "status": "in-progress",
+    "priority": "Medium",
+    "deadline": "18/10/2026",
+    "startDate": "15/10/2026",
+    "progress": 10,
+    "reference_link": "",
+    "tasks": [
+      {
+        "title": "Header",
+        "completed": false
+      },
+      {
+        "title": "Graphics",
+        "completed": false
+      },
+      {
+        "title": "Product Page",
+        "completed": false
+      },
+      {
+        "title": "Product Card",
+        "completed": false
+      },
+      {
+        "title": "Other Pages",
+        "completed": false
+      },
+      {
+        "title": "Footer",
+        "completed": false
+      },
+      {
+        "title": "Buy and Connect Domain",
+        "completed": false
+      },
+      {
+        "title": "Final Changes",
+        "completed": false
+      }
     ]
   },
   {
-    id: 'proj-awais-4',
-    clientId: 'client-awais',
-    title: '20 Dfynex Graphics',
-    description: 'Pending due to Dfynex website and product finalization.',
-    notes: 'Pending due to Dfynex website and product finalization.',
-    projectType: 'Graphics',
-    status: 'in-progress',
-    priority: 'Medium',
-    deadline: '20/10/2026',
-    startDate: '15/10/2026',
-    progress: 0,
-    tasks: ['25% Done', '50% Done', '75% Done', '100% Done']
-  },
-  {
-    id: 'proj-awais-5',
-    clientId: 'client-awais',
-    title: '20 Fytnix Graphics',
-    description: 'Pending due to article designing.',
-    notes: 'Pending due to article designing.',
-    projectType: 'Graphics',
-    status: 'in-progress',
-    priority: 'Medium',
-    deadline: '20/10/2026',
-    startDate: '15/10/2026',
-    progress: 0,
-    tasks: ['25% Done', '50% Done', '75% Done', '100% Done']
-  },
-  {
-    id: 'proj-awais-6',
-    clientId: 'client-awais',
-    title: '20 WearPhere Graphics',
-    description: 'In Process.',
-    notes: 'In Process.',
-    projectType: 'Graphics',
-    status: 'in-progress',
-    priority: 'Urgent',
-    deadline: '16/10/2026',
-    startDate: '15/10/2026',
-    progress: 25,
-    tasks: [
-      { title: '25% Done', completed: true },
-      { title: '50% Done', completed: false },
-      { title: '75% Done', completed: false },
-      { title: '100% Done', completed: false }
+    "id": "proj-awais-2",
+    "clientId": "client-awais",
+    "title": "Pak White Label Store (Latest)",
+    "description": "Normal Pakistan White Label Store.",
+    "notes": "Normal Pakistan White Label Store.",
+    "projectType": "Web Development",
+    "status": "in-progress",
+    "priority": "Medium",
+    "deadline": "19/10/2026",
+    "startDate": "15/10/2026",
+    "progress": 10,
+    "reference_link": "",
+    "tasks": [
+      {
+        "title": "Header",
+        "completed": false
+      },
+      {
+        "title": "Graphics",
+        "completed": false
+      },
+      {
+        "title": "Product Page",
+        "completed": false
+      },
+      {
+        "title": "Product Card",
+        "completed": false
+      },
+      {
+        "title": "Other Pages",
+        "completed": false
+      },
+      {
+        "title": "Footer",
+        "completed": false
+      },
+      {
+        "title": "Buy and Connect Domain",
+        "completed": false
+      },
+      {
+        "title": "Final Changes",
+        "completed": false
+      }
     ]
   },
   {
-    id: 'proj-awais-7',
-    clientId: 'client-awais',
-    title: '20 Oxytees Graphics',
-    description: 'In Process.',
-    notes: 'In Process.',
-    projectType: 'Graphics',
-    status: 'completed',
-    priority: 'Urgent',
-    deadline: '16/10/2026',
-    startDate: '15/10/2026',
-    progress: 100,
-    tasks: [
-      { title: '25% Done', completed: true },
-      { title: '50% Done', completed: false },
-      { title: '75% Done', completed: false },
-      { title: '100% Done', completed: false }
+    "id": "proj-awais-3",
+    "clientId": "client-awais",
+    "title": "Fytnex Products Designing",
+    "description": "In Working.",
+    "notes": "In Working.",
+    "projectType": "Graphics",
+    "status": "in-progress",
+    "priority": "High",
+    "deadline": "22/10/2026",
+    "startDate": "15/10/2026",
+    "progress": 25,
+    "reference_link": "",
+    "tasks": [
+      {
+        "title": "25% Done",
+        "completed": true
+      },
+      {
+        "title": "50% Done",
+        "completed": false
+      },
+      {
+        "title": "75% Done",
+        "completed": false
+      },
+      {
+        "title": "100% Done",
+        "completed": false
+      }
     ]
   },
   {
-    id: 'proj-awais-8',
-    clientId: 'client-awais',
-    title: '20 MrGymWear Graphics',
-    description: 'In Process.',
-    notes: 'In Process.',
-    projectType: 'Graphics',
-    status: 'in-progress',
-    priority: 'High',
-    deadline: '17/10/2026',
-    startDate: '15/10/2026',
-    progress: 25,
-    tasks: [
-      { title: '25% Done', completed: true },
-      { title: '50% Done', completed: false },
-      { title: '75% Done', completed: false },
-      { title: '100% Done', completed: false }
+    "id": "proj-awais-4",
+    "clientId": "client-awais",
+    "title": "20 Dfynex Graphics",
+    "description": "Pending due to Dfynex website and product finalization.",
+    "notes": "Pending due to Dfynex website and product finalization.",
+    "projectType": "Graphics",
+    "status": "in-progress",
+    "priority": "Medium",
+    "deadline": "20/10/2026",
+    "startDate": "15/10/2026",
+    "progress": 0,
+    "reference_link": "",
+    "tasks": [
+      {
+        "title": "25% Done",
+        "completed": false
+      },
+      {
+        "title": "50% Done",
+        "completed": false
+      },
+      {
+        "title": "75% Done",
+        "completed": false
+      },
+      {
+        "title": "100% Done",
+        "completed": false
+      }
     ]
   },
-
-  // 2 Projects for Afshal
   {
-    id: 'proj-afshal-1',
-    clientId: 'client-afshal',
-    title: 'Farjah — Luxury Decor Items (Redesign)',
-    description: 'Luxury Decor Items Store Redesign.',
-    notes: 'Luxury Decor Items Store Redesign.',
-    projectType: 'Web Development',
-    status: 'in-progress',
-    priority: 'Urgent',
-    deadline: '17/10/2026',
-    startDate: '15/10/2026',
-    progress: 0,
-    tasks: ['Product Listing', 'Organization', 'Banners']
+    "id": "proj-awais-5",
+    "clientId": "client-awais",
+    "title": "20 Fytnix Graphics",
+    "description": "Pending due to article designing.",
+    "notes": "Pending due to article designing.",
+    "projectType": "Graphics",
+    "status": "in-progress",
+    "priority": "Medium",
+    "deadline": "20/10/2026",
+    "startDate": "15/10/2026",
+    "progress": 0,
+    "reference_link": "",
+    "tasks": [
+      {
+        "title": "25% Done",
+        "completed": false
+      },
+      {
+        "title": "50% Done",
+        "completed": false
+      },
+      {
+        "title": "75% Done",
+        "completed": false
+      },
+      {
+        "title": "100% Done",
+        "completed": false
+      }
+    ]
   },
   {
-    id: 'proj-afshal-2',
-    clientId: 'client-afshal',
-    title: 'Distant Market',
-    description: 'Pakistan White Label Store.',
-    notes: 'Pakistan White Label Store.',
-    projectType: 'Web Development',
-    status: 'in-progress',
-    priority: 'Medium',
-    deadline: '20/10/2026',
-    startDate: '15/10/2026',
-    progress: 0,
-    tasks: ['Header', 'Graphics', 'Product Page', 'Product Card', 'Other Pages', 'Footer', 'Buy and Connect Domain', 'Final Changes']
+    "id": "proj-awais-6",
+    "clientId": "client-awais",
+    "title": "20 WearPhere Graphics",
+    "description": "In Process.",
+    "notes": "In Process.",
+    "projectType": "Graphics",
+    "status": "in-progress",
+    "priority": "Urgent",
+    "deadline": "16/10/2026",
+    "startDate": "15/10/2026",
+    "progress": 25,
+    "reference_link": "",
+    "tasks": [
+      {
+        "title": "25% Done",
+        "completed": true
+      },
+      {
+        "title": "50% Done",
+        "completed": false
+      },
+      {
+        "title": "75% Done",
+        "completed": false
+      },
+      {
+        "title": "100% Done",
+        "completed": false
+      }
+    ]
+  },
+  {
+    "id": "proj-awais-7",
+    "clientId": "client-awais",
+    "title": "20 Oxytees Graphics",
+    "description": "In Process.",
+    "notes": "In Process.",
+    "projectType": "Graphics",
+    "status": "completed",
+    "priority": "Urgent",
+    "deadline": "16/10/2026",
+    "startDate": "15/10/2026",
+    "progress": 100,
+    "reference_link": "",
+    "tasks": [
+      {
+        "title": "25% Done",
+        "completed": true
+      },
+      {
+        "title": "50% Done",
+        "completed": true
+      },
+      {
+        "title": "75% Done",
+        "completed": true
+      },
+      {
+        "title": "100% Done",
+        "completed": true
+      }
+    ]
+  },
+  {
+    "id": "proj-awais-8",
+    "clientId": "client-awais",
+    "title": "20 MrGymWear Graphics",
+    "description": "In Process.",
+    "notes": "In Process.",
+    "projectType": "Graphics",
+    "status": "in-progress",
+    "priority": "High",
+    "deadline": "17/10/2026",
+    "startDate": "15/10/2026",
+    "progress": 25,
+    "reference_link": "",
+    "tasks": [
+      {
+        "title": "25% Done",
+        "completed": true
+      },
+      {
+        "title": "50% Done",
+        "completed": false
+      },
+      {
+        "title": "75% Done",
+        "completed": false
+      },
+      {
+        "title": "100% Done",
+        "completed": false
+      }
+    ]
+  },
+  {
+    "id": "proj-afshal-1",
+    "clientId": "client-afshal",
+    "title": "Farjah — Luxury Decor Items (Redesign)",
+    "description": "Luxury Decor Items Store Redesign.",
+    "notes": "Luxury Decor Items Store Redesign.",
+    "projectType": "Web Development",
+    "status": "in-progress",
+    "priority": "Urgent",
+    "deadline": "17/10/2026",
+    "startDate": "15/10/2026",
+    "progress": 0,
+    "reference_link": "",
+    "tasks": [
+      {
+        "title": "Product Listing",
+        "completed": false
+      },
+      {
+        "title": "Organization",
+        "completed": false
+      },
+      {
+        "title": "Banners",
+        "completed": false
+      }
+    ]
+  },
+  {
+    "id": "proj-afshal-2",
+    "clientId": "client-afshal",
+    "title": "Distant Market",
+    "description": "Pakistan White Label Store.",
+    "notes": "Pakistan White Label Store.",
+    "projectType": "Web Development",
+    "status": "in-progress",
+    "priority": "Medium",
+    "deadline": "20/10/2026",
+    "startDate": "15/10/2026",
+    "progress": 0,
+    "reference_link": "",
+    "tasks": [
+      {
+        "title": "Header",
+        "completed": false
+      },
+      {
+        "title": "Graphics",
+        "completed": false
+      },
+      {
+        "title": "Product Page",
+        "completed": false
+      },
+      {
+        "title": "Product Card",
+        "completed": false
+      },
+      {
+        "title": "Other Pages",
+        "completed": false
+      },
+      {
+        "title": "Footer",
+        "completed": false
+      },
+      {
+        "title": "Buy and Connect Domain",
+        "completed": false
+      },
+      {
+        "title": "Final Changes",
+        "completed": false
+      }
+    ]
+  },
+  {
+    "id": "proj-awais-hist-1",
+    "clientId": "client-awais",
+    "title": "Fytnix.pk — Gym Wear — fytnix.pk",
+    "description": "Completed client website project. Domain: fytnix.pk",
+    "notes": "the projects was successfully completed by abdullah and ameen",
+    "projectType": "Web Development",
+    "status": "completed",
+    "priority": "Medium",
+    "deadline": "25/08/2026",
+    "startDate": "18/08/2026",
+    "progress": 100,
+    "reference_link": "https://fytnix.pk",
+    "created_at": "2026-08-18T10:39:00.000Z",
+    "tasks": [
+      {
+        "title": "Header",
+        "completed": true
+      },
+      {
+        "title": "Graphics",
+        "completed": true
+      },
+      {
+        "title": "Product Page",
+        "completed": true
+      },
+      {
+        "title": "Product Card",
+        "completed": true
+      },
+      {
+        "title": "Other Pages",
+        "completed": true
+      },
+      {
+        "title": "Footer",
+        "completed": true
+      },
+      {
+        "title": "Buy and Connect Domain",
+        "completed": true
+      },
+      {
+        "title": "Final Changes",
+        "completed": true
+      }
+    ]
+  },
+  {
+    "id": "proj-awais-hist-2",
+    "clientId": "client-awais",
+    "title": "Dfynex Gym Wear",
+    "description": "Completed client project for Awais Agency.",
+    "notes": "the projects was successfully completed by abdullah and ameen",
+    "projectType": "Web Development",
+    "status": "completed",
+    "priority": "Medium",
+    "deadline": "25/08/2026",
+    "startDate": "18/08/2026",
+    "progress": 100,
+    "reference_link": "",
+    "created_at": "2026-08-18T10:38:00.000Z",
+    "tasks": [
+      {
+        "title": "Header",
+        "completed": true
+      },
+      {
+        "title": "Graphics",
+        "completed": true
+      },
+      {
+        "title": "Product Page",
+        "completed": true
+      },
+      {
+        "title": "Product Card",
+        "completed": true
+      },
+      {
+        "title": "Other Pages",
+        "completed": true
+      },
+      {
+        "title": "Footer",
+        "completed": true
+      },
+      {
+        "title": "Buy and Connect Domain",
+        "completed": true
+      },
+      {
+        "title": "Final Changes",
+        "completed": true
+      }
+    ]
+  },
+  {
+    "id": "proj-awais-hist-3",
+    "clientId": "client-awais",
+    "title": "Sir Abdul Saboor WL Al Zariyah",
+    "description": "Completed client project for Awais Agency.",
+    "notes": "the projects was successfully completed by abdullah and ameen",
+    "projectType": "Web Development",
+    "status": "completed",
+    "priority": "Medium",
+    "deadline": "25/08/2026",
+    "startDate": "18/08/2026",
+    "progress": 100,
+    "reference_link": "",
+    "created_at": "2026-08-18T10:37:00.000Z",
+    "tasks": [
+      {
+        "title": "Header",
+        "completed": true
+      },
+      {
+        "title": "Graphics",
+        "completed": true
+      },
+      {
+        "title": "Product Page",
+        "completed": true
+      },
+      {
+        "title": "Product Card",
+        "completed": true
+      },
+      {
+        "title": "Other Pages",
+        "completed": true
+      },
+      {
+        "title": "Footer",
+        "completed": true
+      },
+      {
+        "title": "Buy and Connect Domain",
+        "completed": true
+      },
+      {
+        "title": "Final Changes",
+        "completed": true
+      }
+    ]
+  },
+  {
+    "id": "proj-awais-hist-4",
+    "clientId": "client-awais",
+    "title": "Fasail Zubair KSA Emanzay — emanzay.com",
+    "description": "Completed client website project. Domain: emanzay.com",
+    "notes": "the projects was successfully completed by abdullah and ameen",
+    "projectType": "Web Development",
+    "status": "completed",
+    "priority": "Medium",
+    "deadline": "25/08/2026",
+    "startDate": "18/08/2026",
+    "progress": 100,
+    "reference_link": "https://emanzay.com",
+    "created_at": "2026-08-18T10:36:00.000Z",
+    "tasks": [
+      {
+        "title": "Header",
+        "completed": true
+      },
+      {
+        "title": "Graphics",
+        "completed": true
+      },
+      {
+        "title": "Product Page",
+        "completed": true
+      },
+      {
+        "title": "Product Card",
+        "completed": true
+      },
+      {
+        "title": "Other Pages",
+        "completed": true
+      },
+      {
+        "title": "Footer",
+        "completed": true
+      },
+      {
+        "title": "Buy and Connect Domain",
+        "completed": true
+      },
+      {
+        "title": "Final Changes",
+        "completed": true
+      }
+    ]
+  },
+  {
+    "id": "proj-awais-hist-5",
+    "clientId": "client-awais",
+    "title": "Zam Zam Royal WL — zamzamroyal.com",
+    "description": "Completed client website project. Domain: zamzamroyal.com",
+    "notes": "the projects was successfully completed by abdullah and ameen",
+    "projectType": "Web Development",
+    "status": "completed",
+    "priority": "Medium",
+    "deadline": "25/08/2026",
+    "startDate": "18/08/2026",
+    "progress": 100,
+    "reference_link": "https://zamzamroyal.com",
+    "created_at": "2026-08-18T10:35:00.000Z",
+    "tasks": [
+      {
+        "title": "Header",
+        "completed": true
+      },
+      {
+        "title": "Graphics",
+        "completed": true
+      },
+      {
+        "title": "Product Page",
+        "completed": true
+      },
+      {
+        "title": "Product Card",
+        "completed": true
+      },
+      {
+        "title": "Other Pages",
+        "completed": true
+      },
+      {
+        "title": "Footer",
+        "completed": true
+      },
+      {
+        "title": "Buy and Connect Domain",
+        "completed": true
+      },
+      {
+        "title": "Final Changes",
+        "completed": true
+      }
+    ]
+  },
+  {
+    "id": "proj-awais-hist-6",
+    "clientId": "client-awais",
+    "title": "Riyyah — riyyah.store",
+    "description": "Completed client website project. Domain: riyyah.store",
+    "notes": "the projects was successfully completed by abdullah and ameen",
+    "projectType": "Web Development",
+    "status": "completed",
+    "priority": "Medium",
+    "deadline": "25/08/2026",
+    "startDate": "18/08/2026",
+    "progress": 100,
+    "reference_link": "https://riyyah.store",
+    "created_at": "2026-08-18T10:34:00.000Z",
+    "tasks": [
+      {
+        "title": "Header",
+        "completed": true
+      },
+      {
+        "title": "Graphics",
+        "completed": true
+      },
+      {
+        "title": "Product Page",
+        "completed": true
+      },
+      {
+        "title": "Product Card",
+        "completed": true
+      },
+      {
+        "title": "Other Pages",
+        "completed": true
+      },
+      {
+        "title": "Footer",
+        "completed": true
+      },
+      {
+        "title": "Buy and Connect Domain",
+        "completed": true
+      },
+      {
+        "title": "Final Changes",
+        "completed": true
+      }
+    ]
+  },
+  {
+    "id": "proj-awais-hist-7",
+    "clientId": "client-awais",
+    "title": "Al Zaria — alzaria.store",
+    "description": "Completed client website project. Domain: alzaria.store",
+    "notes": "the projects was successfully completed by abdullah and ameen",
+    "projectType": "Web Development",
+    "status": "completed",
+    "priority": "Medium",
+    "deadline": "25/08/2026",
+    "startDate": "18/08/2026",
+    "progress": 100,
+    "reference_link": "https://alzaria.store",
+    "created_at": "2026-08-18T10:33:00.000Z",
+    "tasks": [
+      {
+        "title": "Header",
+        "completed": true
+      },
+      {
+        "title": "Graphics",
+        "completed": true
+      },
+      {
+        "title": "Product Page",
+        "completed": true
+      },
+      {
+        "title": "Product Card",
+        "completed": true
+      },
+      {
+        "title": "Other Pages",
+        "completed": true
+      },
+      {
+        "title": "Footer",
+        "completed": true
+      },
+      {
+        "title": "Buy and Connect Domain",
+        "completed": true
+      },
+      {
+        "title": "Final Changes",
+        "completed": true
+      }
+    ]
+  },
+  {
+    "id": "proj-awais-hist-8",
+    "clientId": "client-awais",
+    "title": "Bacha World — bachaworld.pk",
+    "description": "Completed client website project. Domain: bachaworld.pk",
+    "notes": "the projects was successfully completed by abdullah and ameen",
+    "projectType": "Web Development",
+    "status": "completed",
+    "priority": "Medium",
+    "deadline": "25/08/2026",
+    "startDate": "18/08/2026",
+    "progress": 100,
+    "reference_link": "https://bachaworld.pk",
+    "created_at": "2026-08-18T10:32:00.000Z",
+    "tasks": [
+      {
+        "title": "Header",
+        "completed": true
+      },
+      {
+        "title": "Graphics",
+        "completed": true
+      },
+      {
+        "title": "Product Page",
+        "completed": true
+      },
+      {
+        "title": "Product Card",
+        "completed": true
+      },
+      {
+        "title": "Other Pages",
+        "completed": true
+      },
+      {
+        "title": "Footer",
+        "completed": true
+      },
+      {
+        "title": "Buy and Connect Domain",
+        "completed": true
+      },
+      {
+        "title": "Final Changes",
+        "completed": true
+      }
+    ]
+  },
+  {
+    "id": "proj-awais-hist-9",
+    "clientId": "client-awais",
+    "title": "KSA Usama Ali — arreja.com",
+    "description": "Completed client website project. Domain: arreja.com",
+    "notes": "the projects was successfully completed by abdullah and ameen",
+    "projectType": "Web Development",
+    "status": "completed",
+    "priority": "Medium",
+    "deadline": "25/08/2026",
+    "startDate": "18/08/2026",
+    "progress": 100,
+    "reference_link": "https://arreja.com",
+    "created_at": "2026-08-18T10:31:00.000Z",
+    "tasks": [
+      {
+        "title": "Header",
+        "completed": true
+      },
+      {
+        "title": "Graphics",
+        "completed": true
+      },
+      {
+        "title": "Product Page",
+        "completed": true
+      },
+      {
+        "title": "Product Card",
+        "completed": true
+      },
+      {
+        "title": "Other Pages",
+        "completed": true
+      },
+      {
+        "title": "Footer",
+        "completed": true
+      },
+      {
+        "title": "Buy and Connect Domain",
+        "completed": true
+      },
+      {
+        "title": "Final Changes",
+        "completed": true
+      }
+    ]
+  },
+  {
+    "id": "proj-awais-hist-10",
+    "clientId": "client-awais",
+    "title": "Oxytees — oxytees.com",
+    "description": "Completed client website project. Domain: oxytees.com",
+    "notes": "the projects was successfully completed by abdullah and ameen",
+    "projectType": "Web Development",
+    "status": "completed",
+    "priority": "Medium",
+    "deadline": "25/08/2026",
+    "startDate": "18/08/2026",
+    "progress": 100,
+    "reference_link": "https://oxytees.com",
+    "created_at": "2026-08-18T10:30:00.000Z",
+    "tasks": [
+      {
+        "title": "Header",
+        "completed": true
+      },
+      {
+        "title": "Graphics",
+        "completed": true
+      },
+      {
+        "title": "Product Page",
+        "completed": true
+      },
+      {
+        "title": "Product Card",
+        "completed": true
+      },
+      {
+        "title": "Other Pages",
+        "completed": true
+      },
+      {
+        "title": "Footer",
+        "completed": true
+      },
+      {
+        "title": "Buy and Connect Domain",
+        "completed": true
+      },
+      {
+        "title": "Final Changes",
+        "completed": true
+      }
+    ]
+  },
+  {
+    "id": "proj-awais-hist-11",
+    "clientId": "client-awais",
+    "title": "Al Injaz Mart — alinjazmar.com",
+    "description": "Completed client website project. Domain: alinjazmar.com",
+    "notes": "the projects was successfully completed by abdullah and ameen",
+    "projectType": "Web Development",
+    "status": "completed",
+    "priority": "Medium",
+    "deadline": "25/08/2026",
+    "startDate": "18/08/2026",
+    "progress": 100,
+    "reference_link": "https://alinjazmar.com",
+    "created_at": "2026-08-18T10:29:00.000Z",
+    "tasks": [
+      {
+        "title": "Header",
+        "completed": true
+      },
+      {
+        "title": "Graphics",
+        "completed": true
+      },
+      {
+        "title": "Product Page",
+        "completed": true
+      },
+      {
+        "title": "Product Card",
+        "completed": true
+      },
+      {
+        "title": "Other Pages",
+        "completed": true
+      },
+      {
+        "title": "Footer",
+        "completed": true
+      },
+      {
+        "title": "Buy and Connect Domain",
+        "completed": true
+      },
+      {
+        "title": "Final Changes",
+        "completed": true
+      }
+    ]
+  },
+  {
+    "id": "proj-awais-hist-12",
+    "clientId": "client-awais",
+    "title": "Shahnawaz PK — aazaar.com",
+    "description": "Completed client website project. Domain: aazaar.com",
+    "notes": "the projects was successfully completed by abdullah and ameen",
+    "projectType": "Web Development",
+    "status": "completed",
+    "priority": "Medium",
+    "deadline": "25/08/2026",
+    "startDate": "18/08/2026",
+    "progress": 100,
+    "reference_link": "https://aazaar.com",
+    "created_at": "2026-08-18T10:28:00.000Z",
+    "tasks": [
+      {
+        "title": "Header",
+        "completed": true
+      },
+      {
+        "title": "Graphics",
+        "completed": true
+      },
+      {
+        "title": "Product Page",
+        "completed": true
+      },
+      {
+        "title": "Product Card",
+        "completed": true
+      },
+      {
+        "title": "Other Pages",
+        "completed": true
+      },
+      {
+        "title": "Footer",
+        "completed": true
+      },
+      {
+        "title": "Buy and Connect Domain",
+        "completed": true
+      },
+      {
+        "title": "Final Changes",
+        "completed": true
+      }
+    ]
+  },
+  {
+    "id": "proj-awais-hist-13",
+    "clientId": "client-awais",
+    "title": "Wearphere Gym Wear — wearphere.com",
+    "description": "Completed client website project. Domain: wearphere.com",
+    "notes": "the projects was successfully completed by abdullah and ameen",
+    "projectType": "Web Development",
+    "status": "completed",
+    "priority": "Medium",
+    "deadline": "25/08/2026",
+    "startDate": "18/08/2026",
+    "progress": 100,
+    "reference_link": "https://wearphere.com",
+    "created_at": "2026-08-18T10:27:00.000Z",
+    "tasks": [
+      {
+        "title": "Header",
+        "completed": true
+      },
+      {
+        "title": "Graphics",
+        "completed": true
+      },
+      {
+        "title": "Product Page",
+        "completed": true
+      },
+      {
+        "title": "Product Card",
+        "completed": true
+      },
+      {
+        "title": "Other Pages",
+        "completed": true
+      },
+      {
+        "title": "Footer",
+        "completed": true
+      },
+      {
+        "title": "Buy and Connect Domain",
+        "completed": true
+      },
+      {
+        "title": "Final Changes",
+        "completed": true
+      }
+    ]
+  },
+  {
+    "id": "proj-awais-hist-14",
+    "clientId": "client-awais",
+    "title": "Seebase — seebase.store",
+    "description": "Completed client website project. Domain: seebase.store",
+    "notes": "the projects was successfully completed by abdullah and ameen",
+    "projectType": "Web Development",
+    "status": "completed",
+    "priority": "Medium",
+    "deadline": "25/08/2026",
+    "startDate": "18/08/2026",
+    "progress": 100,
+    "reference_link": "https://seebase.store",
+    "created_at": "2026-08-18T10:26:00.000Z",
+    "tasks": [
+      {
+        "title": "Header",
+        "completed": true
+      },
+      {
+        "title": "Graphics",
+        "completed": true
+      },
+      {
+        "title": "Product Page",
+        "completed": true
+      },
+      {
+        "title": "Product Card",
+        "completed": true
+      },
+      {
+        "title": "Other Pages",
+        "completed": true
+      },
+      {
+        "title": "Footer",
+        "completed": true
+      },
+      {
+        "title": "Buy and Connect Domain",
+        "completed": true
+      },
+      {
+        "title": "Final Changes",
+        "completed": true
+      }
+    ]
+  },
+  {
+    "id": "proj-awais-hist-15",
+    "clientId": "client-awais",
+    "title": "MrGymWear — mrgymwear.com",
+    "description": "Completed client website project. Domain: mrgymwear.com",
+    "notes": "the projects was successfully completed by abdullah and ameen",
+    "projectType": "Web Development",
+    "status": "completed",
+    "priority": "Medium",
+    "deadline": "25/08/2026",
+    "startDate": "18/08/2026",
+    "progress": 100,
+    "reference_link": "https://mrgymwear.com",
+    "created_at": "2026-08-18T10:25:00.000Z",
+    "tasks": [
+      {
+        "title": "Header",
+        "completed": true
+      },
+      {
+        "title": "Graphics",
+        "completed": true
+      },
+      {
+        "title": "Product Page",
+        "completed": true
+      },
+      {
+        "title": "Product Card",
+        "completed": true
+      },
+      {
+        "title": "Other Pages",
+        "completed": true
+      },
+      {
+        "title": "Footer",
+        "completed": true
+      },
+      {
+        "title": "Buy and Connect Domain",
+        "completed": true
+      },
+      {
+        "title": "Final Changes",
+        "completed": true
+      }
+    ]
+  },
+  {
+    "id": "proj-awais-hist-16",
+    "clientId": "client-awais",
+    "title": "Project WL (Canada)",
+    "description": "Completed client project for Awais Agency.",
+    "notes": "the projects was successfully completed by abdullah and ameen",
+    "projectType": "Web Development",
+    "status": "completed",
+    "priority": "Medium",
+    "deadline": "25/08/2026",
+    "startDate": "18/08/2026",
+    "progress": 100,
+    "reference_link": "",
+    "created_at": "2026-08-18T10:24:00.000Z",
+    "tasks": [
+      {
+        "title": "Header",
+        "completed": true
+      },
+      {
+        "title": "Graphics",
+        "completed": true
+      },
+      {
+        "title": "Product Page",
+        "completed": true
+      },
+      {
+        "title": "Product Card",
+        "completed": true
+      },
+      {
+        "title": "Other Pages",
+        "completed": true
+      },
+      {
+        "title": "Footer",
+        "completed": true
+      },
+      {
+        "title": "Buy and Connect Domain",
+        "completed": true
+      },
+      {
+        "title": "Final Changes",
+        "completed": true
+      }
+    ]
+  },
+  {
+    "id": "proj-awais-hist-17",
+    "clientId": "client-awais",
+    "title": "Project Huggo — huggo.pk",
+    "description": "Completed client website project. Domain: huggo.pk",
+    "notes": "the projects was successfully completed by abdullah and ameen",
+    "projectType": "Web Development",
+    "status": "completed",
+    "priority": "Medium",
+    "deadline": "25/08/2026",
+    "startDate": "18/08/2026",
+    "progress": 100,
+    "reference_link": "https://huggo.pk",
+    "created_at": "2026-08-18T10:23:00.000Z",
+    "tasks": [
+      {
+        "title": "Header",
+        "completed": true
+      },
+      {
+        "title": "Graphics",
+        "completed": true
+      },
+      {
+        "title": "Product Page",
+        "completed": true
+      },
+      {
+        "title": "Product Card",
+        "completed": true
+      },
+      {
+        "title": "Other Pages",
+        "completed": true
+      },
+      {
+        "title": "Footer",
+        "completed": true
+      },
+      {
+        "title": "Buy and Connect Domain",
+        "completed": true
+      },
+      {
+        "title": "Final Changes",
+        "completed": true
+      }
+    ]
+  },
+  {
+    "id": "proj-awais-hist-18",
+    "clientId": "client-awais",
+    "title": "Project Saudi Excellence — saudiexcellence.com",
+    "description": "Completed client website project. Domain: saudiexcellence.com",
+    "notes": "the projects was successfully completed by abdullah and ameen",
+    "projectType": "Web Development",
+    "status": "completed",
+    "priority": "Medium",
+    "deadline": "25/08/2026",
+    "startDate": "18/08/2026",
+    "progress": 100,
+    "reference_link": "https://saudiexcellence.com",
+    "created_at": "2026-08-18T10:22:00.000Z",
+    "tasks": [
+      {
+        "title": "Header",
+        "completed": true
+      },
+      {
+        "title": "Graphics",
+        "completed": true
+      },
+      {
+        "title": "Product Page",
+        "completed": true
+      },
+      {
+        "title": "Product Card",
+        "completed": true
+      },
+      {
+        "title": "Other Pages",
+        "completed": true
+      },
+      {
+        "title": "Footer",
+        "completed": true
+      },
+      {
+        "title": "Buy and Connect Domain",
+        "completed": true
+      },
+      {
+        "title": "Final Changes",
+        "completed": true
+      }
+    ]
+  },
+  {
+    "id": "proj-awais-hist-19",
+    "clientId": "client-awais",
+    "title": "Onlaro Team — onlaro.com",
+    "description": "Completed client website project. Domain: onlaro.com",
+    "notes": "the projects was successfully completed by abdullah and ameen",
+    "projectType": "Web Development",
+    "status": "completed",
+    "priority": "Medium",
+    "deadline": "25/08/2026",
+    "startDate": "18/08/2026",
+    "progress": 100,
+    "reference_link": "https://onlaro.com",
+    "created_at": "2026-08-18T10:21:00.000Z",
+    "tasks": [
+      {
+        "title": "Header",
+        "completed": true
+      },
+      {
+        "title": "Graphics",
+        "completed": true
+      },
+      {
+        "title": "Product Page",
+        "completed": true
+      },
+      {
+        "title": "Product Card",
+        "completed": true
+      },
+      {
+        "title": "Other Pages",
+        "completed": true
+      },
+      {
+        "title": "Footer",
+        "completed": true
+      },
+      {
+        "title": "Buy and Connect Domain",
+        "completed": true
+      },
+      {
+        "title": "Final Changes",
+        "completed": true
+      }
+    ]
+  },
+  {
+    "id": "proj-awais-hist-20",
+    "clientId": "client-awais",
+    "title": "Project Gymvare — gymvare.pk",
+    "description": "Completed client website project. Domain: gymvare.pk",
+    "notes": "the projects was successfully completed by abdullah and ameen",
+    "projectType": "Web Development",
+    "status": "completed",
+    "priority": "Medium",
+    "deadline": "25/08/2026",
+    "startDate": "18/08/2026",
+    "progress": 100,
+    "reference_link": "https://gymvare.pk",
+    "created_at": "2026-08-18T10:20:00.000Z",
+    "tasks": [
+      {
+        "title": "Header",
+        "completed": true
+      },
+      {
+        "title": "Graphics",
+        "completed": true
+      },
+      {
+        "title": "Product Page",
+        "completed": true
+      },
+      {
+        "title": "Product Card",
+        "completed": true
+      },
+      {
+        "title": "Other Pages",
+        "completed": true
+      },
+      {
+        "title": "Footer",
+        "completed": true
+      },
+      {
+        "title": "Buy and Connect Domain",
+        "completed": true
+      },
+      {
+        "title": "Final Changes",
+        "completed": true
+      }
+    ]
+  },
+  {
+    "id": "proj-awais-hist-21",
+    "clientId": "client-awais",
+    "title": "KSA Project (Sundas) — stylinpakistan.myshopify.com",
+    "description": "Completed client website project. Domain: stylinpakistan.myshopify.com",
+    "notes": "the projects was successfully completed by abdullah and ameen",
+    "projectType": "Web Development",
+    "status": "completed",
+    "priority": "Medium",
+    "deadline": "25/08/2026",
+    "startDate": "18/08/2026",
+    "progress": 100,
+    "reference_link": "https://stylinpakistan.myshopify.com",
+    "created_at": "2026-08-18T10:19:00.000Z",
+    "tasks": [
+      {
+        "title": "Header",
+        "completed": true
+      },
+      {
+        "title": "Graphics",
+        "completed": true
+      },
+      {
+        "title": "Product Page",
+        "completed": true
+      },
+      {
+        "title": "Product Card",
+        "completed": true
+      },
+      {
+        "title": "Other Pages",
+        "completed": true
+      },
+      {
+        "title": "Footer",
+        "completed": true
+      },
+      {
+        "title": "Buy and Connect Domain",
+        "completed": true
+      },
+      {
+        "title": "Final Changes",
+        "completed": true
+      }
+    ]
+  },
+  {
+    "id": "proj-awais-hist-22",
+    "clientId": "client-awais",
+    "title": "Project Jafra Roots Co — jafrarootsco.com",
+    "description": "Completed client website project. Domain: jafrarootsco.com",
+    "notes": "the projects was successfully completed by abdullah and ameen",
+    "projectType": "Web Development",
+    "status": "completed",
+    "priority": "Medium",
+    "deadline": "25/08/2026",
+    "startDate": "18/08/2026",
+    "progress": 100,
+    "reference_link": "https://jafrarootsco.com",
+    "created_at": "2026-08-18T10:18:00.000Z",
+    "tasks": [
+      {
+        "title": "Header",
+        "completed": true
+      },
+      {
+        "title": "Graphics",
+        "completed": true
+      },
+      {
+        "title": "Product Page",
+        "completed": true
+      },
+      {
+        "title": "Product Card",
+        "completed": true
+      },
+      {
+        "title": "Other Pages",
+        "completed": true
+      },
+      {
+        "title": "Footer",
+        "completed": true
+      },
+      {
+        "title": "Buy and Connect Domain",
+        "completed": true
+      },
+      {
+        "title": "Final Changes",
+        "completed": true
+      }
+    ]
+  },
+  {
+    "id": "proj-awais-hist-23",
+    "clientId": "client-awais",
+    "title": "Project Kiddora — kiddorahub.com",
+    "description": "Completed client website project. Domain: kiddorahub.com",
+    "notes": "the projects was successfully completed by abdullah and ameen",
+    "projectType": "Web Development",
+    "status": "completed",
+    "priority": "Medium",
+    "deadline": "25/08/2026",
+    "startDate": "18/08/2026",
+    "progress": 100,
+    "reference_link": "https://kiddorahub.com",
+    "created_at": "2026-08-18T10:17:00.000Z",
+    "tasks": [
+      {
+        "title": "Header",
+        "completed": true
+      },
+      {
+        "title": "Graphics",
+        "completed": true
+      },
+      {
+        "title": "Product Page",
+        "completed": true
+      },
+      {
+        "title": "Product Card",
+        "completed": true
+      },
+      {
+        "title": "Other Pages",
+        "completed": true
+      },
+      {
+        "title": "Footer",
+        "completed": true
+      },
+      {
+        "title": "Buy and Connect Domain",
+        "completed": true
+      },
+      {
+        "title": "Final Changes",
+        "completed": true
+      }
+    ]
+  },
+  {
+    "id": "proj-awais-hist-24",
+    "clientId": "client-awais",
+    "title": "Beavy-Tale Website Conversation — beavital.com",
+    "description": "Completed client website project. Domain: beavital.com",
+    "notes": "the projects was successfully completed by abdullah and ameen",
+    "projectType": "Web Development",
+    "status": "completed",
+    "priority": "Medium",
+    "deadline": "25/08/2026",
+    "startDate": "18/08/2026",
+    "progress": 100,
+    "reference_link": "https://beavital.com",
+    "created_at": "2026-08-18T10:16:00.000Z",
+    "tasks": [
+      {
+        "title": "Header",
+        "completed": true
+      },
+      {
+        "title": "Graphics",
+        "completed": true
+      },
+      {
+        "title": "Product Page",
+        "completed": true
+      },
+      {
+        "title": "Product Card",
+        "completed": true
+      },
+      {
+        "title": "Other Pages",
+        "completed": true
+      },
+      {
+        "title": "Footer",
+        "completed": true
+      },
+      {
+        "title": "Buy and Connect Domain",
+        "completed": true
+      },
+      {
+        "title": "Final Changes",
+        "completed": true
+      }
+    ]
+  },
+  {
+    "id": "proj-awais-hist-25",
+    "clientId": "client-awais",
+    "title": "Project Amzefi — amzefi.com",
+    "description": "Completed client website project. Domain: amzefi.com",
+    "notes": "the projects was successfully completed by abdullah and ameen",
+    "projectType": "Web Development",
+    "status": "completed",
+    "priority": "Medium",
+    "deadline": "25/08/2026",
+    "startDate": "18/08/2026",
+    "progress": 100,
+    "reference_link": "https://amzefi.com",
+    "created_at": "2026-08-18T10:15:00.000Z",
+    "tasks": [
+      {
+        "title": "Header",
+        "completed": true
+      },
+      {
+        "title": "Graphics",
+        "completed": true
+      },
+      {
+        "title": "Product Page",
+        "completed": true
+      },
+      {
+        "title": "Product Card",
+        "completed": true
+      },
+      {
+        "title": "Other Pages",
+        "completed": true
+      },
+      {
+        "title": "Footer",
+        "completed": true
+      },
+      {
+        "title": "Buy and Connect Domain",
+        "completed": true
+      },
+      {
+        "title": "Final Changes",
+        "completed": true
+      }
+    ]
+  },
+  {
+    "id": "proj-awais-hist-26",
+    "clientId": "client-awais",
+    "title": "Vera&Co Website Redesigned — veranco.pk",
+    "description": "Completed client website project. Domain: veranco.pk",
+    "notes": "the projects was successfully completed by abdullah and ameen",
+    "projectType": "Web Development",
+    "status": "completed",
+    "priority": "Medium",
+    "deadline": "25/08/2026",
+    "startDate": "18/08/2026",
+    "progress": 100,
+    "reference_link": "https://veranco.pk",
+    "created_at": "2026-08-18T10:14:00.000Z",
+    "tasks": [
+      {
+        "title": "Header",
+        "completed": true
+      },
+      {
+        "title": "Graphics",
+        "completed": true
+      },
+      {
+        "title": "Product Page",
+        "completed": true
+      },
+      {
+        "title": "Product Card",
+        "completed": true
+      },
+      {
+        "title": "Other Pages",
+        "completed": true
+      },
+      {
+        "title": "Footer",
+        "completed": true
+      },
+      {
+        "title": "Buy and Connect Domain",
+        "completed": true
+      },
+      {
+        "title": "Final Changes",
+        "completed": true
+      }
+    ]
+  },
+  {
+    "id": "proj-awais-hist-27",
+    "clientId": "client-awais",
+    "title": "A-Z Fashion Mart — azfashionmart.com",
+    "description": "Completed client website project. Domain: azfashionmart.com",
+    "notes": "the projects was successfully completed by abdullah and ameen",
+    "projectType": "Web Development",
+    "status": "completed",
+    "priority": "Medium",
+    "deadline": "25/08/2026",
+    "startDate": "18/08/2026",
+    "progress": 100,
+    "reference_link": "https://azfashionmart.com",
+    "created_at": "2026-08-18T10:13:00.000Z",
+    "tasks": [
+      {
+        "title": "Header",
+        "completed": true
+      },
+      {
+        "title": "Graphics",
+        "completed": true
+      },
+      {
+        "title": "Product Page",
+        "completed": true
+      },
+      {
+        "title": "Product Card",
+        "completed": true
+      },
+      {
+        "title": "Other Pages",
+        "completed": true
+      },
+      {
+        "title": "Footer",
+        "completed": true
+      },
+      {
+        "title": "Buy and Connect Domain",
+        "completed": true
+      },
+      {
+        "title": "Final Changes",
+        "completed": true
+      }
+    ]
+  },
+  {
+    "id": "proj-awais-hist-28",
+    "clientId": "client-awais",
+    "title": "Project USA (Ali)",
+    "description": "Completed client project for Awais Agency.",
+    "notes": "the projects was successfully completed by abdullah and ameen",
+    "projectType": "Web Development",
+    "status": "completed",
+    "priority": "Medium",
+    "deadline": "25/08/2026",
+    "startDate": "18/08/2026",
+    "progress": 100,
+    "reference_link": "",
+    "created_at": "2026-08-18T10:12:00.000Z",
+    "tasks": [
+      {
+        "title": "Header",
+        "completed": true
+      },
+      {
+        "title": "Graphics",
+        "completed": true
+      },
+      {
+        "title": "Product Page",
+        "completed": true
+      },
+      {
+        "title": "Product Card",
+        "completed": true
+      },
+      {
+        "title": "Other Pages",
+        "completed": true
+      },
+      {
+        "title": "Footer",
+        "completed": true
+      },
+      {
+        "title": "Buy and Connect Domain",
+        "completed": true
+      },
+      {
+        "title": "Final Changes",
+        "completed": true
+      }
+    ]
+  },
+  {
+    "id": "proj-awais-hist-29",
+    "clientId": "client-awais",
+    "title": "Project Youngla.pk",
+    "description": "Completed client website project. Domain: youngla.pk",
+    "notes": "the projects was successfully completed by abdullah and ameen",
+    "projectType": "Web Development",
+    "status": "completed",
+    "priority": "Medium",
+    "deadline": "25/08/2026",
+    "startDate": "18/08/2026",
+    "progress": 100,
+    "reference_link": "https://youngla.pk",
+    "created_at": "2026-08-18T10:11:00.000Z",
+    "tasks": [
+      {
+        "title": "Header",
+        "completed": true
+      },
+      {
+        "title": "Graphics",
+        "completed": true
+      },
+      {
+        "title": "Product Page",
+        "completed": true
+      },
+      {
+        "title": "Product Card",
+        "completed": true
+      },
+      {
+        "title": "Other Pages",
+        "completed": true
+      },
+      {
+        "title": "Footer",
+        "completed": true
+      },
+      {
+        "title": "Buy and Connect Domain",
+        "completed": true
+      },
+      {
+        "title": "Final Changes",
+        "completed": true
+      }
+    ]
+  },
+  {
+    "id": "proj-awais-hist-30",
+    "clientId": "client-awais",
+    "title": "KSA Project (Sundas)",
+    "description": "Completed client project for Awais Agency.",
+    "notes": "the projects was successfully completed by abdullah and ameen",
+    "projectType": "Web Development",
+    "status": "completed",
+    "priority": "Medium",
+    "deadline": "25/08/2026",
+    "startDate": "18/08/2026",
+    "progress": 100,
+    "reference_link": "",
+    "created_at": "2026-08-18T10:10:00.000Z",
+    "tasks": [
+      {
+        "title": "Header",
+        "completed": true
+      },
+      {
+        "title": "Graphics",
+        "completed": true
+      },
+      {
+        "title": "Product Page",
+        "completed": true
+      },
+      {
+        "title": "Product Card",
+        "completed": true
+      },
+      {
+        "title": "Other Pages",
+        "completed": true
+      },
+      {
+        "title": "Footer",
+        "completed": true
+      },
+      {
+        "title": "Buy and Connect Domain",
+        "completed": true
+      },
+      {
+        "title": "Final Changes",
+        "completed": true
+      }
+    ]
+  },
+  {
+    "id": "proj-awais-hist-31",
+    "clientId": "client-awais",
+    "title": "Clients Daily Status & Pending Projects",
+    "description": "Completed client project for Awais Agency.",
+    "notes": "the projects was successfully completed by abdullah and ameen",
+    "projectType": "Web Development",
+    "status": "completed",
+    "priority": "Medium",
+    "deadline": "25/08/2026",
+    "startDate": "18/08/2026",
+    "progress": 100,
+    "reference_link": "",
+    "created_at": "2026-08-18T10:09:00.000Z",
+    "tasks": [
+      {
+        "title": "Header",
+        "completed": true
+      },
+      {
+        "title": "Graphics",
+        "completed": true
+      },
+      {
+        "title": "Product Page",
+        "completed": true
+      },
+      {
+        "title": "Product Card",
+        "completed": true
+      },
+      {
+        "title": "Other Pages",
+        "completed": true
+      },
+      {
+        "title": "Footer",
+        "completed": true
+      },
+      {
+        "title": "Buy and Connect Domain",
+        "completed": true
+      },
+      {
+        "title": "Final Changes",
+        "completed": true
+      }
+    ]
+  },
+  {
+    "id": "proj-awais-hist-32",
+    "clientId": "client-awais",
+    "title": "Project Australia",
+    "description": "Completed client project for Awais Agency.",
+    "notes": "the projects was successfully completed by abdullah and ameen",
+    "projectType": "Web Development",
+    "status": "completed",
+    "priority": "Medium",
+    "deadline": "25/08/2026",
+    "startDate": "18/08/2026",
+    "progress": 100,
+    "reference_link": "",
+    "created_at": "2026-08-18T10:08:00.000Z",
+    "tasks": [
+      {
+        "title": "Header",
+        "completed": true
+      },
+      {
+        "title": "Graphics",
+        "completed": true
+      },
+      {
+        "title": "Product Page",
+        "completed": true
+      },
+      {
+        "title": "Product Card",
+        "completed": true
+      },
+      {
+        "title": "Other Pages",
+        "completed": true
+      },
+      {
+        "title": "Footer",
+        "completed": true
+      },
+      {
+        "title": "Buy and Connect Domain",
+        "completed": true
+      },
+      {
+        "title": "Final Changes",
+        "completed": true
+      }
+    ]
+  },
+  {
+    "id": "proj-awais-hist-33",
+    "clientId": "client-awais",
+    "title": "Project Ireland",
+    "description": "Completed client project for Awais Agency.",
+    "notes": "the projects was successfully completed by abdullah and ameen",
+    "projectType": "Web Development",
+    "status": "completed",
+    "priority": "Medium",
+    "deadline": "25/08/2026",
+    "startDate": "18/08/2026",
+    "progress": 100,
+    "reference_link": "",
+    "created_at": "2026-08-18T10:07:00.000Z",
+    "tasks": [
+      {
+        "title": "Header",
+        "completed": true
+      },
+      {
+        "title": "Graphics",
+        "completed": true
+      },
+      {
+        "title": "Product Page",
+        "completed": true
+      },
+      {
+        "title": "Product Card",
+        "completed": true
+      },
+      {
+        "title": "Other Pages",
+        "completed": true
+      },
+      {
+        "title": "Footer",
+        "completed": true
+      },
+      {
+        "title": "Buy and Connect Domain",
+        "completed": true
+      },
+      {
+        "title": "Final Changes",
+        "completed": true
+      }
+    ]
+  },
+  {
+    "id": "proj-awais-hist-34",
+    "clientId": "client-awais",
+    "title": "Shopify Apps Reviews",
+    "description": "Completed client project for Awais Agency.",
+    "notes": "the projects was successfully completed by abdullah and ameen",
+    "projectType": "Web Development",
+    "status": "completed",
+    "priority": "Medium",
+    "deadline": "25/08/2026",
+    "startDate": "18/08/2026",
+    "progress": 100,
+    "reference_link": "",
+    "created_at": "2026-08-18T10:06:00.000Z",
+    "tasks": [
+      {
+        "title": "Header",
+        "completed": true
+      },
+      {
+        "title": "Graphics",
+        "completed": true
+      },
+      {
+        "title": "Product Page",
+        "completed": true
+      },
+      {
+        "title": "Product Card",
+        "completed": true
+      },
+      {
+        "title": "Other Pages",
+        "completed": true
+      },
+      {
+        "title": "Footer",
+        "completed": true
+      },
+      {
+        "title": "Buy and Connect Domain",
+        "completed": true
+      },
+      {
+        "title": "Final Changes",
+        "completed": true
+      }
+    ]
+  },
+  {
+    "id": "proj-awais-hist-35",
+    "clientId": "client-awais",
+    "title": "SA Ecom Services",
+    "description": "Completed client project for Awais Agency.",
+    "notes": "the projects was successfully completed by abdullah and ameen",
+    "projectType": "Web Development",
+    "status": "completed",
+    "priority": "Medium",
+    "deadline": "25/08/2026",
+    "startDate": "18/08/2026",
+    "progress": 100,
+    "reference_link": "",
+    "created_at": "2026-08-18T10:05:00.000Z",
+    "tasks": [
+      {
+        "title": "Header",
+        "completed": true
+      },
+      {
+        "title": "Graphics",
+        "completed": true
+      },
+      {
+        "title": "Product Page",
+        "completed": true
+      },
+      {
+        "title": "Product Card",
+        "completed": true
+      },
+      {
+        "title": "Other Pages",
+        "completed": true
+      },
+      {
+        "title": "Footer",
+        "completed": true
+      },
+      {
+        "title": "Buy and Connect Domain",
+        "completed": true
+      },
+      {
+        "title": "Final Changes",
+        "completed": true
+      }
+    ]
+  },
+  {
+    "id": "proj-awais-hist-36",
+    "clientId": "client-awais",
+    "title": "KSA & Pakistan Working",
+    "description": "Completed client project for Awais Agency.",
+    "notes": "the projects was successfully completed by abdullah and ameen",
+    "projectType": "Web Development",
+    "status": "completed",
+    "priority": "Medium",
+    "deadline": "25/08/2026",
+    "startDate": "18/08/2026",
+    "progress": 100,
+    "reference_link": "",
+    "created_at": "2026-08-18T10:04:00.000Z",
+    "tasks": [
+      {
+        "title": "Header",
+        "completed": true
+      },
+      {
+        "title": "Graphics",
+        "completed": true
+      },
+      {
+        "title": "Product Page",
+        "completed": true
+      },
+      {
+        "title": "Product Card",
+        "completed": true
+      },
+      {
+        "title": "Other Pages",
+        "completed": true
+      },
+      {
+        "title": "Footer",
+        "completed": true
+      },
+      {
+        "title": "Buy and Connect Domain",
+        "completed": true
+      },
+      {
+        "title": "Final Changes",
+        "completed": true
+      }
+    ]
+  },
+  {
+    "id": "proj-awais-hist-37",
+    "clientId": "client-awais",
+    "title": "MD Shadat eCommerce",
+    "description": "Completed client project for Awais Agency.",
+    "notes": "the projects was successfully completed by abdullah and ameen",
+    "projectType": "Web Development",
+    "status": "completed",
+    "priority": "Medium",
+    "deadline": "25/08/2026",
+    "startDate": "18/08/2026",
+    "progress": 100,
+    "reference_link": "",
+    "created_at": "2026-08-18T10:03:00.000Z",
+    "tasks": [
+      {
+        "title": "Header",
+        "completed": true
+      },
+      {
+        "title": "Graphics",
+        "completed": true
+      },
+      {
+        "title": "Product Page",
+        "completed": true
+      },
+      {
+        "title": "Product Card",
+        "completed": true
+      },
+      {
+        "title": "Other Pages",
+        "completed": true
+      },
+      {
+        "title": "Footer",
+        "completed": true
+      },
+      {
+        "title": "Buy and Connect Domain",
+        "completed": true
+      },
+      {
+        "title": "Final Changes",
+        "completed": true
+      }
+    ]
+  },
+  {
+    "id": "proj-awais-hist-38",
+    "clientId": "client-awais",
+    "title": "Pk Wave Project WL",
+    "description": "Completed client project for Awais Agency.",
+    "notes": "the projects was successfully completed by abdullah and ameen",
+    "projectType": "Web Development",
+    "status": "completed",
+    "priority": "Medium",
+    "deadline": "25/08/2026",
+    "startDate": "18/08/2026",
+    "progress": 100,
+    "reference_link": "",
+    "created_at": "2026-08-18T10:02:00.000Z",
+    "tasks": [
+      {
+        "title": "Header",
+        "completed": true
+      },
+      {
+        "title": "Graphics",
+        "completed": true
+      },
+      {
+        "title": "Product Page",
+        "completed": true
+      },
+      {
+        "title": "Product Card",
+        "completed": true
+      },
+      {
+        "title": "Other Pages",
+        "completed": true
+      },
+      {
+        "title": "Footer",
+        "completed": true
+      },
+      {
+        "title": "Buy and Connect Domain",
+        "completed": true
+      },
+      {
+        "title": "Final Changes",
+        "completed": true
+      }
+    ]
+  },
+  {
+    "id": "proj-awais-hist-39",
+    "clientId": "client-awais",
+    "title": "Project Amzefi",
+    "description": "Completed client project for Awais Agency.",
+    "notes": "the projects was successfully completed by abdullah and ameen",
+    "projectType": "Web Development",
+    "status": "completed",
+    "priority": "Medium",
+    "deadline": "25/08/2026",
+    "startDate": "18/08/2026",
+    "progress": 100,
+    "reference_link": "",
+    "created_at": "2026-08-18T10:01:00.000Z",
+    "tasks": [
+      {
+        "title": "Header",
+        "completed": true
+      },
+      {
+        "title": "Graphics",
+        "completed": true
+      },
+      {
+        "title": "Product Page",
+        "completed": true
+      },
+      {
+        "title": "Product Card",
+        "completed": true
+      },
+      {
+        "title": "Other Pages",
+        "completed": true
+      },
+      {
+        "title": "Footer",
+        "completed": true
+      },
+      {
+        "title": "Buy and Connect Domain",
+        "completed": true
+      },
+      {
+        "title": "Final Changes",
+        "completed": true
+      }
+    ]
   }
 ];
 
@@ -1677,17 +3789,45 @@ const db = {
           notes = COALESCE($5, notes),
           payment_details = COALESCE($6, payment_details),
           published = COALESCE($7, published),
-          items = COALESCE($8::jsonb, items)
-        WHERE id = $9
+          items = COALESCE($8::jsonb, items),
+          client_id = COALESCE($9, client_id),
+          invoice_number = COALESCE($10, invoice_number),
+          issue_date = COALESCE($11, issue_date),
+          currency = COALESCE($12, currency),
+          subtotal = COALESCE($13, subtotal),
+          tax = COALESCE($14, tax),
+          discount = COALESCE($15, discount),
+          project_ids = COALESCE($16::jsonb, project_ids),
+          project_titles = COALESCE($17::jsonb, project_titles),
+          client_name = COALESCE($18, client_name),
+          client_company = COALESCE($19, client_company),
+          client_email = COALESCE($20, client_email),
+          project_id = COALESCE($21, project_id),
+          project_title = COALESCE($22, project_title)
+        WHERE id = $23
       `, [
         updates.title || null,
-        updates.amount ? Number(updates.amount) : null,
+        updates.amount !== undefined ? Number(updates.amount) : null,
         updates.status || null,
         updates.due_date || updates.dueDate || null,
-        updates.notes || null,
+        updates.notes !== undefined ? updates.notes : null,
         updates.payment_details || updates.paymentDetails || null,
         updates.published !== undefined ? Boolean(updates.published) : null,
         updates.items ? JSON.stringify(updates.items) : null,
+        updates.client_id || updates.clientId || null,
+        updates.invoice_number || null,
+        updates.issue_date || null,
+        updates.currency || null,
+        updates.subtotal !== undefined ? Number(updates.subtotal) : null,
+        updates.tax !== undefined ? Number(updates.tax) : null,
+        updates.discount !== undefined ? Number(updates.discount) : null,
+        updates.project_ids ? JSON.stringify(updates.project_ids) : null,
+        updates.project_titles ? JSON.stringify(updates.project_titles) : null,
+        updates.client_name || null,
+        updates.client_company || null,
+        updates.client_email || null,
+        updates.project_id || null,
+        updates.project_title || null,
         id
       ]);
     }

@@ -33,3 +33,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+
+# Temporary tools & reference media
+yt-dlp.exe
+ref_video.mp4
+ref_audio.m4a
+

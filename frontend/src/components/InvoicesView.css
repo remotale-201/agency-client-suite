@@ -371,6 +371,20 @@
   transition: all 0.15s ease;
 }
 
+.inv-action-btn.export-pdf-btn {
+  background: #8D361E;
+  color: #ffffff;
+  border-color: #8D361E;
+}
+.inv-action-btn.export-pdf-btn:hover {
+  background: #732a17;
+  border-color: #732a17;
+}
+.inv-action-btn.export-pdf-btn:disabled {
+  opacity: 0.75;
+  cursor: wait;
+}
+
 .inv-action-btn.view-btn {
   background: #f8fafc;
   border-color: #cbd5e1;
@@ -379,6 +393,17 @@
 .inv-action-btn.view-btn:hover {
   background: #f1f5f9;
   border-color: #94a3b8;
+}
+
+.inv-action-btn.edit-btn {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #334155;
+}
+.inv-action-btn.edit-btn:hover {
+  background: #e2e8f0;
+  border-color: #94a3b8;
+  color: #0f172a;
 }
 
 .inv-action-btn.publish-btn {
@@ -819,6 +844,54 @@
 .inv-btn-delete-modal:hover {
   background: #ef4444;
   color: #ffffff;
+}
+
+.inv-btn-edit-modal {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  background: #334155;
+  color: #ffffff;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.inv-btn-edit-modal:hover {
+  background: #1e293b;
+  border-color: #1e293b;
+}
+
+.inv-btn-export-pdf {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 16px;
+  background: #8D361E;
+  color: #ffffff;
+  border: 1px solid #8D361E;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(141, 54, 30, 0.25);
+  transition: all 0.2s ease;
+}
+
+.inv-btn-export-pdf:hover {
+  background: #732a17;
+  border-color: #732a17;
+  box-shadow: 0 2px 6px rgba(141, 54, 30, 0.35);
+}
+
+.inv-btn-export-pdf:disabled {
+  opacity: 0.75;
+  cursor: wait;
 }
 
 .inv-btn-print {

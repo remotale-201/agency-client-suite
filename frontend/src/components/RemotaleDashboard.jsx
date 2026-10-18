@@ -354,7 +354,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
       ]);
 
       if (statsRes && typeof statsRes.totalProjects === 'number') {
-        setStats(statsRes);
+        setStats(prev => JSON.stringify(prev) === JSON.stringify(statsRes) ? prev : statsRes);
       }
       if (Array.isArray(projsRes) && projsRes.length > 0) {
         const mappedProjs = projsRes.map(p => {
@@ -365,22 +365,22 @@ export default function RemotaleDashboard({ user, onLogout }) {
             status: is100 ? 'completed' : p.status
           };
         });
-        setProjects(mappedProjs);
+        setProjects(prev => JSON.stringify(prev) === JSON.stringify(mappedProjs) ? prev : mappedProjs);
       }
       if (Array.isArray(tasksRes) && tasksRes.length > 0) {
-        setTasks(tasksRes);
+        setTasks(prev => JSON.stringify(prev) === JSON.stringify(tasksRes) ? prev : tasksRes);
       }
       if (Array.isArray(msgsRes)) {
-        setMessages(msgsRes);
+        setMessages(prev => JSON.stringify(prev) === JSON.stringify(msgsRes) ? prev : msgsRes);
       }
       if (Array.isArray(clientsRes) && clientsRes.length > 0) {
-        setClients(clientsRes);
+        setClients(prev => JSON.stringify(prev) === JSON.stringify(clientsRes) ? prev : clientsRes);
       }
       if (Array.isArray(actsRes)) {
-        setTeamActivities(actsRes);
+        setTeamActivities(prev => JSON.stringify(prev) === JSON.stringify(actsRes) ? prev : actsRes);
       }
       if (Array.isArray(invsRes)) {
-        setInvoices(invsRes);
+        setInvoices(prev => JSON.stringify(prev) === JSON.stringify(invsRes) ? prev : invsRes);
       }
 
       // If a project is currently open in detail view, keep it synchronized in real-time
@@ -568,6 +568,20 @@ export default function RemotaleDashboard({ user, onLogout }) {
       await loadData();
     } catch (err) {
       console.error('[Delete Invoice Error]', err);
+    }
+  };
+
+  const handleUpdateInvoice = async (invoiceId, invoicePayload) => {
+    setInvoices(prev => prev.map(inv => inv.id === invoiceId ? { ...inv, ...invoicePayload } : inv));
+    try {
+      const updated = await api.updateInvoice(invoiceId, invoicePayload);
+      if (updated) {
+        setInvoices(prev => prev.map(inv => inv.id === invoiceId ? { ...inv, ...updated } : inv));
+      }
+      await loadData();
+      return updated;
+    } catch (err) {
+      console.error('[Update Invoice Error]', err);
     }
   };
 
@@ -1099,6 +1113,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
             onPublishInvoice={handlePublishInvoice}
             onMarkPaidInvoice={handleMarkPaidInvoice}
             onDeleteInvoice={handleDeleteInvoice}
+            onUpdateInvoice={handleUpdateInvoice}
           />
         ) : (activeTab === 'tasks' || activeTab === 'messages' || activeTab === 'files') ? (
           <ComingSoonView
@@ -1703,6 +1718,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
             onPublishInvoice={handlePublishInvoice}
             onMarkPaidInvoice={handleMarkPaidInvoice}
             onDeleteInvoice={handleDeleteInvoice}
+            onUpdateInvoice={handleUpdateInvoice}
           />
         ) : (activeTab === 'tasks' || activeTab === 'messages' || activeTab === 'files') ? (
           <ComingSoonView
@@ -2290,6 +2306,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
               onPublishInvoice={handlePublishInvoice}
               onMarkPaidInvoice={handleMarkPaidInvoice}
               onDeleteInvoice={handleDeleteInvoice}
+              onUpdateInvoice={handleUpdateInvoice}
             />
 
             <div className="remotale-mobile-bottom-nav">
@@ -3180,6 +3197,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
               onPublishInvoice={handlePublishInvoice}
               onMarkPaidInvoice={handleMarkPaidInvoice}
               onDeleteInvoice={handleDeleteInvoice}
+              onUpdateInvoice={handleUpdateInvoice}
             />
 
             <div className="remotale-mobile-bottom-nav">

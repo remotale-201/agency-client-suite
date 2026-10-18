@@ -1,7 +1,9 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import CreateInvoiceModal from './CreateInvoiceModal';
 import InvoiceDetailModal from './InvoiceDetailModal';
+import InvoicePrintSheet from './InvoicePrintSheet';
 import LetterAvatar from './LetterAvatar';
+import { exportElementToPdf } from '../utils/pdfExport';
 import './InvoicesView.css';
 
 export default function InvoicesView({
@@ -13,13 +15,37 @@ export default function InvoicesView({
   onCreateInvoice,
   onPublishInvoice,
   onMarkPaidInvoice,
-  onDeleteInvoice
+  onDeleteInvoice,
+  onUpdateInvoice
 }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [clientFilter, setClientFilter] = useState('all');
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
+  const [editingInvoice, setEditingInvoice] = useState(null);
+  const [exportingInv, setExportingInv] = useState(null);
+  const [exportingInvId, setExportingInvId] = useState(null);
+  const offscreenExportRef = useRef(null);
+
+  const handleDownloadInvoicePdf = async (inv) => {
+    if (exportingInvId) return;
+    try {
+      setExportingInvId(inv.id);
+      setExportingInv(inv);
+      // Wait for React to render offscreen sheet
+      await new Promise(r => setTimeout(r, 80));
+      if (offscreenExportRef.current) {
+        const filename = `Invoice-${inv.invoice_number || 'INV-2026-08'}.pdf`;
+        await exportElementToPdf(offscreenExportRef.current, filename);
+      }
+    } catch (err) {
+      console.error('[Quick PDF Export Error]', err);
+    } finally {
+      setExportingInv(null);
+      setExportingInvId(null);
+    }
+  };
 
   // Filter invoices based on user role and filters
   const filteredInvoices = useMemo(() => {
@@ -90,6 +116,16 @@ export default function InvoicesView({
     if (onCreateInvoice) {
       await onCreateInvoice(payload, publishImmediately);
     }
+  };
+
+  const handleEditSubmit = async (payload, publishImmediately, invoiceId) => {
+    if (onUpdateInvoice && invoiceId) {
+      await onUpdateInvoice(invoiceId, payload);
+      if (selectedInvoice && selectedInvoice.id === invoiceId) {
+        setSelectedInvoice(prev => ({ ...prev, ...payload }));
+      }
+    }
+    setEditingInvoice(null);
   };
 
   const handlePublishClick = async (invoiceId) => {
@@ -346,13 +382,36 @@ export default function InvoicesView({
                   <div className="inv-card-actions">
                     <button
                       type="button"
+                      className="inv-action-btn export-pdf-btn"
+                      onClick={() => handleDownloadInvoicePdf(inv)}
+                      disabled={exportingInvId === inv.id}
+                      title="Download Invoice as PDF"
+                    >
+                      <span>{exportingInvId === inv.id ? '⏳' : '📥'}</span>
+                      <span>{exportingInvId === inv.id ? 'Exporting...' : 'Export PDF'}</span>
+                    </button>
+
+                    <button
+                      type="button"
                       className="inv-action-btn view-btn"
                       onClick={() => setSelectedInvoice(inv)}
-                      title="View & Export PDF"
+                      title="View & Print Invoice"
                     >
-                      <span>🖨️</span>
-                      <span>View & PDF</span>
+                      <span>👁️</span>
+                      <span>View</span>
                     </button>
+
+                    {isAdmin && (
+                      <button
+                        type="button"
+                        className="inv-action-btn edit-btn"
+                        onClick={() => setEditingInvoice(inv)}
+                        title="Edit this invoice"
+                      >
+                        <span>✏️</span>
+                        <span>Edit</span>
+                      </button>
+                    )}
 
                     {isAdmin && isDraft && (
                       <button
@@ -413,8 +472,28 @@ export default function InvoicesView({
           onPublish={handlePublishClick}
           onMarkPaid={handlePaidClick}
           onDelete={handleDeleteClick}
+          onEdit={(inv) => setEditingInvoice(inv)}
           isAdmin={isAdmin}
         />
+      )}
+
+      {/* Edit Invoice Modal */}
+      {editingInvoice && (
+        <CreateInvoiceModal
+          isOpen={Boolean(editingInvoice)}
+          initialInvoice={editingInvoice}
+          onClose={() => setEditingInvoice(null)}
+          onSubmit={handleEditSubmit}
+          clients={clients}
+          projects={projects}
+        />
+      )}
+
+      {/* Hidden Offscreen Container for Direct PDF Exports */}
+      {exportingInv && (
+        <div style={{ position: 'fixed', left: '-9999px', top: '-9999px', width: '800px', pointerEvents: 'none', zIndex: -100 }}>
+          <InvoicePrintSheet ref={offscreenExportRef} invoice={exportingInv} clients={clients} />
+        </div>
       )}
     </div>
   );

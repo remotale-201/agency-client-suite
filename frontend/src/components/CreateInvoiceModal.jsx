@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './InvoicesView.css';
 
 export default function CreateInvoiceModal({
@@ -6,7 +6,8 @@ export default function CreateInvoiceModal({
   onClose,
   onSubmit,
   clients = [],
-  projects = []
+  projects = [],
+  initialInvoice = null
 }) {
   const [selectedClientId, setSelectedClientId] = useState('');
   const [selectedProjectIds, setSelectedProjectIds] = useState([]);
@@ -35,26 +36,77 @@ export default function CreateInvoiceModal({
   const [discount, setDiscount] = useState(0);
   const [tax, setTax] = useState(0);
 
-  // Initialize dates and invoice number
+  const prevIsOpenRef = useRef(false);
+  const prevInvoiceIdRef = useRef(null);
+
+  // Initialize dates and invoice number, or populate from initialInvoice
   useEffect(() => {
-    if (isOpen) {
-      const now = new Date();
-      const issueStr = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
-      
-      const due = new Date();
-      due.setDate(due.getDate() + 10);
-      const dueStr = `${String(due.getDate()).padStart(2, '0')}/${String(due.getMonth() + 1).padStart(2, '0')}/${due.getFullYear()}`;
-      
-      setIssueDate(issueStr);
-      setDueDate(dueStr);
-      setInvoiceNumber(`INV-${now.getFullYear()}-${Math.floor(100 + Math.random() * 900)}`);
-      
-      // Default to first client if available
-      if (clients.length > 0 && !selectedClientId) {
-        setSelectedClientId(clients[0].id);
+    const justOpened = isOpen && !prevIsOpenRef.current;
+    const currentInvoiceId = initialInvoice?.id ?? (initialInvoice ? 'edit-mode' : null);
+    const invoiceChanged = currentInvoiceId !== prevInvoiceIdRef.current;
+
+    if (isOpen && (justOpened || invoiceChanged)) {
+      if (initialInvoice) {
+        setSelectedClientId(initialInvoice.client_id || initialInvoice.clientId || '');
+        const pIds = Array.isArray(initialInvoice.project_ids) && initialInvoice.project_ids.length > 0
+          ? initialInvoice.project_ids
+          : (initialInvoice.project_id ? [initialInvoice.project_id] : []);
+        setSelectedProjectIds(pIds);
+        setInvoiceTitle(initialInvoice.title || '');
+        setCurrency(initialInvoice.currency || 'PKR');
+        setInvoiceNumber(initialInvoice.invoice_number || '');
+        setIssueDate(initialInvoice.issue_date || '');
+        setDueDate(initialInvoice.due_date || '');
+        setNotes(initialInvoice.notes || '');
+        setPaymentDetails(
+          initialInvoice.payment_details ||
+          'Bank: Meezan Bank / HBL\nAccount Title: Abdullah\nAccount No: 0102-0103948291\nEasyPaisa / JazzCash: 0300-1234567\nWise / USDT (TRC-20): TXYZ981724918237918'
+        );
+        if (Array.isArray(initialInvoice.items) && initialInvoice.items.length > 0) {
+          setItems(initialInvoice.items.map(it => ({
+            description: it.description || '',
+            project_id: it.project_id || '',
+            project_title: it.project_title || '',
+            qty: Number(it.qty) || 1,
+            rate: Number(it.rate) || 0,
+            amount: Number(it.amount) || ((Number(it.qty) || 1) * (Number(it.rate) || 0))
+          })));
+        } else {
+          setItems([
+            {
+              description: initialInvoice.title || 'Project Milestone Deliverable',
+              project_id: initialInvoice.project_id || '',
+              project_title: initialInvoice.project_title || '',
+              qty: 1,
+              rate: Number(initialInvoice.amount) || 85000,
+              amount: Number(initialInvoice.amount) || 85000
+            }
+          ]);
+        }
+        setDiscount(Number(initialInvoice.discount) || 0);
+        setTax(Number(initialInvoice.tax) || 0);
+      } else {
+        const now = new Date();
+        const issueStr = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
+        
+        const due = new Date();
+        due.setDate(due.getDate() + 10);
+        const dueStr = `${String(due.getDate()).padStart(2, '0')}/${String(due.getMonth() + 1).padStart(2, '0')}/${due.getFullYear()}`;
+        
+        setIssueDate(issueStr);
+        setDueDate(dueStr);
+        setInvoiceNumber(`INV-${now.getFullYear()}-${Math.floor(100 + Math.random() * 900)}`);
+        
+        // Default to first client if available
+        if (clients.length > 0 && !selectedClientId) {
+          setSelectedClientId(clients[0].id);
+        }
       }
     }
-  }, [isOpen, clients]);
+
+    prevIsOpenRef.current = isOpen;
+    prevInvoiceIdRef.current = currentInvoiceId;
+  }, [isOpen, initialInvoice]);
 
   // Filter projects by selected client
   const clientProjects = projects.filter(p => {
@@ -62,9 +114,9 @@ export default function CreateInvoiceModal({
     return pCId === selectedClientId;
   });
 
-  // When client changes, auto-select first project if available
+  // When client changes, auto-select first project if available (create mode only)
   useEffect(() => {
-    if (clientProjects.length > 0 && selectedProjectIds.length === 0) {
+    if (!initialInvoice && clientProjects.length > 0 && selectedProjectIds.length === 0) {
       const firstProj = clientProjects[0];
       setSelectedProjectIds([firstProj.id]);
       setInvoiceTitle(`${firstProj.title} Invoice`);
@@ -79,7 +131,7 @@ export default function CreateInvoiceModal({
         }
       ]);
     }
-  }, [selectedClientId]);
+  }, [selectedClientId, initialInvoice]);
 
   // Toggle a project selection
   const handleToggleProject = (projId) => {
@@ -235,8 +287,8 @@ export default function CreateInvoiceModal({
       tax: numTax,
       discount: numDiscount,
       amount: grandTotal,
-      status: publishImmediately ? 'published' : 'draft',
-      published: publishImmediately,
+      status: initialInvoice ? (publishImmediately ? 'published' : initialInvoice.status) : (publishImmediately ? 'published' : 'draft'),
+      published: initialInvoice ? (publishImmediately || Boolean(initialInvoice.published)) : Boolean(publishImmediately),
       issue_date: issueDate,
       due_date: dueDate,
       notes: notes || 'Thank you for your business. We look forward to reaching the next milestone.',
@@ -253,10 +305,10 @@ export default function CreateInvoiceModal({
 
     setIsSubmitting(true);
     try {
-      await onSubmit(invoicePayload, publishImmediately);
+      await onSubmit(invoicePayload, publishImmediately, initialInvoice?.id);
       onClose();
     } catch (err) {
-      alert(err.message || 'Failed to create invoice');
+      alert(err.message || 'Failed to save invoice');
     } finally {
       setIsSubmitting(false);
     }
@@ -270,9 +322,13 @@ export default function CreateInvoiceModal({
         {/* Header */}
         <div className="inv-create-header">
           <div>
-            <h2 className="inv-create-title">Generate New Invoice</h2>
+            <h2 className="inv-create-title">
+              {initialInvoice ? `Edit Invoice (${initialInvoice.invoice_number || 'Draft'})` : 'Generate New Invoice'}
+            </h2>
             <p className="inv-create-sub">
-              Create an itemized bill for one or multiple projects with custom milestone pricing and instant client publication.
+              {initialInvoice
+                ? 'Update client assignment, project deliverables, item pricing, taxes, or payment terms.'
+                : 'Create an itemized bill for one or multiple projects with custom milestone pricing and instant client publication.'}
             </p>
           </div>
           <button type="button" className="inv-btn-close" onClick={onClose}>✕</button>
@@ -619,18 +675,20 @@ export default function CreateInvoiceModal({
               onClick={() => handleSave(false)}
               disabled={isSubmitting}
             >
-              Save as Draft
+              {isSubmitting ? 'Saving...' : initialInvoice ? 'Save Changes' : 'Save as Draft'}
             </button>
 
-            <button
-              type="button"
-              className="inv-btn-submit-publish"
-              onClick={() => handleSave(true)}
-              disabled={isSubmitting}
-            >
-              <span>🚀</span>
-              <span>{isSubmitting ? 'Publishing...' : 'Publish to Client Now'}</span>
-            </button>
+            {(!initialInvoice || initialInvoice.status === 'draft') && (
+              <button
+                type="button"
+                className="inv-btn-submit-publish"
+                onClick={() => handleSave(true)}
+                disabled={isSubmitting}
+              >
+                <span>🚀</span>
+                <span>{isSubmitting ? 'Publishing...' : initialInvoice ? 'Save & Publish to Client' : 'Publish to Client Now'}</span>
+              </button>
+            )}
           </div>
         </div>
       </div>

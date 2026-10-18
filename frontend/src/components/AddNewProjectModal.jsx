@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import './AddNewProjectModal.css';
 import { RemotaleLogo } from './RemotaleAuthFlow';
 
@@ -136,51 +136,64 @@ export default function AddNewProjectModal({
   const [notes, setNotes] = useState(projectToEdit?.notes || '');
   const [loading, setLoading] = useState(false);
 
-  // Sync state whenever projectToEdit or isOpen changes
+  const prevIsOpenRef = useRef(false);
+  const prevProjectToEditIdRef = useRef(null);
+
+  // Sync state ONLY when modal transitions from closed -> open, or when projectToEdit changes
   useEffect(() => {
-    if (projectToEdit) {
-      setTitle(projectToEdit.title || '');
-      setDescription(projectToEdit.description || '');
-      setSelectedClientId(projectToEdit.client_id || projectToEdit.clientId || (isAdmin && clients.length > 0 ? clients[0].id : currentUser?.id || 'client-1'));
-      setProjectType(projectToEdit.project_type || projectToEdit.projectType || 'Web Development');
-      setStartDate(projectToEdit.start_date || projectToEdit.startDate || todayStr);
-      setDeadline(projectToEdit.deadline || defaultDeadlineStr);
-      setPriority(projectToEdit.priority || 'Medium');
-      setStatus(projectToEdit.status || 'in-progress');
-      setProgress(projectToEdit.progress ?? (projectToEdit.status === 'completed' ? 100 : 70));
-      if (projectToEdit.credentials) {
-        try {
-          const parsed = typeof projectToEdit.credentials === 'string' ? JSON.parse(projectToEdit.credentials) : projectToEdit.credentials;
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            setCredentialsList(parsed);
-          } else {
+    const justOpened = isOpen && !prevIsOpenRef.current;
+    const currentProjectId = projectToEdit?.id ?? null;
+    const projectChanged = currentProjectId !== prevProjectToEditIdRef.current;
+
+    if (isOpen && (justOpened || projectChanged)) {
+      if (projectToEdit) {
+        setTitle(projectToEdit.title || '');
+        setDescription(projectToEdit.description || '');
+        setSelectedClientId(projectToEdit.client_id || projectToEdit.clientId || (isAdmin && clients.length > 0 ? clients[0].id : currentUser?.id || 'client-1'));
+        setProjectType(projectToEdit.project_type || projectToEdit.projectType || 'Web Development');
+        setStartDate(projectToEdit.start_date || projectToEdit.startDate || todayStr);
+        setDeadline(projectToEdit.deadline || defaultDeadlineStr);
+        setPriority(projectToEdit.priority || 'Medium');
+        setStatus(projectToEdit.status || 'in-progress');
+        setProgress(projectToEdit.progress ?? (projectToEdit.status === 'completed' ? 100 : 70));
+        if (projectToEdit.credentials) {
+          try {
+            const parsed = typeof projectToEdit.credentials === 'string' ? JSON.parse(projectToEdit.credentials) : projectToEdit.credentials;
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              setCredentialsList(parsed);
+            } else {
+              setCredentialsList([{ platform: '', username: '', password: '', showPw: false }]);
+            }
+          } catch (e) {
             setCredentialsList([{ platform: '', username: '', password: '', showPw: false }]);
           }
-        } catch (e) {
+        } else {
           setCredentialsList([{ platform: '', username: '', password: '', showPw: false }]);
         }
+        setReferenceLink(projectToEdit.reference_link || projectToEdit.referenceLink || '');
+        setNotes(projectToEdit.notes || '');
+        setUploadedFiles([]);
       } else {
+        // Reset only on fresh open of "Add New Project" modal
+        setTitle('');
+        setDescription('');
+        setSelectedClientId(isAdmin && clients.length > 0 ? clients[0].id : currentUser?.id || 'client-1');
+        setProjectType('Web Development');
+        setStartDate(todayStr);
+        setDeadline(defaultDeadlineStr);
+        setPriority('Medium');
+        setStatus('in-progress');
+        setProgress(70);
         setCredentialsList([{ platform: '', username: '', password: '', showPw: false }]);
+        setReferenceLink('');
+        setUploadedFiles([]);
+        setNotes('');
       }
-      setReferenceLink(projectToEdit.reference_link || projectToEdit.referenceLink || '');
-      setNotes(projectToEdit.notes || '');
-      setUploadedFiles([]);
-    } else {
-      setTitle('');
-      setDescription('');
-      setSelectedClientId(isAdmin && clients.length > 0 ? clients[0].id : currentUser?.id || 'client-1');
-      setProjectType('Web Development');
-      setStartDate(todayStr);
-      setDeadline(defaultDeadlineStr);
-      setPriority('Medium');
-      setStatus('in-progress');
-      setProgress(70);
-      setCredentialsList([{ platform: '', username: '', password: '', showPw: false }]);
-      setReferenceLink('');
-      setUploadedFiles([]);
-      setNotes('');
     }
-  }, [projectToEdit, isOpen, isAdmin, clients, currentUser]);
+
+    prevIsOpenRef.current = isOpen;
+    prevProjectToEditIdRef.current = currentProjectId;
+  }, [isOpen, projectToEdit]);
 
   // Add another credential row
   const handleAddCredential = () => {
@@ -381,7 +394,6 @@ export default function AddNewProjectModal({
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 required
-                autoFocus
               />
             </div>
 
