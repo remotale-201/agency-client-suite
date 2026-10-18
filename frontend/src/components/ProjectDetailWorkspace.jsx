@@ -344,13 +344,34 @@ export default function ProjectDetailWorkspace({
     return (project?.progress !== undefined && project?.progress !== null) ? Number(project.progress) : 0;
   }, [localTasks, project?.progress]);
 
+  // Dynamic effective status: strictly driven by tasks completion
+  const hasTasks = localTasks && localTasks.length > 0;
+  const isFullyCompleted = hasTasks ? (calculatedProgress >= 100) : (project?.status === 'completed' || Number(project?.progress || 0) >= 100);
+  const effectiveStatus = isFullyCompleted ? 'completed' : (project?.status === 'under-review' ? 'under-review' : 'in-progress');
+  const effectiveStatusLabel = isFullyCompleted ? 'Completed' : (project?.status === 'under-review' ? 'Under Review' : 'In Progress');
+
   const handleToggleTaskInternal = (taskId, currentCompleted) => {
     const nextCompleted = !currentCompleted;
     // 1. Instant optimistic local UI update with 0 latency
-    setLocalTasks(prev => prev.map(t => t.id === taskId ? { ...t, completed: nextCompleted } : t));
+    const nextTasks = localTasks.map(t => t.id === taskId ? { ...t, completed: nextCompleted } : t);
+    setLocalTasks(nextTasks);
+
+    const total = nextTasks.length;
+    const done = nextTasks.filter(t => t.completed).length;
+    const newProgress = total > 0 ? Math.round((done / total) * 100) : 0;
+    const newStatus = (total > 0 && done === total) ? 'completed' : 'in-progress';
+
     // 2. Propagate to parent handler to sync to PostgreSQL and dashboard
     if (onToggleTask) {
       onToggleTask(taskId, currentCompleted);
+    }
+
+    if (onUpdateProject && project?.id) {
+      onUpdateProject(project.id, {
+        progress: newProgress,
+        status: newStatus,
+        tasks: nextTasks
+      });
     }
   };
 
@@ -420,15 +441,43 @@ export default function ProjectDetailWorkspace({
 
   const handleCreateTask = async (e) => {
     e.preventDefault();
-    if (!newTaskTitle.trim()) return;
+    const taskName = newTaskTitle.trim();
+    if (!taskName) return;
+
+    const newTask = {
+      id: `task-${Date.now()}`,
+      projectId: project?.id,
+      project_id: project?.id,
+      title: taskName,
+      dueDate: project?.deadline || '25/10/2026',
+      completed: false
+    };
+
+    const nextTasks = [...localTasks, newTask];
+    setLocalTasks(nextTasks);
+    setNewTaskTitle('');
+    setIsAddingTask(false);
+
+    // Dynamic progress reduction & status set to in-progress
+    const total = nextTasks.length;
+    const done = nextTasks.filter(t => t.completed).length;
+    const newProgress = Math.round((done / total) * 100);
+    const newStatus = (total > 0 && done === total) ? 'completed' : 'in-progress';
+
     if (onAddTask) {
       await onAddTask({
         projectId: project?.id,
-        title: newTaskTitle.trim(),
-        dueDate: 'Oct 25, 2024'
+        title: newTask.title,
+        dueDate: newTask.dueDate
       });
-      setNewTaskTitle('');
-      setIsAddingTask(false);
+    }
+
+    if (onUpdateProject && project?.id) {
+      await onUpdateProject(project.id, {
+        progress: newProgress,
+        status: newStatus,
+        tasks: nextTasks
+      });
     }
   };
 
@@ -566,9 +615,9 @@ export default function ProjectDetailWorkspace({
           </div>
 
           <div className="pdw-hero-info">
-            <div className={`pdw-status-pill ${calculatedProgress >= 100 || project?.status === 'completed' ? 'completed' : (project?.status || 'in-progress')}`}>
+            <div className={`pdw-status-pill ${effectiveStatus}`}>
               <span className="pdw-status-dot" />
-              <span>{calculatedProgress >= 100 || project?.status === 'completed' ? 'Completed' : (project?.status === 'under-review' ? 'Under Review' : 'In Progress')}</span>
+              <span>{effectiveStatusLabel}</span>
             </div>
 
             <h1 className="pdw-hero-title">{project?.title || 'E-commerce Website'}</h1>
@@ -724,8 +773,8 @@ export default function ProjectDetailWorkspace({
               <div>
                 <div className="pdw-info-lbl">Status</div>
                 <div className="pdw-info-icon-val">
-                  <span className={`pdw-info-dot-status ${calculatedProgress >= 100 || project?.status === 'completed' ? 'completed' : (project?.status || 'in-progress')}`} />
-                  <span>{calculatedProgress >= 100 || project?.status === 'completed' ? 'Completed' : (project?.status === 'under-review' ? 'Under Review' : 'In Progress')}</span>
+                  <span className={`pdw-info-dot-status ${effectiveStatus}`} />
+                  <span>{effectiveStatusLabel}</span>
                 </div>
               </div>
 
