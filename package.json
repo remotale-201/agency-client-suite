@@ -1,7 +1,7 @@
 {
   "name": "agency-client-suite",
   "version": "1.0.0",
-  "description": "Premium Multi-Client Agency Portal & Management System",
+  "description": "ByteForge Suite - Multi-Client Agency Portal & Management System",
   "private": true,
   "engines": {
     "node": ">=18.0.0"

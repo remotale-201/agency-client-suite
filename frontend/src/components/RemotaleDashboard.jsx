@@ -939,7 +939,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
           {/* Brand */}
           <div className="remotale-sidebar-brand">
             <RemotaleLogo size={24} />
-            <span className="remotale-sidebar-brand-name">Remotale</span>
+            <span className="remotale-sidebar-brand-name">ByteForge Suite</span>
           </div>
 
           {/* Navigation Items */}
@@ -1513,7 +1513,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
           {/* Brand */}
           <div className="remotale-sidebar-brand">
             <RemotaleLogo size={24} />
-            <span className="remotale-sidebar-brand-name">Remotale</span>
+            <span className="remotale-sidebar-brand-name">ByteForge Suite</span>
           </div>
 
           {/* Navigation Items */}

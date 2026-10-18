@@ -298,7 +298,7 @@ export default function RemotaleAuthFlow({ onLogin, onRegister, initialPortalTok
           {/* Top Brand */}
           <div className="remotale-welcome-top-brand">
             <RemotaleLogo size={28} />
-            <span className="remotale-welcome-brand-text">Remotale</span>
+            <span className="remotale-welcome-brand-text">ByteForge Suite</span>
           </div>
 
           {/* Hero Headline */}
