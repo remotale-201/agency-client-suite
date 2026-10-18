@@ -594,19 +594,29 @@ export default function RemotaleDashboard({ user, onLogout }) {
         projectId: targetProjId,
         clientId: targetClientId,
         title,
-        dueDate: dueDate || 'Oct 25, 2024'
+        dueDate: dueDate || '25/10/2026'
       });
       setTasks(prev => [created, ...prev]);
+
+      const updateProjWithNewTask = (p) => {
+        const nextTasks = [...(p.tasks || []), created];
+        const total = nextTasks.length;
+        const done = nextTasks.filter(t => t.completed).length;
+        const newProgress = total > 0 ? Math.round((done / total) * 100) : 0;
+        const newStatus = (total > 0 && done === total) ? 'completed' : 'in-progress';
+        return {
+          ...p,
+          tasks: nextTasks,
+          progress: newProgress,
+          status: newStatus
+        };
+      };
+
       if (selectedProject) {
-        setSelectedProject(prev => ({
-          ...prev,
-          tasks: [...(prev.tasks || []), created]
-        }));
+        setSelectedProject(prev => updateProjWithNewTask(prev));
       }
-      setProjects(prev => prev.map(p => p.id === targetProjId ? {
-        ...p,
-        tasks: [...(p.tasks || []), created]
-      } : p));
+      setProjects(prev => prev.map(p => p.id === targetProjId ? updateProjWithNewTask(p) : p));
+      api.updateProject(targetProjId, { status: 'in-progress' }).catch(() => {});
       await loadData();
     } catch (err) {
       console.error('Error adding task:', err);
@@ -620,45 +630,47 @@ export default function RemotaleDashboard({ user, onLogout }) {
     // 1. Optimistically update tasks state
     setTasks(prev => prev.map(t => t.id === taskId ? { ...t, completed: nextCompleted } : t));
 
-    // 2. Optimistically update selectedProject state and recalculate progress percentage
-    setSelectedProject(prev => {
-      if (!prev) return null;
-      const updatedTasks = (prev.tasks || []).map(t => t.id === taskId ? { ...t, completed: nextCompleted } : t);
-      const total = updatedTasks.length;
-      const done = updatedTasks.filter(t => t.completed).length;
-      const newProgress = total > 0 ? Math.round((done / total) * 100) : prev.progress;
-      const isCompleted = newProgress >= 100 || (total > 0 && done === total);
-      const newStatus = isCompleted ? 'completed' : (prev.status === 'completed' ? 'in-progress' : prev.status);
-      return {
-        ...prev,
-        progress: isCompleted ? 100 : newProgress,
-        status: newStatus,
-        tasks: updatedTasks
-      };
-    });
-
-    // 3. Optimistically update projects state with new tasks & progress
-    setProjects(prev => prev.map(p => {
-      const hasTask = (p.tasks || []).some(t => t.id === taskId);
-      if (!hasTask) return p;
+    const recalculateProj = (p) => {
       const updatedTasks = (p.tasks || []).map(t => t.id === taskId ? { ...t, completed: nextCompleted } : t);
       const total = updatedTasks.length;
       const done = updatedTasks.filter(t => t.completed).length;
       const newProgress = total > 0 ? Math.round((done / total) * 100) : p.progress;
-      const isCompleted = newProgress >= 100 || (total > 0 && done === total);
-      const newStatus = isCompleted ? 'completed' : (p.status === 'completed' ? 'in-progress' : p.status);
+      const isCompleted = total > 0 && done === total;
+      const newStatus = isCompleted ? 'completed' : 'in-progress';
       return {
         ...p,
-        progress: isCompleted ? 100 : newProgress,
+        progress: newProgress,
         status: newStatus,
         tasks: updatedTasks
       };
+    };
+
+    // 2. Optimistically update selectedProject state and recalculate progress percentage
+    setSelectedProject(prev => {
+      if (!prev) return null;
+      return recalculateProj(prev);
+    });
+
+    // 3. Optimistically update projects state with new tasks & progress
+    let targetProjId = null;
+    let targetStatus = 'in-progress';
+    let targetProgress = 0;
+    setProjects(prev => prev.map(p => {
+      const hasTask = (p.tasks || []).some(t => t.id === taskId);
+      if (!hasTask) return p;
+      const updated = recalculateProj(p);
+      targetProjId = updated.id;
+      targetStatus = updated.status;
+      targetProgress = updated.progress;
+      return updated;
     }));
 
     // 4. Send to backend database
     try {
       await api.toggleTask(taskId, nextCompleted);
-      // Soft sync in background
+      if (targetProjId) {
+        api.updateProject(targetProjId, { status: targetStatus, progress: targetProgress }).catch(() => {});
+      }
       api.getProjects().then(setProjects).catch(() => {});
       api.getTasks().then(setTasks).catch(() => {});
     } catch (err) {
@@ -953,7 +965,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
           {/* Brand */}
           <div className="remotale-sidebar-brand">
             <RemotaleLogo size={24} />
-            <span className="remotale-sidebar-brand-name">Remotale</span>
+            <span className="remotale-sidebar-brand-name">ByteForge Suite</span>
           </div>
 
           {/* Navigation Items */}
@@ -1528,7 +1540,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
           {/* Brand */}
           <div className="remotale-sidebar-brand">
             <RemotaleLogo size={24} />
-            <span className="remotale-sidebar-brand-name">Remotale</span>
+            <span className="remotale-sidebar-brand-name">ByteForge Suite</span>
           </div>
 
           {/* Navigation Items */}
@@ -1768,10 +1780,15 @@ export default function RemotaleDashboard({ user, onLogout }) {
                 }}
                 title="Switch between Super Admin and specific Client Portals"
               >
-                <option value="admin" style={{ background: '#0f172a', color: '#ffffff' }}>👑 Super Admin (All 10 Projects)</option>
-                <option value="client-awais" style={{ background: '#0f172a', color: '#ffffff' }}>👤 Client Portal: Awais (8 Projects)</option>
-                <option value="client-afshal" style={{ background: '#0f172a', color: '#ffffff' }}>👤 Client Portal: Afshal (2 Projects)</option>
-                <option value="client-1" style={{ background: '#0f172a', color: '#ffffff' }}>👤 Client Portal: Ali Khan</option>
+                <option value="admin" style={{ background: '#0f172a', color: '#ffffff' }}>👑 Super Admin (All {projects.length} Projects)</option>
+                {clients.map(cl => {
+                  const count = projects.filter(p => (p.client_id === cl.id || p.clientId === cl.id)).length;
+                  return (
+                    <option key={cl.id} value={cl.id} style={{ background: '#0f172a', color: '#ffffff' }}>
+                      👤 Client Portal: {cl.name} ({count} {count === 1 ? 'Project' : 'Projects'})
+                    </option>
+                  );
+                })}
               </select>
             )}
 

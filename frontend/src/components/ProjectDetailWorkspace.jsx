@@ -344,23 +344,73 @@ export default function ProjectDetailWorkspace({
     return (project?.progress !== undefined && project?.progress !== null) ? Number(project.progress) : 0;
   }, [localTasks, project?.progress]);
 
+  // Dynamic effective status: strictly driven by tasks completion
+  const hasTasks = localTasks && localTasks.length > 0;
+  const isFullyCompleted = hasTasks ? (calculatedProgress >= 100) : (project?.status === 'completed' || Number(project?.progress || 0) >= 100);
+  const effectiveStatus = isFullyCompleted ? 'completed' : (project?.status === 'under-review' ? 'under-review' : 'in-progress');
+  const effectiveStatusLabel = isFullyCompleted ? 'Completed' : (project?.status === 'under-review' ? 'Under Review' : 'In Progress');
+
   const handleToggleTaskInternal = (taskId, currentCompleted) => {
     const nextCompleted = !currentCompleted;
     // 1. Instant optimistic local UI update with 0 latency
-    setLocalTasks(prev => prev.map(t => t.id === taskId ? { ...t, completed: nextCompleted } : t));
+    const nextTasks = localTasks.map(t => t.id === taskId ? { ...t, completed: nextCompleted } : t);
+    setLocalTasks(nextTasks);
+
+    const total = nextTasks.length;
+    const done = nextTasks.filter(t => t.completed).length;
+    const newProgress = total > 0 ? Math.round((done / total) * 100) : 0;
+    const newStatus = (total > 0 && done === total) ? 'completed' : 'in-progress';
+
     // 2. Propagate to parent handler to sync to PostgreSQL and dashboard
     if (onToggleTask) {
       onToggleTask(taskId, currentCompleted);
     }
+
+    if (onUpdateProject && project?.id) {
+      onUpdateProject(project.id, {
+        progress: newProgress,
+        status: newStatus,
+        tasks: nextTasks
+      });
+    }
   };
 
-  // Safe files list matching Image 2
-  const filesList = [
-    { id: 'f-1', name: 'Homepage Design.fig', meta: 'Figma File • 12 MB', date: '12 Oct 2024', type: 'figma' },
-    { id: 'f-2', name: 'Product Banners.zip', meta: 'ZIP File • 24 MB', date: '14 Oct 2024', type: 'zip' },
-    { id: 'f-3', name: 'Logo & Brand Kit.rar', meta: 'RAR File • 8 MB', date: '15 Oct 2024', type: 'rar' },
-    { id: 'f-4', name: 'Reference Website.url', meta: 'URL Link', date: '16 Oct 2024', type: 'url' }
-  ];
+  // Dynamic files & assets state (Empty by default until user uploads)
+  const [localFiles, setLocalFiles] = useState(() => project?.files || []);
+  useEffect(() => {
+    setLocalFiles(project?.files || []);
+  }, [project?.id, project?.files]);
+
+  const handleFileUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const ext = (file.name.split('.').pop() || '').toLowerCase();
+    let type = 'zip';
+    if (['fig', 'figma'].includes(ext)) type = 'figma';
+    else if (['rar'].includes(ext)) type = 'rar';
+    else if (['url', 'link', 'html'].includes(ext)) type = 'url';
+    else type = 'zip';
+
+    const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
+    const meta = `${ext.toUpperCase()} File • ${Number(sizeMB) > 0.1 ? `${sizeMB} MB` : `${Math.round(file.size / 1024) || 1} KB`}`;
+    const todayDate = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+
+    const newFile = {
+      id: `f-${Date.now()}`,
+      name: file.name,
+      meta,
+      date: todayDate,
+      type
+    };
+
+    const updated = [newFile, ...localFiles];
+    setLocalFiles(updated);
+    if (onUpdateProject && project?.id) {
+      onUpdateProject(project.id, { files: updated });
+    }
+    e.target.value = '';
+  };
 
   // Dynamic project activity timeline
   const activityList = useMemo(() => {
@@ -420,15 +470,43 @@ export default function ProjectDetailWorkspace({
 
   const handleCreateTask = async (e) => {
     e.preventDefault();
-    if (!newTaskTitle.trim()) return;
+    const taskName = newTaskTitle.trim();
+    if (!taskName) return;
+
+    const newTask = {
+      id: `task-${Date.now()}`,
+      projectId: project?.id,
+      project_id: project?.id,
+      title: taskName,
+      dueDate: project?.deadline || '25/10/2026',
+      completed: false
+    };
+
+    const nextTasks = [...localTasks, newTask];
+    setLocalTasks(nextTasks);
+    setNewTaskTitle('');
+    setIsAddingTask(false);
+
+    // Dynamic progress reduction & status set to in-progress
+    const total = nextTasks.length;
+    const done = nextTasks.filter(t => t.completed).length;
+    const newProgress = Math.round((done / total) * 100);
+    const newStatus = (total > 0 && done === total) ? 'completed' : 'in-progress';
+
     if (onAddTask) {
       await onAddTask({
         projectId: project?.id,
-        title: newTaskTitle.trim(),
-        dueDate: 'Oct 25, 2024'
+        title: newTask.title,
+        dueDate: newTask.dueDate
       });
-      setNewTaskTitle('');
-      setIsAddingTask(false);
+    }
+
+    if (onUpdateProject && project?.id) {
+      await onUpdateProject(project.id, {
+        progress: newProgress,
+        status: newStatus,
+        tasks: nextTasks
+      });
     }
   };
 
@@ -566,9 +644,9 @@ export default function ProjectDetailWorkspace({
           </div>
 
           <div className="pdw-hero-info">
-            <div className={`pdw-status-pill ${calculatedProgress >= 100 || project?.status === 'completed' ? 'completed' : (project?.status || 'in-progress')}`}>
+            <div className={`pdw-status-pill ${effectiveStatus}`}>
               <span className="pdw-status-dot" />
-              <span>{calculatedProgress >= 100 || project?.status === 'completed' ? 'Completed' : (project?.status === 'under-review' ? 'Under Review' : 'In Progress')}</span>
+              <span>{effectiveStatusLabel}</span>
             </div>
 
             <h1 className="pdw-hero-title">{project?.title || 'E-commerce Website'}</h1>
@@ -724,8 +802,8 @@ export default function ProjectDetailWorkspace({
               <div>
                 <div className="pdw-info-lbl">Status</div>
                 <div className="pdw-info-icon-val">
-                  <span className={`pdw-info-dot-status ${calculatedProgress >= 100 || project?.status === 'completed' ? 'completed' : (project?.status || 'in-progress')}`} />
-                  <span>{calculatedProgress >= 100 || project?.status === 'completed' ? 'Completed' : (project?.status === 'under-review' ? 'Under Review' : 'In Progress')}</span>
+                  <span className={`pdw-info-dot-status ${effectiveStatus}`} />
+                  <span>{effectiveStatusLabel}</span>
                 </div>
               </div>
 
@@ -1110,41 +1188,56 @@ export default function ProjectDetailWorkspace({
               <label className="pdw-card-btn-action" style={{ cursor: 'pointer' }}>
                 <UploadIcon size={13} />
                 <span>Upload</span>
-                <input type="file" style={{ display: 'none' }} onChange={() => alert('File uploaded successfully to project files!')} />
+                <input type="file" style={{ display: 'none' }} onChange={handleFileUpload} />
               </label>
             </div>
 
             <div className="pdw-files-list">
-              {filesList.map((file) => (
-                <div key={file.id} className="pdw-file-row">
-                  <div className="pdw-file-left">
-                    {file.type === 'figma' ? (
-                      <FigmaFileIcon />
-                    ) : file.type === 'zip' ? (
-                      <ZipFileIcon />
-                    ) : file.type === 'rar' ? (
-                      <RarFileIcon />
-                    ) : (
-                      <UrlFileIcon />
-                    )}
+              {localFiles.length === 0 ? (
+                <div style={{ padding: '24px 12px', textAlign: 'center', color: '#94a3b8', fontSize: '13px' }}>
+                  No files or assets uploaded yet. Click <strong>Upload</strong> above to attach files.
+                </div>
+              ) : (
+                localFiles.map((file) => (
+                  <div key={file.id} className="pdw-file-row">
+                    <div className="pdw-file-left">
+                      {file.type === 'figma' ? (
+                        <FigmaFileIcon />
+                      ) : file.type === 'rar' ? (
+                        <RarFileIcon />
+                      ) : file.type === 'url' ? (
+                        <UrlFileIcon />
+                      ) : (
+                        <ZipFileIcon />
+                      )}
 
-                    <div className="pdw-file-info">
-                      <span className="pdw-file-name">{file.name}</span>
-                      <span className="pdw-file-meta">{file.meta}</span>
+                      <div className="pdw-file-info">
+                        <span className="pdw-file-name">{file.name}</span>
+                        <span className="pdw-file-meta">{file.meta}</span>
+                      </div>
+                    </div>
+
+                    <div className="pdw-file-right">
+                      <span className="pdw-file-date">{file.date}</span>
+                      <button
+                        type="button"
+                        className="pdw-file-download-btn"
+                        title="Delete file"
+                        style={{ color: '#ef4444' }}
+                        onClick={() => {
+                          const updated = localFiles.filter(f => f.id !== file.id);
+                          setLocalFiles(updated);
+                          if (onUpdateProject && project?.id) {
+                            onUpdateProject(project.id, { files: updated });
+                          }
+                        }}
+                      >
+                        <TrashIcon size={14} color="#EF4444" />
+                      </button>
                     </div>
                   </div>
-
-                  <div className="pdw-file-right">
-                    <span className="pdw-file-date">{file.date}</span>
-                    <button type="button" className="pdw-file-download-btn" title="Download file" onClick={() => alert(`Downloading ${file.name}...`)}>
-                      <DownloadIcon size={15} />
-                    </button>
-                    <button type="button" className="pdw-file-download-btn">
-                      <MoreVerticalIcon size={15} />
-                    </button>
-                  </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
         )}
