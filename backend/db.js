@@ -2933,68 +2933,70 @@ async function initPostgresTables() {
         DELETE FROM projects WHERE id IN ('proj-ecommerce', 'proj-brand-logo', 'proj-video-promo', 'proj-seo', 'proj-mobile-app');
       `);
 
-      // Seed Real Projects for Awais and Afshal (using module-level realProjects & seedAssignees)
-
-      for (const p of realProjects) {
-        await client.query(`
-          INSERT INTO projects (
-            id, client_id, title, description, status, progress, budget, deadline,
-            project_type, start_date, priority, credentials, notes, files
-          )
-          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
-          ON CONFLICT (id) DO UPDATE SET
-            title = EXCLUDED.title,
-            description = EXCLUDED.description,
-            status = EXCLUDED.status,
-            progress = COALESCE(projects.progress, EXCLUDED.progress),
-            deadline = EXCLUDED.deadline,
-            project_type = EXCLUDED.project_type,
-            start_date = EXCLUDED.start_date,
-            priority = EXCLUDED.priority,
-            notes = COALESCE(NULLIF(projects.notes, ''), EXCLUDED.notes);
-        `, [
-          p.id,
-          p.clientId,
-          p.title,
-          p.description,
-          p.status,
-          p.progress,
-          0,
-          p.deadline,
-          p.projectType,
-          p.startDate,
-          p.priority,
-          '[]',
-          p.notes,
-          '[]'
-        ]);
-
-        let tIdx = 1;
-        for (const t of p.tasks) {
-          const tTitle = typeof t === 'string' ? t : t.title;
-          const tCompleted = typeof t === 'object' ? Boolean(t.completed) : false;
-          const assigned = (seedAssignees && seedAssignees.length > 0)
-            ? seedAssignees[(tIdx - 1) % seedAssignees.length]
-            : { name: 'Abdullah', avatar: '' };
-          const tId = `task-${p.id}-${tIdx}`;
-
+      // Seed Real Projects for Awais and Afshal only if projects table is empty
+      const projCheck = await client.query('SELECT COUNT(*)::int as count FROM projects');
+      if (projCheck.rows[0].count === 0) {
+        for (const p of realProjects) {
           await client.query(`
-            INSERT INTO tasks (id, project_id, client_id, title, due_date, completed, assigned_name, assigned_avatar)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+            INSERT INTO projects (
+              id, client_id, title, description, status, progress, budget, deadline,
+              project_type, start_date, priority, credentials, notes, files
+            )
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
             ON CONFLICT (id) DO UPDATE SET
               title = EXCLUDED.title,
-              due_date = EXCLUDED.due_date;
+              description = EXCLUDED.description,
+              status = EXCLUDED.status,
+              progress = COALESCE(projects.progress, EXCLUDED.progress),
+              deadline = EXCLUDED.deadline,
+              project_type = EXCLUDED.project_type,
+              start_date = EXCLUDED.start_date,
+              priority = EXCLUDED.priority,
+              notes = COALESCE(NULLIF(projects.notes, ''), EXCLUDED.notes);
           `, [
-            tId,
             p.id,
             p.clientId,
-            tTitle,
+            p.title,
+            p.description,
+            p.status,
+            p.progress,
+            0,
             p.deadline,
-            tCompleted,
-            assigned?.name || 'Abdullah',
-            assigned?.avatar || ''
+            p.projectType,
+            p.startDate,
+            p.priority,
+            '[]',
+            p.notes,
+            '[]'
           ]);
-          tIdx++;
+
+          let tIdx = 1;
+          for (const t of p.tasks) {
+            const tTitle = typeof t === 'string' ? t : t.title;
+            const tCompleted = typeof t === 'object' ? Boolean(t.completed) : false;
+            const assigned = (seedAssignees && seedAssignees.length > 0)
+              ? seedAssignees[(tIdx - 1) % seedAssignees.length]
+              : { name: 'Abdullah', avatar: '' };
+            const tId = `task-${p.id}-${tIdx}`;
+
+            await client.query(`
+              INSERT INTO tasks (id, project_id, client_id, title, due_date, completed, assigned_name, assigned_avatar)
+              VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+              ON CONFLICT (id) DO UPDATE SET
+                title = EXCLUDED.title,
+                due_date = EXCLUDED.due_date;
+            `, [
+              tId,
+              p.id,
+              p.clientId,
+              tTitle,
+              p.deadline,
+              tCompleted,
+              assigned?.name || 'Abdullah',
+              assigned?.avatar || ''
+            ]);
+            tIdx++;
+          }
         }
       }
 
@@ -3004,7 +3006,7 @@ async function initPostgresTables() {
         ON CONFLICT (key) DO NOTHING;
       `);
 
-      // Ensure invoices table has full billing metadata
+      // Ensure invoices table has full billing metadata & soft delete columns
       await client.query(`
         ALTER TABLE invoices ADD COLUMN IF NOT EXISTS invoice_number VARCHAR(100);
         ALTER TABLE invoices ADD COLUMN IF NOT EXISTS currency VARCHAR(10) DEFAULT 'PKR';
@@ -3018,9 +3020,12 @@ async function initPostgresTables() {
         ALTER TABLE invoices ADD COLUMN IF NOT EXISTS published BOOLEAN DEFAULT true;
         ALTER TABLE invoices ADD COLUMN IF NOT EXISTS project_ids JSONB DEFAULT '[]';
         ALTER TABLE invoices ADD COLUMN IF NOT EXISTS project_titles JSONB DEFAULT '[]';
+        ALTER TABLE invoices ADD COLUMN IF NOT EXISTS project_title VARCHAR(255);
         ALTER TABLE invoices ADD COLUMN IF NOT EXISTS client_name VARCHAR(255);
         ALTER TABLE invoices ADD COLUMN IF NOT EXISTS client_company VARCHAR(255);
         ALTER TABLE invoices ADD COLUMN IF NOT EXISTS client_email VARCHAR(255);
+        ALTER TABLE invoices ADD COLUMN IF NOT EXISTS is_deleted BOOLEAN DEFAULT false;
+        ALTER TABLE invoices ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMP;
       `);
 
       // Automatically mark projects with >= 100% progress as completed
@@ -3835,13 +3840,16 @@ const db = {
   // ==========================================
   // Invoices Management
   // ==========================================
-  async getInvoices(clientId, projectId, status) {
+  async getInvoices(clientId, projectId, status, includeDeleted = false) {
     if (initPromise) await initPromise;
     if (isPostgres && pgPool) {
       const conditions = [];
       const values = [];
       let i = 1;
 
+      if (!includeDeleted) {
+        conditions.push(`(i.is_deleted IS FALSE OR i.is_deleted IS NULL)`);
+      }
       if (clientId) {
         conditions.push(`i.client_id = $${i++}`);
         values.push(clientId);
@@ -3861,7 +3869,7 @@ const db = {
                COALESCE(i.client_name, u.name, 'Client') as client_name,
                COALESCE(i.client_company, u.company, 'Agency Client') as client_company,
                COALESCE(i.client_email, u.email, '') as client_email,
-               p.title as project_title
+               COALESCE(NULLIF(i.project_title, ''), p.title, '') as project_title
         FROM invoices i
         LEFT JOIN users u ON i.client_id = u.id
         LEFT JOIN projects p ON i.project_id = p.id
@@ -3887,7 +3895,7 @@ const db = {
     }
 
     const local = readLocalStore();
-    let invoices = (local.invoices || []).map(inv => {
+    let invoices = (local.invoices || []).filter(inv => includeDeleted || !inv.is_deleted).map(inv => {
       const client = (local.users || []).find(u => u.id === inv.client_id);
       const project = (local.projects || []).find(p => p.id === inv.project_id);
       const pIds = Array.isArray(inv.project_ids) ? inv.project_ids : (inv.project_id ? [inv.project_id] : []);
@@ -3897,9 +3905,9 @@ const db = {
 
       return {
         ...inv,
-        client_name: client?.name || 'Client',
-        client_company: client?.company || 'Agency Client',
-        client_email: client?.email || '',
+        client_name: client?.name || inv.client_name || 'Client',
+        client_company: client?.company || inv.client_company || 'Agency Client',
+        client_email: client?.email || inv.client_email || '',
         project_ids: pIds,
         project_titles: pTitles,
         project_title: inv.project_title || (pTitles.length > 0 ? pTitles.join(', ') : (project?.title || inv.title)),
@@ -3932,7 +3940,7 @@ const db = {
                COALESCE(i.client_name, u.name, 'Client') as client_name,
                COALESCE(i.client_company, u.company, 'Agency Client') as client_company,
                COALESCE(i.client_email, u.email, '') as client_email,
-               p.title as project_title
+               COALESCE(NULLIF(i.project_title, ''), p.title, '') as project_title
         FROM invoices i
         LEFT JOIN users u ON i.client_id = u.id
         LEFT JOIN projects p ON i.project_id = p.id
@@ -3967,9 +3975,9 @@ const db = {
 
     return {
       ...inv,
-      client_name: client?.name || 'Client',
-      client_company: client?.company || 'Agency Client',
-      client_email: client?.email || '',
+      client_name: client?.name || inv.client_name || 'Client',
+      client_company: client?.company || inv.client_company || 'Agency Client',
+      client_email: client?.email || inv.client_email || '',
       project_ids: pIds,
       project_titles: pTitles,
       project_title: inv.project_title || (pTitles.length > 0 ? pTitles.join(', ') : (project?.title || inv.title)),
@@ -4024,7 +4032,8 @@ const db = {
       payment_details: invoiceData.payment_details || invoiceData.paymentDetails || 'Bank: Meezan Bank | Title: Abdullah | Account: 0102-0103948291',
       published,
       items,
-      created_at: new Date().toISOString()
+      is_deleted: false,
+      created_at: invoiceData.created_at || new Date().toISOString()
     };
 
     if (isPostgres && pgPool) {
@@ -4033,20 +4042,33 @@ const db = {
           id, client_id, project_id, title, invoice_number, amount, status,
           due_date, issue_date, currency, subtotal, tax, discount, notes,
           payment_details, published, items, project_ids, project_titles,
-          client_name, client_company, client_email
+          client_name, client_company, client_email, project_title, is_deleted
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17::jsonb, $18::jsonb, $19::jsonb, $20, $21, $22)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17::jsonb, $18::jsonb, $19::jsonb, $20, $21, $22, $23, $24)
         ON CONFLICT (id) DO UPDATE SET
           title = EXCLUDED.title,
           amount = EXCLUDED.amount,
           status = EXCLUDED.status,
           due_date = EXCLUDED.due_date,
+          issue_date = EXCLUDED.issue_date,
+          currency = EXCLUDED.currency,
+          subtotal = EXCLUDED.subtotal,
+          tax = EXCLUDED.tax,
+          discount = EXCLUDED.discount,
+          notes = EXCLUDED.notes,
+          payment_details = EXCLUDED.payment_details,
+          published = EXCLUDED.published,
           items = EXCLUDED.items,
           project_ids = EXCLUDED.project_ids,
           project_titles = EXCLUDED.project_titles,
           client_name = EXCLUDED.client_name,
           client_company = EXCLUDED.client_company,
-          client_email = EXCLUDED.client_email;
+          client_email = EXCLUDED.client_email,
+          client_id = EXCLUDED.client_id,
+          invoice_number = EXCLUDED.invoice_number,
+          project_id = EXCLUDED.project_id,
+          project_title = EXCLUDED.project_title,
+          is_deleted = EXCLUDED.is_deleted;
       `, [
         cleanInvoice.id,
         cleanInvoice.client_id,
@@ -4069,7 +4091,9 @@ const db = {
         JSON.stringify(cleanInvoice.project_titles),
         cleanInvoice.client_name,
         cleanInvoice.client_company,
-        cleanInvoice.client_email
+        cleanInvoice.client_email,
+        cleanInvoice.project_title,
+        cleanInvoice.is_deleted
       ]);
     }
 
@@ -4115,8 +4139,9 @@ const db = {
           client_company = COALESCE($19, client_company),
           client_email = COALESCE($20, client_email),
           project_id = COALESCE($21, project_id),
-          project_title = COALESCE($22, project_title)
-        WHERE id = $23
+          project_title = COALESCE($22, project_title),
+          is_deleted = COALESCE($23, is_deleted)
+        WHERE id = $24
       `, [
         updates.title || null,
         updates.amount !== undefined ? Number(updates.amount) : null,
@@ -4140,6 +4165,7 @@ const db = {
         updates.client_email || null,
         updates.project_id || null,
         updates.project_title || null,
+        updates.is_deleted !== undefined ? Boolean(updates.is_deleted) : null,
         id
       ]);
     }
@@ -4155,15 +4181,20 @@ const db = {
     return this.updateInvoice(id, { status: 'published', published: true });
   },
 
+  async restoreInvoice(id) {
+    return this.updateInvoice(id, { is_deleted: false, status: 'draft' });
+  },
+
   async deleteInvoice(id) {
     if (initPromise) await initPromise;
     if (isPostgres && pgPool) {
-      await pgPool.query('DELETE FROM invoices WHERE id = $1', [id]);
+      // Soft delete: Never permanently wipe invoice records from PostgreSQL
+      await pgPool.query("UPDATE invoices SET is_deleted = TRUE, status = 'archived' WHERE id = $1", [id]);
     }
     const local = readLocalStore();
-    local.invoices = (local.invoices || []).filter(inv => inv.id !== id);
+    local.invoices = (local.invoices || []).map(inv => inv.id === id ? { ...inv, is_deleted: true, status: 'archived' } : inv);
     writeLocalStore(local);
-    return { success: true };
+    return { success: true, message: 'Invoice safely archived and preserved in database.' };
   }
 };
 

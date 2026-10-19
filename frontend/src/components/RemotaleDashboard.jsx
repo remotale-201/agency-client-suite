@@ -350,7 +350,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
         api.getMessages().catch((e) => { console.warn('[Messages Sync]', e.message); return null; }),
         api.getClients().catch((e) => { console.warn('[Clients Sync]', e.message); return null; }),
         api.getTeamActivities().catch((e) => { console.warn('[Activities Sync]', e.message); return null; }),
-        api.getInvoices().catch((e) => { console.warn('[Invoices Sync]', e.message); return null; })
+        api.getInvoices({ includeDeleted: isRealAdmin }).catch((e) => { console.warn('[Invoices Sync]', e.message); return null; })
       ]);
 
       if (statsRes && typeof statsRes.totalProjects === 'number') {
@@ -380,7 +380,12 @@ export default function RemotaleDashboard({ user, onLogout }) {
         setTeamActivities(prev => JSON.stringify(prev) === JSON.stringify(actsRes) ? prev : actsRes);
       }
       if (Array.isArray(invsRes)) {
-        setInvoices(prev => JSON.stringify(prev) === JSON.stringify(invsRes) ? prev : invsRes);
+        if (invsRes.length > 0) {
+          setInvoices(prev => JSON.stringify(prev) === JSON.stringify(invsRes) ? prev : invsRes);
+        } else {
+          // Never wipe user's local/optimistic invoices if server returns empty array
+          setInvoices(prev => prev.length > 0 ? prev : invsRes);
+        }
       }
 
       // If a project is currently open in detail view, keep it synchronized in real-time
@@ -514,21 +519,26 @@ export default function RemotaleDashboard({ user, onLogout }) {
   // Invoices Management Handlers
   const handleCreateInvoice = async (invoicePayload, publishImmediately) => {
     const tempId = `inv-${Date.now()}`;
-    const optimisticInv = {
+    const targetStatus = publishImmediately ? 'published' : (invoicePayload.status || 'draft');
+    const targetPublished = Boolean(publishImmediately || invoicePayload.published);
+    const fullPayload = {
       ...invoicePayload,
-      id: tempId,
-      status: publishImmediately ? 'published' : 'draft',
-      published: Boolean(publishImmediately)
+      status: targetStatus,
+      published: targetPublished
     };
-    setInvoices(prev => [optimisticInv, ...prev]);
+    const optimisticInv = {
+      ...fullPayload,
+      id: tempId
+    };
+    setInvoices(prev => [optimisticInv, ...prev.filter(i => i.id !== tempId)]);
 
     try {
-      const created = await api.createInvoice(invoicePayload);
+      const created = await api.createInvoice(fullPayload);
       if (created) {
         setInvoices(prev => [created, ...prev.filter(i => i.id !== tempId && i.id !== created.id)]);
       }
       await loadData();
-      return created;
+      return created || optimisticInv;
     } catch (err) {
       console.error('[Create Invoice Error]', err);
       return optimisticInv;
@@ -562,12 +572,26 @@ export default function RemotaleDashboard({ user, onLogout }) {
   };
 
   const handleDeleteInvoice = async (invoiceId) => {
-    setInvoices(prev => prev.filter(inv => inv.id !== invoiceId));
+    // Soft-archive in state so invoice record is never lost from system
+    setInvoices(prev => prev.map(inv => inv.id === invoiceId ? { ...inv, status: 'archived', is_deleted: true } : inv));
     try {
       await api.deleteInvoice(invoiceId);
       await loadData();
     } catch (err) {
       console.error('[Delete Invoice Error]', err);
+    }
+  };
+
+  const handleRestoreInvoice = async (invoiceId) => {
+    setInvoices(prev => prev.map(inv => inv.id === invoiceId ? { ...inv, status: 'draft', is_deleted: false } : inv));
+    try {
+      const restored = await api.restoreInvoice(invoiceId);
+      if (restored) {
+        setInvoices(prev => prev.map(inv => inv.id === invoiceId ? { ...inv, ...restored } : inv));
+      }
+      await loadData();
+    } catch (err) {
+      console.error('[Restore Invoice Error]', err);
     }
   };
 
@@ -1125,6 +1149,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
             onPublishInvoice={handlePublishInvoice}
             onMarkPaidInvoice={handleMarkPaidInvoice}
             onDeleteInvoice={handleDeleteInvoice}
+            onRestoreInvoice={handleRestoreInvoice}
             onUpdateInvoice={handleUpdateInvoice}
           />
         ) : (activeTab === 'tasks' || activeTab === 'messages' || activeTab === 'files') ? (
@@ -1730,6 +1755,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
             onPublishInvoice={handlePublishInvoice}
             onMarkPaidInvoice={handleMarkPaidInvoice}
             onDeleteInvoice={handleDeleteInvoice}
+            onRestoreInvoice={handleRestoreInvoice}
             onUpdateInvoice={handleUpdateInvoice}
           />
         ) : (activeTab === 'tasks' || activeTab === 'messages' || activeTab === 'files') ? (
@@ -2323,6 +2349,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
               onPublishInvoice={handlePublishInvoice}
               onMarkPaidInvoice={handleMarkPaidInvoice}
               onDeleteInvoice={handleDeleteInvoice}
+              onRestoreInvoice={handleRestoreInvoice}
               onUpdateInvoice={handleUpdateInvoice}
             />
 
@@ -3214,6 +3241,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
               onPublishInvoice={handlePublishInvoice}
               onMarkPaidInvoice={handleMarkPaidInvoice}
               onDeleteInvoice={handleDeleteInvoice}
+              onRestoreInvoice={handleRestoreInvoice}
               onUpdateInvoice={handleUpdateInvoice}
             />
 

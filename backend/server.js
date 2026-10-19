@@ -420,8 +420,8 @@ app.get(['/api/team/activities', '/api/team-activities', '/api/activities'], asy
 // ==========================================
 app.get('/api/invoices', async (req, res) => {
   try {
-    const { clientId, projectId, status } = req.query;
-    const invoices = await db.getInvoices(clientId, projectId, status);
+    const { clientId, projectId, status, includeDeleted } = req.query;
+    const invoices = await db.getInvoices(clientId, projectId, status, includeDeleted === 'true');
     res.json(invoices);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -467,6 +467,16 @@ app.patch('/api/invoices/:id/publish', async (req, res) => {
   }
 });
 
+app.patch('/api/invoices/:id/restore', async (req, res) => {
+  try {
+    const restored = await db.restoreInvoice(req.params.id);
+    if (!restored) return res.status(404).json({ error: 'Invoice not found' });
+    res.json(restored);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.patch('/api/invoices/:id/status', async (req, res) => {
   try {
     const { status } = req.body;
@@ -480,8 +490,8 @@ app.patch('/api/invoices/:id/status', async (req, res) => {
 
 app.delete('/api/invoices/:id', async (req, res) => {
   try {
-    await db.deleteInvoice(req.params.id);
-    res.json({ success: true });
+    const result = await db.deleteInvoice(req.params.id);
+    res.json({ success: true, ...result });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

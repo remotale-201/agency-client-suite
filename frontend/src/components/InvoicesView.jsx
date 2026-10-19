@@ -16,6 +16,7 @@ export default function InvoicesView({
   onPublishInvoice,
   onMarkPaidInvoice,
   onDeleteInvoice,
+  onRestoreInvoice,
   onUpdateInvoice
 }) {
   const [searchQuery, setSearchQuery] = useState('');
@@ -50,10 +51,12 @@ export default function InvoicesView({
   // Filter invoices based on user role and filters
   const filteredInvoices = useMemo(() => {
     return invoices.filter(inv => {
-      // Client role: only show invoices for this specific client and only if published or paid!
+      const isArchived = inv.status === 'archived' || inv.is_deleted;
+
+      // Client role: only show invoices for this specific client and only if published or paid (never archived/draft)!
       if (!isAdmin && currentUser) {
         const isForClient = inv.client_id === currentUser.id || inv.clientId === currentUser.id;
-        const isPublic = inv.status === 'published' || inv.status === 'paid' || inv.published;
+        const isPublic = (inv.status === 'published' || inv.status === 'paid' || inv.published) && !isArchived;
         if (!isForClient || !isPublic) return false;
       }
 
@@ -64,10 +67,17 @@ export default function InvoicesView({
       }
 
       // Status filter
-      if (statusFilter !== 'all') {
-        if (statusFilter === 'published' && inv.status !== 'published') return false;
-        if (statusFilter === 'draft' && inv.status !== 'draft') return false;
-        if (statusFilter === 'paid' && inv.status !== 'paid') return false;
+      if (statusFilter === 'all') {
+        // In "All" view, do not clutter with archived items
+        if (isArchived) return false;
+      } else if (statusFilter === 'published') {
+        if (inv.status !== 'published' || isArchived) return false;
+      } else if (statusFilter === 'draft') {
+        if (inv.status !== 'draft' || isArchived) return false;
+      } else if (statusFilter === 'paid') {
+        if (inv.status !== 'paid' || isArchived) return false;
+      } else if (statusFilter === 'archived') {
+        if (!isArchived) return false;
       }
 
       // Search query
@@ -92,12 +102,19 @@ export default function InvoicesView({
     let paidVal = 0;
     let pendingVal = 0;
     let draftCount = 0;
+    let archivedCount = 0;
 
     const baseList = !isAdmin && currentUser 
-      ? invoices.filter(i => (i.client_id === currentUser.id || i.clientId === currentUser.id) && (i.status === 'published' || i.status === 'paid' || i.published))
+      ? invoices.filter(i => (i.client_id === currentUser.id || i.clientId === currentUser.id) && (i.status === 'published' || i.status === 'paid' || i.published) && i.status !== 'archived')
       : invoices;
 
     baseList.forEach(inv => {
+      const isArchived = inv.status === 'archived' || inv.is_deleted;
+      if (isArchived) {
+        archivedCount++;
+        return;
+      }
+
       const amt = Number(inv.amount || 0);
       totalInv += amt;
       if (inv.status === 'paid') {
@@ -109,7 +126,7 @@ export default function InvoicesView({
       }
     });
 
-    return { totalInv, paidVal, pendingVal, draftCount };
+    return { totalInv, paidVal, pendingVal, draftCount, archivedCount };
   }, [invoices, isAdmin, currentUser]);
 
   const handleCreateSubmit = async (payload, publishImmediately) => {
@@ -147,12 +164,21 @@ export default function InvoicesView({
   };
 
   const handleDeleteClick = async (invoiceId) => {
-    if (window.confirm('Are you sure you want to delete this invoice?')) {
+    if (window.confirm('Do you want to archive this invoice? It will remain safely preserved in the database and can be restored anytime.')) {
       if (onDeleteInvoice) {
         await onDeleteInvoice(invoiceId);
         if (selectedInvoice && selectedInvoice.id === invoiceId) {
-          setSelectedInvoice(null);
+          setSelectedInvoice(prev => ({ ...prev, status: 'archived', is_deleted: true }));
         }
+      }
+    }
+  };
+
+  const handleRestoreClick = async (invoiceId) => {
+    if (onRestoreInvoice) {
+      await onRestoreInvoice(invoiceId);
+      if (selectedInvoice && selectedInvoice.id === invoiceId) {
+        setSelectedInvoice(prev => ({ ...prev, status: 'draft', is_deleted: false }));
       }
     }
   };
@@ -272,7 +298,7 @@ export default function InvoicesView({
                 className={`inv-filter-btn ${statusFilter === 'draft' ? 'active' : ''}`}
                 onClick={() => setStatusFilter('draft')}
               >
-                Drafts
+                Drafts ({stats.draftCount})
               </button>
             )}
             <button
@@ -282,6 +308,15 @@ export default function InvoicesView({
             >
               Paid
             </button>
+            {isAdmin && (
+              <button
+                type="button"
+                className={`inv-filter-btn ${statusFilter === 'archived' ? 'active' : ''}`}
+                onClick={() => setStatusFilter('archived')}
+              >
+                Archived ({stats.archivedCount || 0})
+              </button>
+            )}
           </div>
 
           {/* Client Filter (Admin only) */}
@@ -306,13 +341,15 @@ export default function InvoicesView({
       {filteredInvoices.length === 0 ? (
         <div className="invoices-empty-card">
           <div className="inv-empty-icon">📄</div>
-          <h3>No Invoices Found</h3>
+          <h3>{statusFilter === 'archived' ? 'No Archived Invoices' : statusFilter === 'draft' ? 'No Draft Invoices' : 'No Invoices Found'}</h3>
           <p>
-            {isAdmin 
-              ? 'Click the button below to generate your first client project invoice.' 
-              : 'There are currently no active or published invoices for your account.'}
+            {statusFilter === 'archived'
+              ? 'There are no archived invoices. Every invoice remains active in the database.'
+              : isAdmin 
+                ? 'Click the button below to generate your client project invoice.' 
+                : 'There are currently no active or published invoices for your account.'}
           </p>
-          {isAdmin && (
+          {isAdmin && statusFilter !== 'archived' && (
             <button
               type="button"
               className="invoices-btn-create"
@@ -326,6 +363,7 @@ export default function InvoicesView({
       ) : (
         <div className="invoices-card-list">
           {filteredInvoices.map((inv) => {
+            const isArchived = inv.status === 'archived' || inv.is_deleted;
             const isPaid = inv.status === 'paid';
             const isDraft = inv.status === 'draft';
             const isPub = inv.status === 'published' || inv.published;
@@ -333,13 +371,13 @@ export default function InvoicesView({
             const amount = Number(inv.amount || 0);
 
             return (
-              <div key={inv.id} className="inv-item-card">
+              <div key={inv.id} className="inv-item-card" style={isArchived ? { opacity: 0.9, borderColor: '#CBD5E1' } : {}}>
                 {/* Left Section: Info */}
                 <div className="inv-card-left">
                   <div className="inv-card-number-row">
                     <span className="inv-card-number">{inv.invoice_number || 'INV-2026-001'}</span>
                     <span className={`inv-status-pill ${inv.status || 'published'}`}>
-                      {isPaid ? '✓ Paid' : isDraft ? 'Draft' : '● Published'}
+                      {isArchived ? '📦 Archived (Saved in DB)' : isPaid ? '✓ Paid' : isDraft ? 'Draft' : '● Published'}
                     </span>
                   </div>
 
@@ -401,7 +439,7 @@ export default function InvoicesView({
                       <span>View</span>
                     </button>
 
-                    {isAdmin && (
+                    {isAdmin && !isArchived && (
                       <button
                         type="button"
                         className="inv-action-btn edit-btn"
@@ -413,7 +451,7 @@ export default function InvoicesView({
                       </button>
                     )}
 
-                    {isAdmin && isDraft && (
+                    {isAdmin && isDraft && !isArchived && (
                       <button
                         type="button"
                         className="inv-action-btn publish-btn"
@@ -425,7 +463,7 @@ export default function InvoicesView({
                       </button>
                     )}
 
-                    {isAdmin && !isPaid && (
+                    {isAdmin && !isPaid && !isArchived && (
                       <button
                         type="button"
                         className="inv-action-btn paid-btn"
@@ -438,14 +476,27 @@ export default function InvoicesView({
                     )}
 
                     {isAdmin && (
-                      <button
-                        type="button"
-                        className="inv-action-btn delete-btn"
-                        onClick={() => handleDeleteClick(inv.id)}
-                        title="Delete invoice"
-                      >
-                        🗑️
-                      </button>
+                      isArchived ? (
+                        <button
+                          type="button"
+                          className="inv-action-btn restore-btn"
+                          style={{ backgroundColor: '#EEF2FF', color: '#4F46E5', borderColor: '#C7D2FE', fontWeight: 600 }}
+                          onClick={() => handleRestoreClick(inv.id)}
+                          title="Restore invoice back to active drafts"
+                        >
+                          <span>♻️</span>
+                          <span>Restore</span>
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          className="inv-action-btn delete-btn"
+                          onClick={() => handleDeleteClick(inv.id)}
+                          title="Archive invoice (safely preserved in database)"
+                        >
+                          🗑️
+                        </button>
+                      )
                     )}
                   </div>
                 </div>
@@ -472,6 +523,7 @@ export default function InvoicesView({
           onPublish={handlePublishClick}
           onMarkPaid={handlePaidClick}
           onDelete={handleDeleteClick}
+          onRestore={handleRestoreClick}
           onEdit={(inv) => setEditingInvoice(inv)}
           isAdmin={isAdmin}
         />

@@ -212,6 +212,7 @@ export const api = {
     if (params.clientId) query.append('clientId', params.clientId);
     if (params.projectId) query.append('projectId', params.projectId);
     if (params.status) query.append('status', params.status);
+    if (params.includeDeleted) query.append('includeDeleted', 'true');
     const queryString = query.toString() ? `?${query.toString()}` : '';
     return request(`/api/invoices${queryString}`);
   },
@@ -219,6 +220,7 @@ export const api = {
   createInvoice: (invoiceData) => request('/api/invoices', { method: 'POST', body: JSON.stringify(invoiceData) }),
   updateInvoice: (id, updates) => request(`/api/invoices/${id}`, { method: 'PUT', body: JSON.stringify(updates) }),
   publishInvoice: (id) => request(`/api/invoices/${id}/publish`, { method: 'PATCH' }),
+  restoreInvoice: (id) => request(`/api/invoices/${id}/restore`, { method: 'PATCH' }),
   updateInvoiceStatus: (id, status) => request(`/api/invoices/${id}/status`, { method: 'PATCH', body: JSON.stringify({ status }) }),
   deleteInvoice: (id) => request(`/api/invoices/${id}`, { method: 'DELETE' }),
 

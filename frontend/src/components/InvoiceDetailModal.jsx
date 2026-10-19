@@ -10,6 +10,7 @@ export default function InvoiceDetailModal({
   onPublish,
   onMarkPaid,
   onDelete,
+  onRestore,
   onEdit,
   isAdmin = false
 }) {
@@ -18,6 +19,7 @@ export default function InvoiceDetailModal({
 
   if (!invoice) return null;
 
+  const isArchived = invoice.status === 'archived' || invoice.is_deleted;
   const isPaid = invoice.status === 'paid';
   const isDraft = invoice.status === 'draft';
 
@@ -47,13 +49,28 @@ export default function InvoiceDetailModal({
         <div className="inv-modal-actions-bar no-print">
           <div className="inv-modal-actions-left">
             <span className={`inv-status-pill ${invoice.status || 'published'}`}>
-              {isPaid ? '✓ Paid' : isDraft ? 'Draft (Not sent)' : '● Published to Client'}
+              {isArchived ? '📦 Archived / Preserved in DB' : isPaid ? '✓ Paid' : isDraft ? 'Draft (Not sent)' : '● Published to Client'}
             </span>
             <span className="inv-number-tag">{invoice.invoice_number || 'INV-2026-08'}</span>
           </div>
 
           <div className="inv-modal-actions-right">
-            {isAdmin && isDraft && onPublish && (
+            {isAdmin && isArchived && onRestore && (
+              <button
+                type="button"
+                className="inv-btn-publish"
+                style={{ backgroundColor: '#4F46E5' }}
+                onClick={() => {
+                  onRestore(invoice.id);
+                  onClose();
+                }}
+              >
+                <span>♻️</span>
+                <span>Restore to Active</span>
+              </button>
+            )}
+
+            {isAdmin && isDraft && !isArchived && onPublish && (
               <button
                 type="button"
                 className="inv-btn-publish"
@@ -64,7 +81,7 @@ export default function InvoiceDetailModal({
               </button>
             )}
 
-            {isAdmin && !isPaid && onMarkPaid && (
+            {isAdmin && !isPaid && !isArchived && onMarkPaid && (
               <button
                 type="button"
                 className="inv-btn-paid"
@@ -75,7 +92,7 @@ export default function InvoiceDetailModal({
               </button>
             )}
 
-            {isAdmin && onEdit && (
+            {isAdmin && !isArchived && onEdit && (
               <button
                 type="button"
                 className="inv-btn-edit-modal"
@@ -90,17 +107,18 @@ export default function InvoiceDetailModal({
               </button>
             )}
 
-            {isAdmin && onDelete && (
+            {isAdmin && !isArchived && onDelete && (
               <button
                 type="button"
                 className="inv-btn-delete-modal"
                 onClick={() => {
                   onDelete(invoice.id);
+                  onClose();
                 }}
-                title="Delete this invoice"
+                title="Archive invoice safely"
               >
                 <span>🗑️</span>
-                <span>Delete</span>
+                <span>Archive</span>
               </button>
             )}
 
