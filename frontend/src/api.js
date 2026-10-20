@@ -191,6 +191,8 @@ export const api = {
   },
   createTask: (taskData) => request('/api/tasks', { method: 'POST', body: JSON.stringify(taskData) }),
   toggleTask: (id, completed) => request(`/api/tasks/${id}/toggle`, { method: 'PATCH', body: JSON.stringify({ completed }) }),
+  updateTask: (id, updates) => request(`/api/tasks/${id}`, { method: 'PUT', body: JSON.stringify(updates) }),
+  deleteTask: (id) => request(`/api/tasks/${id}`, { method: 'DELETE' }),
 
   // Messages
   getMessages: (params = {}) => {

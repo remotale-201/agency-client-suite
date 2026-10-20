@@ -1,7 +1,38 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import './ProjectDetailWorkspace.css';
+import { api } from '../api';
 import { RemotaleLogo } from './RemotaleAuthFlow';
 import LetterAvatar from './LetterAvatar';
+
+function formatCompletionDateTime(timestamp) {
+  if (!timestamp) return null;
+  try {
+    const d = new Date(timestamp);
+    if (isNaN(d.getTime())) return null;
+
+    const now = new Date();
+    const isToday = d.toDateString() === now.toDateString();
+
+    const timeStr = d.toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    });
+
+    if (isToday) {
+      return `Today at ${timeStr}`;
+    }
+
+    const dateStr = d.toLocaleDateString('en-GB', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+    });
+    return `${dateStr} at ${timeStr}`;
+  } catch (e) {
+    return null;
+  }
+}
 
 // SVG Icons
 function ArrowLeftIcon({ size = 20, color = 'currentColor' }) {
@@ -219,6 +250,7 @@ export default function ProjectDetailWorkspace({
   onDeleteProject,
   onToggleTask,
   onAddTask,
+  onDeleteTask,
   onUpdateProject,
   currentUser,
   onLogout,
@@ -353,8 +385,18 @@ export default function ProjectDetailWorkspace({
 
   const handleToggleTaskInternal = (taskId, currentCompleted) => {
     const nextCompleted = !currentCompleted;
-    // 1. Instant optimistic local UI update with 0 latency
-    const nextTasks = localTasks.map(t => t.id === taskId ? { ...t, completed: nextCompleted } : t);
+    const nowIso = new Date().toISOString();
+    // 1. Instant optimistic local UI update with 0 latency including exact completed_at timestamp
+    const nextTasks = localTasks.map(t => {
+      if (t.id === taskId) {
+        return {
+          ...t,
+          completed: nextCompleted,
+          completed_at: nextCompleted ? (t.completed_at || nowIso) : null
+        };
+      }
+      return t;
+    });
     setLocalTasks(nextTasks);
 
     const total = nextTasks.length;
@@ -365,6 +407,105 @@ export default function ProjectDetailWorkspace({
     // 2. Propagate to parent handler to sync to PostgreSQL and dashboard
     if (onToggleTask) {
       onToggleTask(taskId, currentCompleted);
+    } else {
+      api.toggleTask(taskId, nextCompleted).catch(err => {
+        console.error('Error toggling task:', err);
+      });
+    }
+
+    if (onUpdateProject && project?.id) {
+      onUpdateProject(project.id, {
+        progress: newProgress,
+        status: newStatus,
+        tasks: nextTasks
+      });
+    }
+  };
+
+  const handleCreateTask = async (e) => {
+    if (e) e.preventDefault();
+    if (!newTaskTitle.trim()) return;
+    const title = newTaskTitle.trim();
+    setNewTaskTitle('');
+    setIsAddingTask(false);
+
+    const tempId = `task-${Date.now()}`;
+    const newTask = {
+      id: tempId,
+      project_id: project?.id,
+      client_id: project?.client_id || project?.clientId,
+      title,
+      due_date: project?.deadline || new Date(Date.now() + 7 * 86400000).toLocaleDateString('en-GB'),
+      completed: false,
+      completed_at: null,
+      assigned_name: currentUser?.name || 'Abdullah',
+      assigned_avatar: ''
+    };
+
+    const nextTasks = [newTask, ...localTasks];
+    setLocalTasks(nextTasks);
+
+    const total = nextTasks.length;
+    const done = nextTasks.filter(t => t.completed).length;
+    const newProgress = total > 0 ? Math.round((done / total) * 100) : 0;
+    const newStatus = (total > 0 && done === total) ? 'completed' : 'in-progress';
+
+    if (onAddTask) {
+      try {
+        const saved = await onAddTask({
+          projectId: project?.id,
+          title,
+          dueDate: newTask.due_date
+        });
+        if (saved && saved.id) {
+          setLocalTasks(prev => prev.map(t => t.id === tempId ? { ...saved, completed_at: saved.completed_at || null } : t));
+        }
+      } catch (err) {
+        console.error('Failed to add task via prop:', err);
+      }
+    } else {
+      try {
+        const saved = await api.createTask({
+          projectId: project?.id,
+          clientId: project?.client_id || project?.clientId,
+          title,
+          dueDate: newTask.due_date
+        });
+        if (saved && saved.id) {
+          setLocalTasks(prev => prev.map(t => t.id === tempId ? { ...saved, completed_at: saved.completed_at || null } : t));
+        }
+      } catch (err) {
+        console.error('Failed to create task via api:', err);
+      }
+    }
+
+    if (onUpdateProject && project?.id) {
+      onUpdateProject(project.id, {
+        progress: newProgress,
+        status: newStatus,
+        tasks: nextTasks
+      });
+    }
+  };
+
+  const handleDeleteTaskInternal = async (taskId) => {
+    if (!window.confirm('Delete this task?')) return;
+    const nextTasks = localTasks.filter(t => t.id !== taskId);
+    setLocalTasks(nextTasks);
+
+    const total = nextTasks.length;
+    const done = nextTasks.filter(t => t.completed).length;
+    const newProgress = total > 0 ? Math.round((done / total) * 100) : 0;
+    const newStatus = (total > 0 && done === total) ? 'completed' : 'in-progress';
+
+    if (onDeleteTask) {
+      onDeleteTask(taskId);
+    } else {
+      try {
+        await api.deleteTask(taskId);
+      } catch (err) {
+        console.error('Failed to delete task:', err);
+      }
     }
 
     if (onUpdateProject && project?.id) {
@@ -466,48 +607,6 @@ export default function ProjectDetailWorkspace({
       } catch (err) {
         console.error('Error saving notes:', err);
       }
-    }
-  };
-
-  const handleCreateTask = async (e) => {
-    e.preventDefault();
-    const taskName = newTaskTitle.trim();
-    if (!taskName) return;
-
-    const newTask = {
-      id: `task-${Date.now()}`,
-      projectId: project?.id,
-      project_id: project?.id,
-      title: taskName,
-      dueDate: project?.deadline || '25/10/2026',
-      completed: false
-    };
-
-    const nextTasks = [...localTasks, newTask];
-    setLocalTasks(nextTasks);
-    setNewTaskTitle('');
-    setIsAddingTask(false);
-
-    // Dynamic progress reduction & status set to in-progress
-    const total = nextTasks.length;
-    const done = nextTasks.filter(t => t.completed).length;
-    const newProgress = Math.round((done / total) * 100);
-    const newStatus = (total > 0 && done === total) ? 'completed' : 'in-progress';
-
-    if (onAddTask) {
-      await onAddTask({
-        projectId: project?.id,
-        title: newTask.title,
-        dueDate: newTask.dueDate
-      });
-    }
-
-    if (onUpdateProject && project?.id) {
-      await onUpdateProject(project.id, {
-        progress: newProgress,
-        status: newStatus,
-        tasks: nextTasks
-      });
     }
   };
 
@@ -1150,25 +1249,27 @@ export default function ProjectDetailWorkspace({
 
             {/* Quick add task input */}
             {isAddingTask && (
-              <form onSubmit={handleCreateTask} style={{ marginBottom: '12px', display: 'flex', gap: '8px' }}>
+              <form onSubmit={handleCreateTask} className="pdw-task-add-form">
                 <input
                   type="text"
-                  placeholder="Enter task name..."
+                  placeholder="Enter task name (e.g. Hero Banner, Product Page, Domain Setup)..."
                   value={newTaskTitle}
                   onChange={(e) => setNewTaskTitle(e.target.value)}
                   autoFocus
-                  style={{ flex: 1, padding: '7px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px' }}
+                  className="pdw-task-add-input"
                 />
                 <button
                   type="submit"
-                  style={{ background: '#6366f1', color: '#fff', border: 'none', padding: '7px 14px', borderRadius: '8px', fontSize: '12.5px', fontWeight: 600, cursor: 'pointer' }}
+                  className="pdw-task-save-btn"
+                  disabled={!newTaskTitle.trim()}
                 >
-                  Save
+                  Save Task
                 </button>
                 <button
                   type="button"
                   onClick={() => setIsAddingTask(false)}
-                  style={{ background: '#f1f5f9', border: '1px solid #e2e8f0', padding: '7px 10px', borderRadius: '8px', fontSize: '12.5px', cursor: 'pointer' }}
+                  className="pdw-task-cancel-btn"
+                  title="Cancel"
                 >
                   ✕
                 </button>
@@ -1181,34 +1282,54 @@ export default function ProjectDetailWorkspace({
                   No tasks recorded for this project yet. Click <strong>+ Add Task</strong> above.
                 </div>
               ) : (
-                localTasks.map((t) => (
-                  <div key={t.id} className="pdw-task-row">
-                    <div className="pdw-task-left">
-                      <input
-                        type="checkbox"
-                        className="pdw-task-checkbox"
-                        checked={Boolean(t.completed)}
-                        onChange={() => handleToggleTaskInternal(t.id, t.completed)}
-                      />
-                      <span
-                        className={`pdw-task-title ${t.completed ? 'completed' : ''}`}
-                        onClick={() => handleToggleTaskInternal(t.id, t.completed)}
-                        style={{ cursor: 'pointer' }}
-                        title="Click to toggle completion"
-                      >
-                        {t.title}
-                      </span>
-                    </div>
+                localTasks.map((t) => {
+                  const completedTime = t.completed ? formatCompletionDateTime(t.completed_at || t.completedAt) : null;
+                  return (
+                    <div key={t.id} className={`pdw-task-row ${t.completed ? 'completed' : ''}`}>
+                      <div className="pdw-task-left">
+                        <input
+                          type="checkbox"
+                          className="pdw-task-checkbox"
+                          checked={Boolean(t.completed)}
+                          onChange={() => handleToggleTaskInternal(t.id, t.completed)}
+                        />
+                        <div className="pdw-task-content-col">
+                          <span
+                            className={`pdw-task-title ${t.completed ? 'completed' : ''}`}
+                            onClick={() => handleToggleTaskInternal(t.id, t.completed)}
+                            style={{ cursor: 'pointer' }}
+                            title="Click to toggle completion"
+                          >
+                            {t.title}
+                          </span>
+                          {t.completed && (
+                            <div className="pdw-task-ticked-meta">
+                              <span className="pdw-ticked-badge">
+                                <CheckIcon size={12} color="#059669" />
+                                <span>Ticked on {completedTime || 'Completed'}</span>
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
 
-                    <div className="pdw-task-right">
-                      <span className="pdw-task-date">{t.due_date || t.dueDate || project?.deadline || '18/10/2026'}</span>
-                      <LetterAvatar name={t.assigned_name || 'Abdullah'} size={24} />
-                      <button type="button" className="pdw-btn-copy">
-                        <MoreVerticalIcon size={15} />
-                      </button>
+                      <div className="pdw-task-right">
+                        <span className="pdw-task-date" title="Due Date">
+                          Due: {t.due_date || t.dueDate || project?.deadline || '18/10/2026'}
+                        </span>
+                        <LetterAvatar name={t.assigned_name || 'Abdullah'} size={24} />
+                        <button
+                          type="button"
+                          className="pdw-btn-delete-task"
+                          title="Delete task"
+                          onClick={() => handleDeleteTaskInternal(t.id)}
+                        >
+                          <TrashIcon size={13} color="#94a3b8" />
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                ))
+                  );
+                })
               )}
             </div>
           </div>

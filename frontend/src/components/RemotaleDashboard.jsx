@@ -6,6 +6,7 @@ import AddNewProjectModal from './AddNewProjectModal';
 import MyProjectsView from './MyProjectsView';
 import ProjectDetailWorkspace from './ProjectDetailWorkspace';
 import InvoicesView from './InvoicesView';
+import TasksView from './TasksView';
 import ComingSoonView from './ComingSoonView';
 import LetterAvatar from './LetterAvatar';
 import ClientProgressPdfModal from './ClientProgressPdfModal';
@@ -654,12 +655,31 @@ export default function RemotaleDashboard({ user, onLogout }) {
   // Handle Task Toggle -> updates PostgreSQL 'tasks' table and all local state optimistically
   const handleToggleTask = async (taskId, currentCompleted) => {
     const nextCompleted = !currentCompleted;
+    const nowIso = new Date().toISOString();
 
-    // 1. Optimistically update tasks state
-    setTasks(prev => prev.map(t => t.id === taskId ? { ...t, completed: nextCompleted } : t));
+    // 1. Optimistically update tasks state with completed_at
+    setTasks(prev => prev.map(t => {
+      if (t.id === taskId) {
+        return {
+          ...t,
+          completed: nextCompleted,
+          completed_at: nextCompleted ? (t.completed_at || nowIso) : null
+        };
+      }
+      return t;
+    }));
 
     const recalculateProj = (p) => {
-      const updatedTasks = (p.tasks || []).map(t => t.id === taskId ? { ...t, completed: nextCompleted } : t);
+      const updatedTasks = (p.tasks || []).map(t => {
+        if (t.id === taskId) {
+          return {
+            ...t,
+            completed: nextCompleted,
+            completed_at: nextCompleted ? (t.completed_at || nowIso) : null
+          };
+        }
+        return t;
+      });
       const total = updatedTasks.length;
       const done = updatedTasks.filter(t => t.completed).length;
       const newProgress = total > 0 ? Math.round((done / total) * 100) : p.progress;
@@ -695,15 +715,73 @@ export default function RemotaleDashboard({ user, onLogout }) {
 
     // 4. Send to backend database
     try {
-      await api.toggleTask(taskId, nextCompleted);
+      const updatedBackendTask = await api.toggleTask(taskId, nextCompleted);
+      if (updatedBackendTask) {
+        setTasks(prev => prev.map(t => t.id === taskId ? { ...t, ...updatedBackendTask } : t));
+        setSelectedProject(prev => {
+          if (!prev) return null;
+          return {
+            ...prev,
+            tasks: (prev.tasks || []).map(t => t.id === taskId ? { ...t, ...updatedBackendTask } : t)
+          };
+        });
+      }
       if (targetProjId) {
         api.updateProject(targetProjId, { status: targetStatus, progress: targetProgress }).catch(() => {});
       }
       api.getProjects().then(setProjects).catch(() => {});
-      api.getTasks().then(setTasks).catch(() => {});
     } catch (err) {
       console.error('Error toggling task:', err);
       // Revert if error
+      loadData();
+    }
+  };
+
+  // Handle Delete Task -> removes from PostgreSQL 'tasks' table and local state
+  const handleDeleteTask = async (taskId) => {
+    setTasks(prev => prev.filter(t => t.id !== taskId));
+
+    let targetProjId = null;
+    let targetStatus = 'in-progress';
+    let targetProgress = 0;
+
+    const recalculateWithoutTask = (p) => {
+      const remaining = (p.tasks || []).filter(t => t.id !== taskId);
+      const total = remaining.length;
+      const done = remaining.filter(t => t.completed).length;
+      const newProgress = total > 0 ? Math.round((done / total) * 100) : 0;
+      const newStatus = (total > 0 && done === total) ? 'completed' : 'in-progress';
+      return {
+        ...p,
+        tasks: remaining,
+        progress: newProgress,
+        status: newStatus
+      };
+    };
+
+    setSelectedProject(prev => {
+      if (!prev) return null;
+      return recalculateWithoutTask(prev);
+    });
+
+    setProjects(prev => prev.map(p => {
+      const hasTask = (p.tasks || []).some(t => t.id === taskId);
+      if (!hasTask) return p;
+      const updated = recalculateWithoutTask(p);
+      targetProjId = updated.id;
+      targetStatus = updated.status;
+      targetProgress = updated.progress;
+      return updated;
+    }));
+
+    try {
+      await api.deleteTask(taskId);
+      if (targetProjId) {
+        api.updateProject(targetProjId, { status: targetStatus, progress: targetProgress }).catch(() => {});
+      }
+      api.getProjects().then(setProjects).catch(() => {});
+    } catch (err) {
+      console.error('Error deleting task:', err);
       loadData();
     }
   };
@@ -1122,6 +1200,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
             onDeleteProject={handleDeleteProject}
             onToggleTask={handleToggleTask}
             onAddTask={handleAddTaskInDetail}
+            onDeleteTask={handleDeleteTask}
             onUpdateProject={handleUpdateProject}
             currentUser={currentClientUser}
             onLogout={onLogout}
@@ -1156,7 +1235,17 @@ export default function RemotaleDashboard({ user, onLogout }) {
             onRestoreInvoice={handleRestoreInvoice}
             onUpdateInvoice={handleUpdateInvoice}
           />
-        ) : (activeTab === 'tasks' || activeTab === 'messages' || activeTab === 'files') ? (
+        ) : activeTab === 'tasks' ? (
+          <TasksView
+            tasks={visibleTasks}
+            projects={visibleProjects}
+            onToggleTask={handleToggleTask}
+            onAddTask={handleAddTaskInDetail}
+            onDeleteTask={handleDeleteTask}
+            onSelectProject={handleSelectProject}
+            currentUser={currentClientUser}
+          />
+        ) : (activeTab === 'messages' || activeTab === 'files') ? (
           <ComingSoonView
             section={activeTab}
             onBackToProjects={() => {
@@ -1728,6 +1817,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
             onDeleteProject={handleDeleteProject}
             onToggleTask={handleToggleTask}
             onAddTask={handleAddTaskInDetail}
+            onDeleteTask={handleDeleteTask}
             onUpdateProject={handleUpdateProject}
             currentUser={user}
             onLogout={onLogout}
@@ -1772,7 +1862,17 @@ export default function RemotaleDashboard({ user, onLogout }) {
             onRestoreInvoice={handleRestoreInvoice}
             onUpdateInvoice={handleUpdateInvoice}
           />
-        ) : (activeTab === 'tasks' || activeTab === 'messages' || activeTab === 'files') ? (
+        ) : activeTab === 'tasks' ? (
+          <TasksView
+            tasks={visibleTasks}
+            projects={visibleProjects}
+            onToggleTask={handleToggleTask}
+            onAddTask={handleAddTaskInDetail}
+            onDeleteTask={handleDeleteTask}
+            onSelectProject={handleSelectProject}
+            currentUser={user}
+          />
+        ) : (activeTab === 'messages' || activeTab === 'files') ? (
           <ComingSoonView
             section={activeTab}
             onBackToProjects={() => {
@@ -2227,6 +2327,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
               onDeleteProject={handleDeleteProject}
               onToggleTask={handleToggleTask}
               onAddTask={handleAddTaskInDetail}
+              onDeleteTask={handleDeleteTask}
               onUpdateProject={handleUpdateProject}
               currentUser={user}
               onLogout={onLogout}
@@ -2983,6 +3084,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
               onDeleteProject={handleDeleteProject}
               onToggleTask={handleToggleTask}
               onAddTask={handleAddTaskInDetail}
+              onDeleteTask={handleDeleteTask}
               onUpdateProject={handleUpdateProject}
               currentUser={currentClientUser}
               onLogout={onLogout}
@@ -3204,13 +3306,25 @@ export default function RemotaleDashboard({ user, onLogout }) {
               </div>
             </div>
 
-            <ComingSoonView
-              section={activeTab}
-              onBackToProjects={() => {
-                setSelectedProject(null);
-                setActiveTab('projects');
-              }}
-            />
+            {activeTab === 'tasks' ? (
+              <TasksView
+                tasks={visibleTasks}
+                projects={visibleProjects}
+                onToggleTask={handleToggleTask}
+                onAddTask={handleAddTaskInDetail}
+                onDeleteTask={handleDeleteTask}
+                onSelectProject={handleSelectProject}
+                currentUser={currentClientUser}
+              />
+            ) : (
+              <ComingSoonView
+                section={activeTab}
+                onBackToProjects={() => {
+                  setSelectedProject(null);
+                  setActiveTab('projects');
+                }}
+              />
+            )}
 
             <div className="remotale-mobile-bottom-nav">
               <button

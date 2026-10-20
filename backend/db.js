@@ -2915,6 +2915,8 @@ async function initPostgresTables() {
       await client.query(`
         ALTER TABLE tasks ADD COLUMN IF NOT EXISTS assigned_name VARCHAR(100);
         ALTER TABLE tasks ADD COLUMN IF NOT EXISTS assigned_avatar TEXT;
+        ALTER TABLE tasks ADD COLUMN IF NOT EXISTS completed_at TIMESTAMP WITH TIME ZONE;
+        UPDATE tasks SET completed_at = created_at WHERE completed = true AND completed_at IS NULL;
       `);
 
       // Ensure single Admin user in team_members table
@@ -3536,11 +3538,17 @@ const db = {
   async addTask(taskObj) {
     if (initPromise) await initPromise;
     let saved = null;
+    const isCompleted = Boolean(taskObj.completed);
+    const nowIso = new Date().toISOString();
+    const completedAt = isCompleted ? (taskObj.completed_at || taskObj.completedAt || nowIso) : null;
+    const assignedName = taskObj.assigned_name || taskObj.assignedName || 'Abdullah';
+    const assignedAvatar = taskObj.assigned_avatar || taskObj.assignedAvatar || '';
+
     if (isPostgres && pgPool) {
       try {
         const res = await pgPool.query(
-          `INSERT INTO tasks (id, project_id, client_id, title, due_date, completed)
-           VALUES ($1, $2, $3, $4, $5, $6)
+          `INSERT INTO tasks (id, project_id, client_id, title, due_date, completed, completed_at, assigned_name, assigned_avatar)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
            RETURNING *`,
           [
             taskObj.id || `task-${Date.now()}`,
@@ -3548,7 +3556,10 @@ const db = {
             taskObj.client_id || taskObj.clientId || null,
             taskObj.title,
             taskObj.due_date || taskObj.dueDate || new Date(Date.now() + 7 * 86400000).toLocaleDateString('en-GB'),
-            Boolean(taskObj.completed)
+            isCompleted,
+            completedAt,
+            assignedName,
+            assignedAvatar
           ]
         );
         saved = res.rows[0];
@@ -3574,9 +3585,17 @@ const db = {
 
     const local = readLocalStore();
     local.tasks = local.tasks || [];
-    local.tasks.unshift(saved || taskObj);
+    const itemToSave = saved || {
+      ...taskObj,
+      id: taskObj.id || `task-${Date.now()}`,
+      completed: isCompleted,
+      completed_at: completedAt,
+      assigned_name: assignedName,
+      assigned_avatar: assignedAvatar
+    };
+    local.tasks.unshift(itemToSave);
 
-    const targetProjId = (saved || taskObj).project_id || (saved || taskObj).projectId;
+    const targetProjId = itemToSave.project_id || itemToSave.projectId;
     if (targetProjId) {
       const projTasks = (local.tasks || []).filter(t => (t.project_id === targetProjId || t.projectId === targetProjId));
       const total = projTasks.length;
@@ -3590,22 +3609,24 @@ const db = {
     }
 
     writeLocalStore(local);
-    return saved || taskObj;
+    return itemToSave;
   },
 
   async toggleTask(id, completed) {
     if (initPromise) await initPromise;
     let updatedTask = null;
+    const nowIso = new Date().toISOString();
 
     if (isPostgres && pgPool) {
       try {
         let q = '';
         let params = [];
         if (completed !== undefined) {
-          q = 'UPDATE tasks SET completed = $1 WHERE id = $2 RETURNING *';
-          params = [Boolean(completed), id];
+          const isComp = Boolean(completed);
+          q = 'UPDATE tasks SET completed = $1, completed_at = CASE WHEN $1 = true THEN COALESCE(completed_at, NOW()) ELSE NULL END WHERE id = $2 RETURNING *';
+          params = [isComp, id];
         } else {
-          q = 'UPDATE tasks SET completed = NOT completed WHERE id = $1 RETURNING *';
+          q = 'UPDATE tasks SET completed = NOT completed, completed_at = CASE WHEN completed = false THEN NOW() ELSE NULL END WHERE id = $1 RETURNING *';
           params = [id];
         }
         const res = await pgPool.query(q, params);
@@ -3637,7 +3658,9 @@ const db = {
     const local = readLocalStore();
     const task = (local.tasks || []).find(t => t.id === id);
     if (task) {
-      task.completed = completed !== undefined ? Boolean(completed) : !task.completed;
+      const nextComp = completed !== undefined ? Boolean(completed) : !task.completed;
+      task.completed = nextComp;
+      task.completed_at = nextComp ? (task.completed_at || nowIso) : null;
       if (!updatedTask) updatedTask = task;
       // Also update project progress in local store
       if (task.project_id) {
@@ -3664,6 +3687,103 @@ const db = {
       this.logActivity('Abdullah', isDone ? 'completed task on' : 'reopened task on', `${updatedTask.title || 'Task'}`).catch(() => {});
     }
 
+    return updatedTask;
+  },
+
+  async deleteTask(id) {
+    if (initPromise) await initPromise;
+    let targetProjId = null;
+    if (isPostgres && pgPool) {
+      try {
+        const found = await pgPool.query('SELECT project_id FROM tasks WHERE id = $1', [id]);
+        if (found.rows[0]) targetProjId = found.rows[0].project_id;
+        await pgPool.query('DELETE FROM tasks WHERE id = $1', [id]);
+        if (targetProjId) {
+          const stats = await pgPool.query(
+            `SELECT COUNT(*)::int as total, COUNT(*) FILTER (WHERE completed = true)::int as done
+             FROM tasks WHERE project_id = $1`,
+            [targetProjId]
+          );
+          const total = stats.rows[0] ? stats.rows[0].total : 0;
+          const done = stats.rows[0] ? stats.rows[0].done : 0;
+          const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+          const status = pct >= 100 ? 'completed' : 'in-progress';
+          await pgPool.query('UPDATE projects SET progress = $1, status = $2 WHERE id = $3', [pct, status, targetProjId]);
+        }
+      } catch (err) {
+        console.error('[DB deleteTask PG Error]', err.message);
+      }
+    }
+
+    const local = readLocalStore();
+    const t = (local.tasks || []).find(x => x.id === id);
+    if (t) targetProjId = t.project_id || t.projectId;
+    local.tasks = (local.tasks || []).filter(x => x.id !== id);
+
+    if (targetProjId) {
+      const projTasks = (local.tasks || []).filter(x => (x.project_id === targetProjId || x.projectId === targetProjId));
+      const total = projTasks.length;
+      const done = projTasks.filter(x => x.completed).length;
+      const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+      const proj = (local.projects || []).find(p => p.id === targetProjId);
+      if (proj) {
+        proj.progress = pct;
+        proj.status = pct >= 100 ? 'completed' : 'in-progress';
+      }
+    }
+    writeLocalStore(local);
+    return { success: true };
+  },
+
+  async updateTask(id, updates = {}) {
+    if (initPromise) await initPromise;
+    let updatedTask = null;
+    const nowIso = new Date().toISOString();
+
+    if (isPostgres && pgPool) {
+      try {
+        const fields = [];
+        const values = [];
+        let i = 1;
+        if (updates.title !== undefined) {
+          fields.push(`title = $${i++}`);
+          values.push(updates.title);
+        }
+        if (updates.due_date !== undefined || updates.dueDate !== undefined) {
+          fields.push(`due_date = $${i++}`);
+          values.push(updates.due_date || updates.dueDate);
+        }
+        if (updates.completed !== undefined) {
+          fields.push(`completed = $${i++}`);
+          values.push(Boolean(updates.completed));
+          if (updates.completed) {
+            fields.push(`completed_at = COALESCE(completed_at, NOW())`);
+          } else {
+            fields.push(`completed_at = NULL`);
+          }
+        }
+        if (fields.length > 0) {
+          values.push(id);
+          const q = `UPDATE tasks SET ${fields.join(', ')} WHERE id = $${i} RETURNING *`;
+          const res = await pgPool.query(q, values);
+          if (res.rows[0]) updatedTask = res.rows[0];
+        }
+      } catch (err) {
+        console.error('[DB updateTask PG Error]', err.message);
+      }
+    }
+
+    const local = readLocalStore();
+    const task = (local.tasks || []).find(t => t.id === id);
+    if (task) {
+      Object.assign(task, updates);
+      if (updates.completed !== undefined) {
+        task.completed = Boolean(updates.completed);
+        task.completed_at = task.completed ? (task.completed_at || nowIso) : null;
+      }
+      if (!updatedTask) updatedTask = task;
+      writeLocalStore(local);
+    }
     return updatedTask;
   },
 

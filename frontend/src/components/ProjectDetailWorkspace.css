@@ -619,53 +619,143 @@
 .pdw-tasks-list {
   display: flex;
   flex-direction: column;
-  gap: 11px;
+  gap: 10px;
+}
+
+.pdw-task-add-form {
+  margin-bottom: 14px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  background: #f8fafc;
+  padding: 8px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+}
+
+.pdw-task-add-input {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  font-size: 13px;
+  background: #ffffff;
+  color: #1e293b;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.pdw-task-add-input:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+.pdw-task-save-btn {
+  background: #4f46e5;
+  color: #ffffff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.pdw-task-save-btn:hover:not(:disabled) {
+  background: #4338ca;
+  transform: translateY(-1px);
+}
+
+.pdw-task-save-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pdw-task-cancel-btn {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  color: #64748b;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.pdw-task-cancel-btn:hover {
+  background: #e2e8f0;
+  color: #1e293b;
 }
 
 .pdw-task-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 10px;
+  padding: 10px 12px;
   border-radius: 10px;
   background: #f8fafc;
   border: 1px solid #edf2f7;
-  transition: all 0.15s ease;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   width: 100%;
   box-sizing: border-box;
   min-width: 0;
-  gap: 8px;
+  gap: 10px;
 }
 
 .pdw-task-row:hover {
   background: #f1f5f9;
+  border-color: #e2e8f0;
+}
+
+.pdw-task-row.completed {
+  background: #fcfdfc;
+  border-color: #e2f1e6;
 }
 
 .pdw-task-left {
   display: flex;
-  align-items: center;
-  gap: 10px;
+  align-items: flex-start;
+  gap: 11px;
   flex: 1;
   min-width: 0;
 }
 
 .pdw-task-checkbox {
-  width: 17px;
-  height: 17px;
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
   border-radius: 5px;
-  accent-color: #6366f1;
+  accent-color: #059669;
   cursor: pointer;
   flex-shrink: 0;
+  transition: transform 0.15s ease;
+}
+
+.pdw-task-checkbox:hover {
+  transform: scale(1.1);
+}
+
+.pdw-task-content-col {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  flex: 1;
 }
 
 .pdw-task-title {
-  font-size: 13px;
+  font-size: 13.5px;
   font-weight: 500;
   color: #1e293b;
   overflow: hidden;
   text-overflow: ellipsis;
   word-break: break-word;
   min-width: 0;
+  line-height: 1.4;
+  transition: color 0.15s ease;
 }
 
 .pdw-task-title.completed {
@@ -673,10 +763,33 @@
   color: #94a3b8;
 }
 
+.pdw-task-ticked-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 2px;
+}
+
+.pdw-ticked-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4.5px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #047857;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  padding: 2px 7px;
+  border-radius: 6px;
+  line-height: 1.3;
+  letter-spacing: 0.1px;
+}
+
 .pdw-task-right {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 9px;
   flex-shrink: 0;
 }
 
@@ -684,6 +797,11 @@
   font-size: 11.5px;
   color: #64748b;
   white-space: nowrap;
+  background: #ffffff;
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid #edf2f7;
+  font-weight: 500;
 }
 
 .pdw-task-avatar {
@@ -691,6 +809,24 @@
   height: 22px;
   border-radius: 50%;
   object-fit: cover;
+}
+
+.pdw-btn-delete-task {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.pdw-btn-delete-task:hover {
+  color: #ef4444;
+  background: #fee2e2;
 }
 
 /* Card 5: Files & Assets */
@@ -991,11 +1127,22 @@
   }
 }
 
-@media (max-width: 480px) {
-  .pdw-task-row {
+@media (max-width: 640px) {
+  .pdw-task-add-form {
     flex-wrap: wrap !important;
     gap: 8px !important;
-    padding: 10px !important;
+  }
+
+  .pdw-task-add-input {
+    width: 100% !important;
+    flex: none !important;
+  }
+
+  .pdw-task-row {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+    padding: 12px !important;
   }
 
   .pdw-task-left {
@@ -1004,12 +1151,9 @@
 
   .pdw-task-right {
     width: 100% !important;
-    justify-content: flex-end !important;
+    justify-content: space-between !important;
     border-top: 1px dashed #e2e8f0 !important;
-    padding-top: 6px !important;
-    margin-top: 2px !important;
-  }
-
+    padding-top: 8px !important;
   .pdw-file-row {
     flex-wrap: wrap !important;
     gap: 8px !important;

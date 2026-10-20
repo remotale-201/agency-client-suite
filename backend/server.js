@@ -326,18 +326,22 @@ app.get('/api/tasks', async (req, res) => {
 
 app.post('/api/tasks', async (req, res) => {
   try {
-    const { title, dueDate, clientId, projectId } = req.body;
+    const { title, dueDate, clientId, projectId, assignedName, assignedAvatar, completed, completedAt } = req.body;
     if (!title || !title.trim()) {
       return res.status(400).json({ error: 'Task title is required' });
     }
 
+    const isCompleted = Boolean(completed);
     const newTask = {
       id: `task-${Date.now()}`,
       project_id: projectId || null,
       client_id: clientId || null,
       title: title.trim(),
-      due_date: dueDate || 'Oct 25, 2024',
-      completed: false
+      due_date: dueDate || new Date(Date.now() + 7 * 86400000).toLocaleDateString('en-GB'),
+      completed: isCompleted,
+      completed_at: isCompleted ? (completedAt || new Date().toISOString()) : null,
+      assigned_name: assignedName || 'Abdullah',
+      assigned_avatar: assignedAvatar || ''
     };
 
     const saved = await db.addTask(newTask);
@@ -352,6 +356,25 @@ app.patch('/api/tasks/:id/toggle', async (req, res) => {
     const updated = await db.toggleTask(req.params.id, req.body.completed);
     if (!updated) return res.status(404).json({ error: 'Task not found' });
     res.json(updated);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.put('/api/tasks/:id', async (req, res) => {
+  try {
+    const updated = await db.updateTask(req.params.id, req.body);
+    if (!updated) return res.status(404).json({ error: 'Task not found' });
+    res.json(updated);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.delete('/api/tasks/:id', async (req, res) => {
+  try {
+    const result = await db.deleteTask(req.params.id);
+    res.json(result);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
