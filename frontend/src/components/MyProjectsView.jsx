@@ -122,7 +122,8 @@ export default function MyProjectsView({
   onEditProject,
   onDeleteProject,
   currentUser,
-  onLogout
+  onLogout,
+  onOpenProgressPdf
 }) {
   const [activeFilter, setActiveFilter] = useState('all'); // 'all', 'in-progress', 'under-review', 'completed'
   const [searchTerm, setSearchTerm] = useState('');
@@ -268,6 +269,18 @@ export default function MyProjectsView({
             >
               <span>🚪</span>
               <span>Log Out</span>
+            </button>
+          )}
+
+          {onOpenProgressPdf && (
+            <button
+              type="button"
+              className="my-projects-btn-progress-pdf"
+              onClick={onOpenProgressPdf}
+              title="Make, customize pending items, and print Client Project Progress PDF"
+            >
+              <span>📄</span>
+              <span>Progress PDF Report</span>
             </button>
           )}
 

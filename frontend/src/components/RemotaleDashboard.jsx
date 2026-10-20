@@ -8,6 +8,7 @@ import ProjectDetailWorkspace from './ProjectDetailWorkspace';
 import InvoicesView from './InvoicesView';
 import ComingSoonView from './ComingSoonView';
 import LetterAvatar from './LetterAvatar';
+import ClientProgressPdfModal from './ClientProgressPdfModal';
 import { SEED_PROJECTS, SEED_CLIENTS, SEED_STATS, SEED_INVOICES, SEED_ACTIVITIES } from '../seedData';
 
 // Helper for relative time formatting
@@ -289,6 +290,9 @@ export default function RemotaleDashboard({ user, onLogout }) {
 
   // New Project Modal State
   const [isNewProjectModalOpen, setIsNewProjectModalOpen] = useState(false);
+  // Client Progress PDF Studio Modal State
+  const [isProgressPdfModalOpen, setIsProgressPdfModalOpen] = useState(false);
+  const [progressPdfClientId, setProgressPdfClientId] = useState('client-awais');
   const [newProjTitle, setNewProjTitle] = useState('');
   const [newProjDesc, setNewProjDesc] = useState('');
   const [newProjStatus, setNewProjStatus] = useState('in-progress');
@@ -1727,6 +1731,11 @@ export default function RemotaleDashboard({ user, onLogout }) {
             onUpdateProject={handleUpdateProject}
             currentUser={user}
             onLogout={onLogout}
+            onOpenProgressPdf={(p) => {
+              const targetCid = p?.clientId || p?.client_id || (role === 'client' ? previewClientId : 'client-awais');
+              setProgressPdfClientId(targetCid);
+              setIsProgressPdfModalOpen(true);
+            }}
           />
         ) : activeTab === 'projects' ? (
           <MyProjectsView
@@ -1743,6 +1752,11 @@ export default function RemotaleDashboard({ user, onLogout }) {
             onDeleteProject={handleDeleteProject}
             currentUser={user}
             onLogout={onLogout}
+            onOpenProgressPdf={() => {
+              const targetCid = role === 'client' ? previewClientId : 'client-awais';
+              setProgressPdfClientId(targetCid);
+              setIsProgressPdfModalOpen(true);
+            }}
           />
         ) : activeTab === 'invoices' ? (
           <InvoicesView
@@ -1825,6 +1839,35 @@ export default function RemotaleDashboard({ user, onLogout }) {
               style={{ display: 'inline-flex', padding: '8px 14px', fontSize: '12px' }}
             >
               <span>+ New Project</span>
+            </button>
+
+            <button
+              type="button"
+              className="remotale-btn-progress-pdf"
+              onClick={() => {
+                const targetCid = role === 'client' ? previewClientId : 'client-awais';
+                setProgressPdfClientId(targetCid);
+                setIsProgressPdfModalOpen(true);
+              }}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '8px 14px',
+                fontSize: '12px',
+                fontWeight: 700,
+                borderRadius: '8px',
+                background: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)',
+                color: '#ffffff',
+                border: 'none',
+                cursor: 'pointer',
+                boxShadow: '0 2px 8px rgba(2, 132, 199, 0.28)',
+                transition: 'all 0.15s ease'
+              }}
+              title="Create, customize pending items, and print client project progress PDF"
+            >
+              <span>📄</span>
+              <span>Progress PDF Report</span>
             </button>
 
             <div style={{ position: 'relative' }} ref={datePickerRef}>
@@ -2092,7 +2135,33 @@ export default function RemotaleDashboard({ user, onLogout }) {
                       <span className="remotale-admin-item-sub">{c.totalProjects || 1} Projects</span>
                     </div>
                   </div>
-                  <span style={{ color: '#94a3b8', cursor: 'pointer', fontSize: '15px' }}>⋮</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setProgressPdfClientId(c.id);
+                        setIsProgressPdfModalOpen(true);
+                      }}
+                      style={{
+                        padding: '4px 8px',
+                        background: '#f0f9ff',
+                        color: '#0284c7',
+                        border: '1px solid #bae6fd',
+                        borderRadius: '6px',
+                        fontSize: '11px',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '4px'
+                      }}
+                      title={`Export Progress PDF Report for ${c.name}`}
+                    >
+                      <span>📄</span>
+                      <span>Progress PDF</span>
+                    </button>
+                    <span style={{ color: '#94a3b8', cursor: 'pointer', fontSize: '15px' }}>⋮</span>
+                  </div>
                 </div>
               ))
             )}
@@ -2160,6 +2229,12 @@ export default function RemotaleDashboard({ user, onLogout }) {
               onAddTask={handleAddTaskInDetail}
               onUpdateProject={handleUpdateProject}
               currentUser={user}
+              onLogout={onLogout}
+              onOpenProgressPdf={(p) => {
+                const targetCid = p?.clientId || p?.client_id || (role === 'client' ? previewClientId : 'client-awais');
+                setProgressPdfClientId(targetCid);
+                setIsProgressPdfModalOpen(true);
+              }}
             />
             {/* Mobile Bottom Navigation */}
             <div className="remotale-mobile-bottom-nav">
@@ -2273,6 +2348,11 @@ export default function RemotaleDashboard({ user, onLogout }) {
               onDeleteProject={handleDeleteProject}
               currentUser={user}
               onLogout={onLogout}
+              onOpenProgressPdf={() => {
+                const targetCid = role === 'client' ? previewClientId : 'client-awais';
+                setProgressPdfClientId(targetCid);
+                setIsProgressPdfModalOpen(true);
+              }}
             />
 
             {/* Mobile Bottom Navigation */}
@@ -3694,6 +3774,16 @@ export default function RemotaleDashboard({ user, onLogout }) {
         isAdmin={role === 'admin'}
         clients={clients}
         currentUser={user}
+      />
+
+      {/* Client Project Progress & Pending Items PDF Studio Modal */}
+      <ClientProgressPdfModal
+        isOpen={isProgressPdfModalOpen}
+        onClose={() => setIsProgressPdfModalOpen(false)}
+        projects={projects}
+        clients={clients}
+        initialClientId={progressPdfClientId}
+        currentAdminName="Ameen"
       />
     </div>
   );

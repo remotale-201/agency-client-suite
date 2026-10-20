@@ -1,0 +1,961 @@
+/* ==========================================================================
+   SHARE PROJECT PROGRESS MODAL & EXACT LUXURY TERRACOTTA PDF SHEET
+   Matching User Image 1 (PDF Design) and Image 2 (Modal UI)
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   IMAGE 2: MODAL BACKDROP & FLOATING CARD ('Share project progress')
+   -------------------------------------------------------------------------- */
+.spp-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.spp-modal-container {
+  background: #ffffff;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 980px;
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  position: relative;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Inter, Helvetica, Arial, sans-serif;
+  color: #111827;
+  animation: sppFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes sppFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.98) translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Modal Header */
+.spp-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 24px 28px 16px 28px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.spp-header-titles {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.spp-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+  color: #111827;
+  letter-spacing: -0.02em;
+}
+
+.spp-subtitle {
+  margin: 0;
+  font-size: 13.5px;
+  color: #6b7280;
+}
+
+.spp-close-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  color: #6b7280;
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.spp-close-btn:hover {
+  background: #f9fafb;
+  color: #111827;
+  border-color: #d1d5db;
+}
+
+/* Filter Row: Client / Show / Search */
+.spp-filter-row {
+  display: grid;
+  grid-template-columns: 240px 240px 1fr;
+  gap: 16px;
+  padding: 16px 28px;
+  background: #ffffff;
+}
+
+.spp-filter-col {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.spp-filter-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #4b5563;
+}
+
+.spp-select-wrapper {
+  position: relative;
+}
+
+.spp-select-field {
+  width: 100%;
+  padding: 9px 14px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #111827;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 14px;
+}
+
+.spp-select-field:focus {
+  border-color: #6366f1;
+}
+
+/* Show Filter Pills */
+.spp-pills-group {
+  display: flex;
+  background: #f3f4f6;
+  padding: 3px;
+  border-radius: 10px;
+  gap: 2px;
+}
+
+.spp-pill-btn {
+  flex: 1;
+  padding: 7px 10px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #4b5563;
+  cursor: pointer;
+  text-align: center;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.spp-pill-btn.active {
+  background: #ffffff;
+  color: #4338ca;
+  font-weight: 700;
+  border-color: #c7d2fe;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* Search input */
+.spp-search-input {
+  width: 100%;
+  padding: 9px 14px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 13.5px;
+  color: #111827;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.spp-search-input:focus {
+  border-color: #6366f1;
+}
+
+/* Message to Client Box */
+.spp-message-box-wrap {
+  padding: 0 28px 16px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.spp-message-textarea {
+  width: 100%;
+  padding: 10px 14px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #111827;
+  font-family: inherit;
+  resize: vertical;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.spp-message-textarea:focus {
+  border-color: #6366f1;
+}
+
+/* Projects Cards Scroll Area */
+.spp-cards-list-wrap {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 28px 20px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: #ffffff;
+}
+
+.spp-empty-state {
+  text-align: center;
+  padding: 36px 20px;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+/* Individual Project Card (3-Column Layout from Image 2) */
+.spp-project-card {
+  display: grid;
+  grid-template-columns: 230px 1fr 140px;
+  gap: 16px;
+  padding: 16px 18px;
+  background: #ffffff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 14px;
+  transition: all 0.15s ease;
+  box-sizing: border-box;
+}
+
+.spp-project-card.selected {
+  border-color: #c7d2fe;
+  background: #fafbff;
+}
+
+.spp-project-card.unselected {
+  opacity: 0.55;
+  background: #ffffff;
+}
+
+/* Left Column: Checkbox, Title, Domain, Slider */
+.spp-card-left-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.spp-card-title-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+/* Custom Blue Checkbox */
+.spp-checkbox-container {
+  display: inline-flex;
+  position: relative;
+  cursor: pointer;
+  padding-top: 2px;
+}
+
+.spp-checkbox-container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.spp-custom-checkmark {
+  width: 18px;
+  height: 18px;
+  background-color: #ffffff;
+  border: 2px solid #cbd5e1;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.spp-checkbox-container input:checked ~ .spp-custom-checkmark {
+  background-color: #4f46e5;
+  border-color: #4f46e5;
+}
+
+.spp-checkbox-container input:checked ~ .spp-custom-checkmark::after {
+  content: '✓';
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.spp-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.spp-card-project-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1.3;
+}
+
+.spp-card-project-domain {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* Progress Slider & Percentage */
+.spp-card-slider-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-left: 28px;
+}
+
+.spp-slider {
+  flex: 1;
+  height: 6px;
+  accent-color: #4f46e5;
+  cursor: pointer;
+}
+
+.spp-slider-pct {
+  font-size: 13px;
+  font-weight: 700;
+  color: #111827;
+  min-width: 34px;
+}
+
+/* Middle Column: What is Pending */
+.spp-card-mid-col {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.spp-pending-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #9a3412;
+}
+
+.spp-pending-textarea {
+  width: 100%;
+  padding: 10px 12px;
+  background: #fffdf9;
+  border: 1px solid #f4ecd8;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #111827;
+  font-family: inherit;
+  resize: vertical;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.spp-pending-textarea:focus {
+  border-color: #d97706;
+  background: #ffffff;
+}
+
+/* Right Column: Deadline */
+.spp-card-right-col {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.spp-deadline-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #4b5563;
+}
+
+.spp-deadline-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.spp-deadline-input {
+  width: 100%;
+  padding: 8px 30px 8px 10px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #111827;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.spp-calendar-icon {
+  position: absolute;
+  right: 8px;
+  pointer-events: none;
+  font-size: 13px;
+  opacity: 0.65;
+}
+
+/* Modal Bottom Footer */
+.spp-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 28px;
+  background: #ffffff;
+  border-top: 1px solid #f3f4f6;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.spp-footer-left-count {
+  font-size: 13.5px;
+  color: #4b5563;
+}
+
+.spp-footer-left-count strong {
+  color: #111827;
+  font-weight: 700;
+}
+
+.spp-footer-right-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.spp-btn-whatsapp {
+  padding: 9px 16px;
+  background: #ffffff;
+  color: #111827;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.spp-btn-whatsapp:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+}
+
+.spp-btn-whatsapp.copied {
+  background: #dcfce7;
+  color: #15803d;
+  border-color: #86efac;
+}
+
+.spp-btn-preview {
+  padding: 9px 18px;
+  background: #ffffff;
+  color: #111827;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.spp-btn-preview:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+}
+
+.spp-btn-download-pdf {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 20px;
+  background: #4f46e5;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
+  transition: all 0.15s ease;
+}
+
+.spp-btn-download-pdf:hover:not(:disabled) {
+  background: #4338ca;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+}
+
+.spp-btn-download-pdf:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* --------------------------------------------------------------------------
+   PREVIEW VIEW WRAPPER
+   -------------------------------------------------------------------------- */
+.spp-preview-view-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 92vh;
+  background: #262626;
+}
+
+.spp-preview-top-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  background: #171717;
+  border-bottom: 1px solid #404040;
+  color: #ffffff;
+}
+
+.spp-preview-toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.spp-btn-back {
+  padding: 6px 12px;
+  background: #262626;
+  color: #ffffff;
+  border: 1px solid #525252;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.spp-btn-back:hover {
+  background: #404040;
+}
+
+.spp-preview-sheet-title {
+  font-size: 13px;
+  color: #d4d4d4;
+}
+
+.spp-preview-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.spp-btn-print-native {
+  padding: 8px 16px;
+  background: #ffffff;
+  color: #171717;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.spp-preview-sheet-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 20px;
+  display: flex;
+  justify-content: center;
+}
+
+/* --------------------------------------------------------------------------
+   IMAGE 1: EXACT LUXURY TERRACOTTA PDF SHEET DESIGN (`exact-pdf-sheet`)
+   -------------------------------------------------------------------------- */
+.exact-pdf-sheet {
+  width: 210mm;
+  min-height: 297mm;
+  background: #ffffff;
+  color: #111827;
+  padding: 16mm 16mm 14mm 16mm;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Inter, Helvetica, Arial, sans-serif;
+  font-size: 9.5pt;
+  line-height: 1.45;
+  margin: 0 auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 1. Terracotta Curved Header Banner */
+.eps-top-banner {
+  background: #8A351B;
+  border-radius: 18px;
+  padding: 22px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #ffffff;
+}
+
+.eps-banner-left {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.eps-banner-title {
+  margin: 0;
+  font-family: Georgia, 'Playfair Display', 'Times New Roman', serif;
+  font-size: 26pt;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+}
+
+.eps-banner-sub {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 10pt;
+  color: rgba(255, 255, 255, 0.88);
+  font-weight: 400;
+}
+
+.eps-author-pill {
+  border: 1.5px solid rgba(255, 255, 255, 0.7);
+  color: #ffffff;
+  border-radius: 999px;
+  padding: 5px 22px;
+  font-size: 10pt;
+  font-weight: 600;
+  background: transparent;
+  letter-spacing: 0.02em;
+}
+
+/* 2. Soft Cream Report Details Card */
+.eps-cream-card {
+  background: #F7F3EA;
+  border-radius: 14px;
+  padding: 18px 24px;
+  margin-top: 18px;
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.eps-card-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.eps-meta-label {
+  font-size: 8pt;
+  font-weight: 700;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 4px;
+}
+
+.eps-meta-label.right {
+  text-align: right;
+}
+
+.eps-client-name {
+  font-size: 18pt;
+  font-weight: 800;
+  color: #111827;
+  line-height: 1.2;
+}
+
+.eps-client-company {
+  font-size: 10pt;
+  color: #4b5563;
+  margin-bottom: 6px;
+}
+
+.eps-client-contact {
+  display: flex;
+  gap: 16px;
+  font-size: 9pt;
+  color: #4b5563;
+}
+
+.eps-card-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.eps-report-date {
+  font-size: 16pt;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 8px;
+}
+
+.eps-avg-progress-pill {
+  background: #8A351B;
+  color: #ffffff;
+  border-radius: 999px;
+  padding: 6px 18px;
+  font-size: 9.5pt;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+/* 3. Message to Client */
+.eps-client-message {
+  font-size: 9.5pt;
+  color: #374151;
+  line-height: 1.5;
+  margin: 0 0 16px 0;
+}
+
+/* 4. Main Projects Table */
+.eps-projects-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 10px;
+}
+
+.eps-projects-table thead th {
+  background: #1C1C1E;
+  color: #ffffff;
+  font-size: 8.5pt;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 9px 12px;
+}
+
+.eps-projects-table thead th:first-child {
+  border-top-left-radius: 6px;
+}
+
+.eps-projects-table thead th:last-child {
+  border-top-right-radius: 6px;
+}
+
+.eps-projects-table tbody tr {
+  border-bottom: 1px solid #E5E7EB;
+  page-break-inside: avoid;
+}
+
+.eps-projects-table td {
+  padding: 12px 12px;
+  vertical-align: top;
+  font-size: 9pt;
+}
+
+.eps-cell-project {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.eps-proj-title {
+  font-weight: 800;
+  color: #111827;
+  font-size: 9.5pt;
+  line-height: 1.3;
+}
+
+.eps-proj-domain {
+  font-size: 8.5pt;
+  color: #8A351B;
+  font-weight: 500;
+}
+
+/* Progress Cell */
+.eps-progress-val {
+  font-size: 9.5pt;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 4px;
+}
+
+.eps-progress-track {
+  width: 80px;
+  height: 5px;
+  background: #EBDCCB;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.eps-progress-fill {
+  height: 100%;
+  background: #8A351B;
+  border-radius: 999px;
+}
+
+/* What is Pending Cell */
+.eps-cell-pending {
+  color: #374151;
+  font-size: 9pt;
+  line-height: 1.5;
+}
+
+.eps-pending-single {
+  color: #374151;
+}
+
+.eps-pending-bullets {
+  margin: 0;
+  padding-left: 14px;
+  list-style-type: disc;
+}
+
+.eps-pending-bullets li {
+  margin-bottom: 2px;
+}
+
+/* Deadline Cell */
+.eps-cell-deadline {
+  text-align: right;
+  font-size: 9pt;
+  font-weight: 800;
+  color: #111827;
+}
+
+/* Selected Projects Count */
+.eps-selected-count {
+  text-align: right;
+  font-size: 9.5pt;
+  color: #111827;
+  margin: 8px 0 28px 0;
+}
+
+/* 5. Footer with Note & Ameen Sign-off */
+.eps-footer-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid #F3F4F6;
+  page-break-inside: avoid;
+}
+
+.eps-footer-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.eps-footer-note-title {
+  font-size: 8.5pt;
+  font-weight: 800;
+  color: #111827;
+  letter-spacing: 0.05em;
+}
+
+.eps-footer-note-list {
+  margin: 0;
+  padding-left: 14px;
+  font-size: 8pt;
+  color: #4b5563;
+  line-height: 1.6;
+}
+
+.eps-footer-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  text-align: right;
+}
+
+.eps-author-name {
+  font-size: 12pt;
+  font-weight: 800;
+  color: #111827;
+}
+
+.eps-author-role {
+  font-size: 8.5pt;
+  color: #4b5563;
+}
+
+.eps-author-phone,
+.eps-author-email {
+  font-size: 8.5pt;
+  color: #4b5563;
+}
+
+/* Bottom Terracotta Accent Line */
+.eps-bottom-accent-line {
+  height: 4px;
+  background: #8A351B;
+  border-radius: 2px;
+  margin-top: 14px;
+}
+
+/* --------------------------------------------------------------------------
+   PRINT STYLES
+   -------------------------------------------------------------------------- */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  .spp-modal-overlay,
+  .spp-modal-container {
+    position: static !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .exact-pdf-sheet,
+  .exact-pdf-sheet * {
+    visibility: visible !important;
+  }
+
+  .exact-pdf-sheet {
+    display: block !important;
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    box-shadow: none !important;
+    padding: 10mm 12mm !important;
+  }
+}

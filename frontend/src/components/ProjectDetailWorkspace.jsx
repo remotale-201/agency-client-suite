@@ -221,7 +221,8 @@ export default function ProjectDetailWorkspace({
   onAddTask,
   onUpdateProject,
   currentUser,
-  onLogout
+  onLogout,
+  onOpenProgressPdf
 }) {
   const [activeTab, setActiveTab] = useState('overview'); // overview, todo, files, credentials, notes
   const [copiedKey, setCopiedKey] = useState(null);
@@ -583,6 +584,32 @@ export default function ProjectDetailWorkspace({
             </button>
           )}
 
+          {onOpenProgressPdf && (
+            <button
+              type="button"
+              className="pdw-btn-progress-pdf"
+              onClick={() => onOpenProgressPdf(project)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '5px',
+                padding: '6px 12px',
+                borderRadius: '8px',
+                border: '1px solid #bae6fd',
+                background: '#f0f9ff',
+                color: '#0284c7',
+                fontSize: '12px',
+                fontWeight: 700,
+                cursor: 'pointer',
+                transition: 'all 0.15s ease'
+              }}
+              title="Create Client Project Progress PDF Report"
+            >
+              <span>📄</span>
+              <span>Progress PDF</span>
+            </button>
+          )}
+
           <button
             type="button"
             className="pdw-dots-btn"
@@ -595,6 +622,19 @@ export default function ProjectDetailWorkspace({
           {/* 3-dots menu for the project */}
           {isTopMenuOpen && (
             <div className="pdw-menu-dropdown">
+              {onOpenProgressPdf && (
+                <button
+                  type="button"
+                  className="pdw-menu-item"
+                  onClick={() => {
+                    setIsTopMenuOpen(false);
+                    onOpenProgressPdf(project);
+                  }}
+                >
+                  <span style={{ fontSize: '14px' }}>📄</span>
+                  <span>Client Progress PDF</span>
+                </button>
+              )}
               <button
                 type="button"
                 className="pdw-menu-item"
