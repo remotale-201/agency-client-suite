@@ -1154,6 +1154,8 @@
     justify-content: space-between !important;
     border-top: 1px dashed #e2e8f0 !important;
     padding-top: 8px !important;
+  }
+
   .pdw-file-row {
     flex-wrap: wrap !important;
     gap: 8px !important;

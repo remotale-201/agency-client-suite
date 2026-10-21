@@ -3935,7 +3935,75 @@ export const SEED_STATS = {
   "totalRevenue": 0
 };
 
-export const SEED_INVOICES = [];
+export const SEED_INVOICES = [
+  {
+    id: "inv-1792100301148",
+    client_id: "client-awais",
+    project_id: null,
+    title: "Web Development & E-Commerce Services",
+    amount: 13000,
+    status: "published",
+    due_date: "2026-09-10",
+    created_at: "2026-10-15T16:38:22.359Z",
+    invoice_number: "INV-2026-08",
+    currency: "PKR",
+    items: [
+      { qty: 15, rate: 100, amount: 1500, description: "Dfynex 15 Post" },
+      { qty: 20, rate: 100, amount: 2000, description: "Oxytees" },
+      { qty: 20, rate: 100, amount: 2000, description: "Mr Gym Wear" },
+      { qty: 10, rate: 100, amount: 1000, description: "Gym Shire" },
+      { qty: 20, rate: 100, amount: 2000, description: "GymVare" },
+      { qty: 20, rate: 100, amount: 2000, description: "WearPhare" },
+      { qty: 15, rate: 100, amount: 1500, description: "FytNix" },
+      { qty: 10, rate: 100, amount: 1000, description: "10 Brand Logo + Bnanner" }
+    ],
+    subtotal: 13000,
+    tax: 0,
+    discount: 0,
+    notes: "Thank you for your business!",
+    issue_date: "2026-09-03",
+    payment_details: "JazzCash: 03293003719\nMeezan Bank A/C: 00300115381875",
+    published: true,
+    project_ids: [],
+    project_titles: [],
+    client_name: "Adeel Bhai",
+    client_company: "Designation / Business",
+    client_email: "client@company.com",
+    project_title: "",
+    is_deleted: false,
+    deleted_at: null
+  },
+  {
+    id: "inv-1792441924496",
+    client_id: "client-awais",
+    project_id: null,
+    title: "Test Draft Invoice",
+    amount: 25000,
+    status: "draft",
+    due_date: "25/10/2026",
+    created_at: "2026-10-19T15:32:04.463Z",
+    invoice_number: "INV-2026-DRAFT-01",
+    currency: "PKR",
+    items: [
+      { qty: 1, rate: 25000, amount: 25000, description: "Test Draft Feature" }
+    ],
+    subtotal: 25000,
+    tax: 0,
+    discount: 0,
+    notes: "Thank you for your business!",
+    issue_date: "15/10/2026",
+    payment_details: "Bank: Meezan Bank | Title: Abdullah | Account: 0102-0103948291",
+    published: false,
+    project_ids: [],
+    project_titles: [],
+    client_name: "Awais Agency",
+    client_company: "Awais Agency",
+    client_email: "awais@remotale.com",
+    project_title: "",
+    is_deleted: false,
+    deleted_at: null
+  }
+];
 
 export const SEED_ACTIVITIES = [
   {
