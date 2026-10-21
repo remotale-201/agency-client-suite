@@ -3840,12 +3840,19 @@ const db = {
     }
 
     const local = readLocalStore();
-    return local.messages || [];
+    let msgs = local.messages || [];
+    if (projectId) {
+      msgs = msgs.filter(m => (m.project_id === projectId || m.projectId === projectId));
+    }
+    if (clientId) {
+      msgs = msgs.filter(m => (m.sender_id === clientId || m.receiver_id === clientId));
+    }
+    return msgs;
   },
 
   async addMessage(msgObj) {
     if (initPromise) await initPromise;
-    const msgId = msgObj.id || `msg-${Date.now()}`;
+    const msgId = msgObj.id || `msg-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`;
     const senderId = msgObj.sender_id || msgObj.senderId || 'admin';
     const senderName = msgObj.sender_name || msgObj.senderName || 'User';
     const senderAvatar = msgObj.sender_avatar || msgObj.senderAvatar || '';
@@ -3853,13 +3860,15 @@ const db = {
     const projectId = msgObj.project_id || msgObj.projectId || null;
     const content = msgObj.content !== undefined ? msgObj.content : '';
     const imageUrl = msgObj.image_url || msgObj.imageUrl || null;
+    const createdAt = msgObj.created_at || new Date().toISOString();
 
     if (isPostgres && pgPool) {
       const res = await pgPool.query(
-        `INSERT INTO messages (id, sender_id, sender_name, sender_avatar, receiver_id, project_id, content, image_url)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        `INSERT INTO messages (id, sender_id, sender_name, sender_avatar, receiver_id, project_id, content, image_url, created_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+         ON CONFLICT (id) DO UPDATE SET content = EXCLUDED.content, image_url = EXCLUDED.image_url
          RETURNING *`,
-        [msgId, senderId, senderName, senderAvatar, receiverId, projectId, content, imageUrl]
+        [msgId, senderId, senderName, senderAvatar, receiverId, projectId, content, imageUrl, createdAt]
       );
       return res.rows[0];
     }
@@ -3875,9 +3884,14 @@ const db = {
       project_id: projectId,
       content,
       image_url: imageUrl,
-      created_at: new Date().toISOString()
+      created_at: createdAt
     };
-    local.messages.push(savedLocal);
+    const existingIndex = local.messages.findIndex(m => m.id === msgId);
+    if (existingIndex >= 0) {
+      local.messages[existingIndex] = savedLocal;
+    } else {
+      local.messages.push(savedLocal);
+    }
     writeLocalStore(local);
     return savedLocal;
   },

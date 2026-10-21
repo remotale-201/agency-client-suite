@@ -400,22 +400,27 @@ app.get('/api/messages', async (req, res) => {
 
 app.post('/api/messages', async (req, res) => {
   try {
-    const { senderId, senderName, senderAvatar, receiverId, projectId, content, imageUrl, image_url } = req.body;
-    const finalImage = imageUrl || image_url || null;
-    const finalContent = (content || '').trim();
+    const senderId = req.body.senderId || req.body.sender_id || 'user-1';
+    const senderName = req.body.senderName || req.body.sender_name || 'User';
+    const senderAvatar = req.body.senderAvatar || req.body.sender_avatar || '';
+    const receiverId = req.body.receiverId || req.body.receiver_id || null;
+    const projectId = req.body.projectId || req.body.project_id || null;
+    const finalImage = req.body.imageUrl || req.body.image_url || null;
+    const finalContent = (req.body.content || '').trim();
     if (!finalContent && !finalImage) {
       return res.status(400).json({ error: 'Message content or image is required' });
     }
 
     const newMsg = {
-      id: `msg-${Date.now()}`,
-      sender_id: senderId || 'user-1',
-      sender_name: senderName || 'User',
-      sender_avatar: senderAvatar || '',
-      receiver_id: receiverId || null,
-      project_id: projectId || null,
+      id: req.body.id || `msg-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`,
+      sender_id: senderId,
+      sender_name: senderName,
+      sender_avatar: senderAvatar,
+      receiver_id: receiverId,
+      project_id: projectId,
       content: finalContent,
-      image_url: finalImage
+      image_url: finalImage,
+      created_at: req.body.created_at || new Date().toISOString()
     };
 
     const saved = await db.addMessage(newMsg);

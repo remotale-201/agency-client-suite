@@ -208,7 +208,19 @@ export default function RemotaleDashboard({ user, onLogout }) {
   const [stats, setStats] = useState(SEED_STATS);
   const [projects, setProjects] = useState(SEED_PROJECTS);
   const [tasks, setTasks] = useState(() => SEED_PROJECTS.flatMap(p => p.tasks || []));
-  const [messages, setMessages] = useState(SEED_MESSAGES);
+  const [messages, setMessages] = useState(() => {
+    if (typeof window === 'undefined') return [];
+    try {
+      const raw = localStorage.getItem('remotale_messages_v1');
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+          return parsed.filter(m => m.id !== 'msg-1' && m.id !== 'msg-2' && m.id !== 'msg-3');
+        }
+      }
+    } catch (e) {}
+    return [];
+  });
   const [teamMembers, setTeamMembers] = useState(SEED_TEAM_MEMBERS);
   const [clients, setClients] = useState(SEED_CLIENTS);
   const [teamActivities, setTeamActivities] = useState(SEED_ACTIVITIES);
@@ -426,7 +438,16 @@ export default function RemotaleDashboard({ user, onLogout }) {
         setTasks(prev => JSON.stringify(prev) === JSON.stringify(tasksRes) ? prev : tasksRes);
       }
       if (Array.isArray(msgsRes)) {
-        setMessages(prev => JSON.stringify(prev) === JSON.stringify(msgsRes) ? prev : msgsRes);
+        setMessages(prev => {
+          const map = new Map();
+          prev.filter(m => m.id !== 'msg-1' && m.id !== 'msg-2' && m.id !== 'msg-3').forEach(m => map.set(m.id, m));
+          msgsRes.filter(m => m.id !== 'msg-1' && m.id !== 'msg-2' && m.id !== 'msg-3').forEach(m => map.set(m.id, { ...(map.get(m.id) || {}), ...m }));
+          const merged = Array.from(map.values()).sort((a, b) => new Date(a.created_at || 0) - new Date(b.created_at || 0));
+          try {
+            localStorage.setItem('remotale_messages_v1', JSON.stringify(merged));
+          } catch (e) {}
+          return JSON.stringify(prev) === JSON.stringify(merged) ? prev : merged;
+        });
       }
       if (Array.isArray(clientsRes) && clientsRes.length > 0) {
         setClients(prev => JSON.stringify(prev) === JSON.stringify(clientsRes) ? prev : clientsRes);
@@ -490,6 +511,60 @@ export default function RemotaleDashboard({ user, onLogout }) {
     // Fast 3-second real-time sync between Client & Admin
     const interval = setInterval(loadData, 3000);
     return () => clearInterval(interval);
+  }, []);
+
+  // Real-time cross-tab & cross-window messaging synchronization
+  useEffect(() => {
+    const handleSync = () => {
+      try {
+        const raw = localStorage.getItem('remotale_messages_v1');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) {
+            const clean = parsed.filter(m => m.id !== 'msg-1' && m.id !== 'msg-2' && m.id !== 'msg-3');
+            setMessages(prev => {
+              const prevStr = JSON.stringify(prev);
+              const nextStr = JSON.stringify(clean);
+              return prevStr === nextStr ? prev : clean;
+            });
+          }
+        }
+      } catch (err) {}
+    };
+
+    let bc;
+    if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
+      try {
+        bc = new BroadcastChannel('remotale_messages_sync');
+        bc.onmessage = (event) => {
+          if (event.data && event.data.type === 'NEW_MESSAGE' && event.data.message) {
+            const incoming = event.data.message;
+            if (incoming.id === 'msg-1' || incoming.id === 'msg-2' || incoming.id === 'msg-3') return;
+            setMessages(prev => {
+              if (prev.some(m => m.id === incoming.id)) return prev;
+              const next = [...prev, incoming];
+              try {
+                localStorage.setItem('remotale_messages_v1', JSON.stringify(next));
+              } catch (e) {}
+              return next;
+            });
+          } else {
+            handleSync();
+          }
+        };
+      } catch (e) {}
+    }
+
+    window.addEventListener('storage', handleSync);
+    window.addEventListener('remotale_message_event', handleSync);
+
+    return () => {
+      if (bc) {
+        try { bc.close(); } catch (e) {}
+      }
+      window.removeEventListener('storage', handleSync);
+      window.removeEventListener('remotale_message_event', handleSync);
+    };
   }, []);
 
   // Handle New Project Creation -> saves to PostgreSQL 'projects' table
@@ -669,24 +744,65 @@ export default function RemotaleDashboard({ user, onLogout }) {
 
   // Persistent Messages Handler (Text + Photo attachments stored as database records)
   const handleSendMessage = async (msgPayload) => {
-    const tempId = msgPayload.id || `msg-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`;
+    const tempId = msgPayload.id || `msg-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`;
+    const effectiveSender = currentUserForPortal || user || (role === 'admin' ? { id: 'admin-1', name: 'Abdullah', role: 'admin' } : { id: 'client-awais', name: 'Awais', role: 'client' });
+
     const fullMsg = {
       ...msgPayload,
       id: tempId,
-      sender_id: currentUserForPortal?.id || 'admin-1',
-      sender_name: currentUserForPortal?.name || 'Abdullah',
-      sender_avatar: currentUserForPortal?.avatar || '',
+      project_id: msgPayload.project_id || msgPayload.projectId,
+      projectId: msgPayload.projectId || msgPayload.project_id,
+      sender_id: msgPayload.sender_id || effectiveSender?.id || (role === 'admin' ? 'admin-1' : 'client-awais'),
+      senderId: msgPayload.sender_id || effectiveSender?.id || (role === 'admin' ? 'admin-1' : 'client-awais'),
+      sender_name: msgPayload.sender_name || effectiveSender?.name || (role === 'admin' ? 'Abdullah' : 'Awais'),
+      senderName: msgPayload.sender_name || effectiveSender?.name || (role === 'admin' ? 'Abdullah' : 'Awais'),
+      sender_avatar: msgPayload.sender_avatar || effectiveSender?.avatar || '',
+      senderAvatar: msgPayload.sender_avatar || effectiveSender?.avatar || '',
+      content: (msgPayload.content || '').trim(),
+      image_url: msgPayload.image_url || msgPayload.imageUrl || null,
+      imageUrl: msgPayload.imageUrl || msgPayload.image_url || null,
       created_at: msgPayload.created_at || new Date().toISOString()
     };
-    setMessages(prev => [...prev, fullMsg]);
+
+    // 1. Optimistic state update & local persistence
+    setMessages(prev => {
+      const filtered = prev.filter(m => m.id !== tempId && m.id !== 'msg-1' && m.id !== 'msg-2' && m.id !== 'msg-3');
+      const updated = [...filtered, fullMsg];
+      try {
+        localStorage.setItem('remotale_messages_v1', JSON.stringify(updated));
+      } catch (e) {}
+      return updated;
+    });
+
+    // 2. Cross-tab real-time broadcast
     try {
-      const saved = await api.createMessage(fullMsg);
+      if (typeof window !== 'undefined') {
+        if ('BroadcastChannel' in window) {
+          const bc = new BroadcastChannel('remotale_messages_sync');
+          bc.postMessage({ type: 'NEW_MESSAGE', message: fullMsg });
+          setTimeout(() => {
+            try { bc.close(); } catch (e) {}
+          }, 500);
+        }
+        window.dispatchEvent(new CustomEvent('remotale_message_event', { detail: fullMsg }));
+      }
+    } catch (e) {}
+
+    // 3. Persist via API (which handles local storage + backend sync)
+    try {
+      const saved = await (api.createMessage ? api.createMessage(fullMsg) : api.sendMessage(fullMsg));
       if (saved && saved.id) {
-        setMessages(prev => prev.map(m => m.id === tempId ? saved : m));
+        setMessages(prev => {
+          const next = prev.map(m => m.id === tempId ? { ...fullMsg, ...saved } : m);
+          try {
+            localStorage.setItem('remotale_messages_v1', JSON.stringify(next));
+          } catch (e) {}
+          return next;
+        });
       }
       return saved || fullMsg;
     } catch (err) {
-      console.error('Error saving message:', err);
+      console.warn('Network message sync deferred, locally persisted:', err);
       return fullMsg;
     }
   };
@@ -1541,10 +1657,12 @@ export default function RemotaleDashboard({ user, onLogout }) {
             projects={visibleProjects}
             messages={messages}
             currentUser={currentUserForPortal}
+            isAdmin={role === 'admin'}
             onSendMessage={handleSendMessage}
             teamMembers={teamMembers}
             clients={clients}
             onSelectProject={handleSelectProject}
+            onOpenProject={handleSelectProject}
           />
         ) : activeTab === 'files' ? (
           <ComingSoonView
@@ -2182,10 +2300,12 @@ export default function RemotaleDashboard({ user, onLogout }) {
             projects={projects}
             messages={messages}
             currentUser={user || { id: 'admin-1', name: 'Abdullah', role: 'admin' }}
+            isAdmin={true}
             onSendMessage={handleSendMessage}
             teamMembers={teamMembers}
             clients={clients}
             onSelectProject={handleSelectProject}
+            onOpenProject={handleSelectProject}
           />
         ) : activeTab === 'files' ? (
           <ComingSoonView
@@ -3651,10 +3771,12 @@ export default function RemotaleDashboard({ user, onLogout }) {
                 projects={visibleProjects}
                 messages={messages}
                 currentUser={currentUserForPortal}
+                isAdmin={false}
                 onSendMessage={handleSendMessage}
                 teamMembers={teamMembers}
                 clients={clients}
                 onSelectProject={handleSelectProject}
+                onOpenProject={handleSelectProject}
               />
             ) : (
               <ComingSoonView

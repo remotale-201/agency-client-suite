@@ -67,8 +67,11 @@ export default function MessagesView({
   messages = [],
   onSendMessage,
   initialProjectId = null,
-  onOpenProject
+  onOpenProject,
+  onSelectProject
 }) {
+  const handleOpenWorkspace = onOpenProject || onSelectProject;
+
   // Active Project ID
   const [selectedProjectId, setSelectedProjectId] = useState(() => {
     if (initialProjectId && projects.some(p => p.id === initialProjectId)) {
@@ -128,24 +131,27 @@ export default function MessagesView({
     });
   }, [projects, filterStatus, searchQuery, clients]);
 
-  // Messages scoped to the currently selected project
+  // Messages scoped to the currently selected project (excluding legacy demo messages)
   const projectMessages = useMemo(() => {
     if (!selectedProjectId) return [];
     return messages
       .filter(m => (m.project_id === selectedProjectId || m.projectId === selectedProjectId))
+      .filter(m => m.id !== 'msg-1' && m.id !== 'msg-2' && m.id !== 'msg-3')
       .sort((a, b) => new Date(a.created_at || 0) - new Date(b.created_at || 0));
   }, [messages, selectedProjectId]);
 
   // Map of project last message
   const lastMessageMap = useMemo(() => {
     const map = {};
-    messages.forEach(m => {
-      const pid = m.project_id || m.projectId;
-      if (!pid) return;
-      if (!map[pid] || new Date(m.created_at || 0) > new Date(map[pid].created_at || 0)) {
-        map[pid] = m;
-      }
-    });
+    messages
+      .filter(m => m.id !== 'msg-1' && m.id !== 'msg-2' && m.id !== 'msg-3')
+      .forEach(m => {
+        const pid = m.project_id || m.projectId;
+        if (!pid) return;
+        if (!map[pid] || new Date(m.created_at || 0) > new Date(map[pid].created_at || 0)) {
+          map[pid] = m;
+        }
+      });
     return map;
   }, [messages]);
 
@@ -193,15 +199,24 @@ export default function MessagesView({
 
     setSending(true);
     try {
+      const isSenderAdmin = isAdmin || currentUser?.role === 'admin' || currentUser?.id === 'admin-1';
+      const senderId = currentUser?.id || (isSenderAdmin ? 'admin-1' : 'client-awais');
+      const senderName = currentUser?.name || (isSenderAdmin ? 'Abdullah' : 'Awais');
+      const senderAvatar = currentUser?.avatar || '';
+
       const newMsg = {
-        id: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
+        id: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`,
         project_id: selectedProjectId,
         projectId: selectedProjectId,
-        sender_id: currentUser?.id || 'admin-1',
-        sender_name: currentUser?.name || (isAdmin ? 'Abdullah' : 'User'),
-        sender_avatar: currentUser?.avatar || '',
+        sender_id: senderId,
+        senderId: senderId,
+        sender_name: senderName,
+        senderName: senderName,
+        sender_avatar: senderAvatar,
+        senderAvatar: senderAvatar,
         content,
         image_url: attachedImage || null,
+        imageUrl: attachedImage || null,
         created_at: new Date().toISOString()
       };
 
@@ -221,10 +236,12 @@ export default function MessagesView({
 
   // Role tag helper
   const getSenderRoleTag = (senderId, senderName) => {
-    if (senderId === 'admin-1' || senderId === 'admin' || (senderName && senderName.toLowerCase().includes('abdullah'))) {
+    const sId = (senderId || '').toLowerCase();
+    const sName = (senderName || '').toLowerCase();
+    if (sId === 'admin-1' || sId === 'admin' || sName.includes('abdullah')) {
       return { label: '👑 Admin', className: 'admin' };
     }
-    if (senderId && senderId.startsWith('client')) {
+    if (sId.startsWith('client') || sName.includes('awais') || sName.includes('afshal')) {
       return { label: '👤 Client', className: 'client' };
     }
     return { label: '⚡ Team Member', className: 'member' };
@@ -374,11 +391,11 @@ export default function MessagesView({
               </div>
 
               <div className="msg-header-right">
-                {onOpenProject && (
+                {handleOpenWorkspace && (
                   <button
                     type="button"
                     className="msg-btn-workspace"
-                    onClick={() => onOpenProject(activeProject)}
+                    onClick={() => handleOpenWorkspace(activeProject)}
                     title="Open full project details, tasks, notepad and credentials"
                   >
                     <span>📂 Open Workspace</span>
@@ -422,9 +439,14 @@ export default function MessagesView({
                 </div>
               ) : (
                 projectMessages.map((msg, idx) => {
-                  const isOutgoing = (msg.sender_id === currentUser?.id) || 
-                    (isAdmin && (msg.sender_id === 'admin-1' || msg.sender_id === 'admin')) ||
-                    (!isAdmin && currentUser && msg.sender_id === currentUser.id);
+                  const sId = msg.sender_id || msg.senderId;
+                  const sName = (msg.sender_name || msg.senderName || '').toLowerCase();
+                  const cId = currentUser?.id;
+                  const cName = (currentUser?.name || '').toLowerCase();
+
+                  const isOutgoing = (cId && sId === cId) ||
+                    (cName && sName && sName === cName) ||
+                    (isAdmin && (sId === 'admin-1' || sId === 'admin' || sName.includes('abdullah')));
 
                   const roleTag = getSenderRoleTag(msg.sender_id, msg.sender_name);
 

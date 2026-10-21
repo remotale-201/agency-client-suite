@@ -36,7 +36,47 @@ async function request(endpoint, options = {}) {
   }
 }
 
+// Persistent storage helpers for real-time cross-tab & cross-role messaging
+const MESSAGES_KEY = 'remotale_messages_v1';
+
+function getStoredMessages() {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = localStorage.getItem(MESSAGES_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        return parsed.filter(m => m.id !== 'msg-1' && m.id !== 'msg-2' && m.id !== 'msg-3');
+      }
+    }
+  } catch (e) {}
+  return [];
+}
+
+function persistStoredMessages(msgs) {
+  if (typeof window === 'undefined') return;
+  try {
+    const clean = msgs.filter(m => m.id !== 'msg-1' && m.id !== 'msg-2' && m.id !== 'msg-3');
+    localStorage.setItem(MESSAGES_KEY, JSON.stringify(clean));
+  } catch (e) {}
+}
+
+function broadcastSync(msg) {
+  if (typeof window === 'undefined') return;
+  try {
+    if ('BroadcastChannel' in window) {
+      const bc = new BroadcastChannel('remotale_messages_sync');
+      bc.postMessage({ type: 'NEW_MESSAGE', message: msg });
+      setTimeout(() => {
+        try { bc.close(); } catch (e) {}
+      }, 500);
+    }
+    window.dispatchEvent(new CustomEvent('remotale_message_event', { detail: msg }));
+  } catch (e) {}
+}
+
 export const api = {
+
   // Authentication
   login: async (identifier, password) => {
     try {
@@ -193,16 +233,96 @@ export const api = {
   toggleTask: (id, completed) => request(`/api/tasks/${id}/toggle`, { method: 'PATCH', body: JSON.stringify({ completed }) }),
   updateTask: (id, updates) => request(`/api/tasks/${id}`, { method: 'PUT', body: JSON.stringify(updates) }),
   deleteTask: (id) => request(`/api/tasks/${id}`, { method: 'DELETE' }),
+  // Messages - Resilient Real-Time Persistence (LocalStorage + BroadcastChannel + Cloud API)
+  getMessages: async (params = {}) => {
+    let serverMsgs = [];
+    try {
+      const query = new URLSearchParams();
+      if (params.clientId) query.append('clientId', params.clientId);
+      if (params.projectId) query.append('projectId', params.projectId);
+      const queryString = query.toString() ? `?${query.toString()}` : '';
+      const res = await request(`/api/messages${queryString}`);
+      if (Array.isArray(res)) {
+        serverMsgs = res.filter(m => m.id !== 'msg-1' && m.id !== 'msg-2' && m.id !== 'msg-3');
+      }
+    } catch (err) {
+      // Offline / Static Vercel mode: Fallback to local store
+    }
 
-  // Messages
-  getMessages: (params = {}) => {
-    const query = new URLSearchParams();
-    if (params.clientId) query.append('clientId', params.clientId);
-    if (params.projectId) query.append('projectId', params.projectId);
-    const queryString = query.toString() ? `?${query.toString()}` : '';
-    return request(`/api/messages${queryString}`);
+    const localMsgs = getStoredMessages();
+    const map = new Map();
+    localMsgs.forEach(m => map.set(m.id, m));
+    serverMsgs.forEach(m => map.set(m.id, { ...(map.get(m.id) || {}), ...m }));
+
+    const merged = Array.from(map.values()).sort((a, b) => new Date(a.created_at || 0) - new Date(b.created_at || 0));
+    persistStoredMessages(merged);
+
+    if (params.projectId) {
+      return merged.filter(m => m.project_id === params.projectId || m.projectId === params.projectId);
+    }
+    if (params.clientId) {
+      return merged.filter(m => m.sender_id === params.clientId || m.receiver_id === params.clientId);
+    }
+    return merged;
   },
-  sendMessage: (msgData) => request('/api/messages', { method: 'POST', body: JSON.stringify(msgData) }),
+
+  sendMessage: async (msgData) => {
+    const finalId = msgData.id || `msg-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`;
+    const finalCreatedAt = msgData.created_at || new Date().toISOString();
+    const normalized = {
+      ...msgData,
+      id: finalId,
+      project_id: msgData.project_id || msgData.projectId,
+      projectId: msgData.projectId || msgData.project_id,
+      sender_id: msgData.sender_id || msgData.senderId || 'user-1',
+      senderId: msgData.senderId || msgData.sender_id || 'user-1',
+      sender_name: msgData.sender_name || msgData.senderName || 'User',
+      senderName: msgData.senderName || msgData.sender_name || 'User',
+      sender_avatar: msgData.sender_avatar || msgData.senderAvatar || '',
+      senderAvatar: msgData.senderAvatar || msgData.sender_avatar || '',
+      receiver_id: msgData.receiver_id || msgData.receiverId || null,
+      receiverId: msgData.receiverId || msgData.receiver_id || null,
+      content: (msgData.content || '').trim(),
+      image_url: msgData.image_url || msgData.imageUrl || null,
+      imageUrl: msgData.imageUrl || msgData.image_url || null,
+      created_at: finalCreatedAt
+    };
+
+    // Store in localStorage immediately
+    const currentList = getStoredMessages();
+    const existingIdx = currentList.findIndex(m => m.id === finalId);
+    if (existingIdx >= 0) {
+      currentList[existingIdx] = normalized;
+    } else {
+      currentList.push(normalized);
+    }
+    persistStoredMessages(currentList);
+
+    // Broadcast in real-time to other open tabs / windows
+    broadcastSync(normalized);
+
+    // Try posting to backend API
+    try {
+      const serverRes = await request('/api/messages', {
+        method: 'POST',
+        body: JSON.stringify(normalized)
+      });
+      if (serverRes && serverRes.id) {
+        const mergedObj = { ...normalized, ...serverRes };
+        const updated = getStoredMessages().map(m => m.id === finalId ? mergedObj : m);
+        persistStoredMessages(updated);
+        return mergedObj;
+      }
+    } catch (e) {
+      // Local persistence already done
+    }
+
+    return normalized;
+  },
+
+  createMessage: async (msgData) => {
+    return api.sendMessage(msgData);
+  },
 
   // Team
   getTeam: () => request('/api/team'),
