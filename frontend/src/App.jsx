@@ -129,9 +129,12 @@ export default function App() {
     if (res && res.user) {
       setAuthUser(res.user);
       localStorage.setItem('byteforge_auth_user', JSON.stringify(res.user));
-      if (res.user.type === 'admin') {
+      if (res.user.type === 'admin' || res.user.role === 'admin') {
         setCurrentPersona({ type: 'admin', id: 'admin' });
         setActiveTab('dashboard');
+      } else if (res.user.type === 'member' || res.user.role === 'member') {
+        setCurrentPersona({ type: 'member', id: res.user.id });
+        setActiveTab('client-projects');
       } else {
         setCurrentPersona({ type: 'client', id: res.user.id });
         setActiveTab('client-projects');

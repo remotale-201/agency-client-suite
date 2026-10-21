@@ -2813,9 +2813,12 @@ async function initPostgresTables() {
           sender_avatar TEXT,
           receiver_id VARCHAR(100),
           project_id VARCHAR(100),
-          content TEXT NOT NULL,
+          content TEXT,
+          image_url TEXT,
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
+        ALTER TABLE messages ADD COLUMN IF NOT EXISTS image_url TEXT;
+        ALTER TABLE messages ALTER COLUMN content DROP NOT NULL;
       `);
 
       // 5. Team Members table
@@ -2892,6 +2895,9 @@ async function initPostgresTables() {
         ALTER TABLE projects ADD COLUMN IF NOT EXISTS reference_link TEXT;
         ALTER TABLE projects ADD COLUMN IF NOT EXISTS notes TEXT;
         ALTER TABLE projects ADD COLUMN IF NOT EXISTS files JSONB DEFAULT '[]';
+        ALTER TABLE projects ADD COLUMN IF NOT EXISTS assigned_to VARCHAR(100);
+        ALTER TABLE projects ADD COLUMN IF NOT EXISTS assigned_name VARCHAR(100);
+        ALTER TABLE projects ADD COLUMN IF NOT EXISTS assigned_members JSONB DEFAULT '[]';
       `);
 
       // Ensure user credentials requested:
@@ -2904,7 +2910,9 @@ async function initPostgresTables() {
           ('admin-1', 'Abdullah', 'admin@remotale.com', 'admin', 'admin', 'Remotale', 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80', 'admin'),
           ('client-1', 'Ali Khan', 'ali@remotale.com', 'client123', 'client', 'Acme Brand', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80', 'ali'),
           ('client-awais', 'Awais', 'awais@remotale.com', 'Remotale123', 'client', 'Awais Agency', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80', 'awais'),
-          ('client-afshal', 'Afshal', 'afshal@remotale.com', 'afshal', 'client', 'Afshal Brand', 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80', 'afshal')
+          ('client-afshal', 'Afshal', 'afshal@remotale.com', 'afshal', 'client', 'Afshal Brand', 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80', 'afshal'),
+          ('mem-usman', 'Usman Ali', 'usman@remotale.com', 'usman123', 'member', 'Remotale Team', 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80', 'usman'),
+          ('mem-hamza', 'Hamza Tariq', 'hamza@remotale.com', 'hamza123', 'member', 'Remotale Team', 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=100&auto=format&fit=crop&q=80', 'hamza')
         ON CONFLICT (email) DO UPDATE SET 
           name = EXCLUDED.name,
           password = EXCLUDED.password,
@@ -2919,11 +2927,13 @@ async function initPostgresTables() {
         UPDATE tasks SET completed_at = created_at WHERE completed = true AND completed_at IS NULL;
       `);
 
-      // Ensure single Admin user in team_members table
+      // Ensure Team members in team_members table without wiping user-added members
       await client.query(`
-        DELETE FROM team_members;
         INSERT INTO team_members (id, name, role, email)
-        VALUES ('admin-1', 'Abdullah', 'Super Admin & Agency Lead', 'admin@remotale.com')
+        VALUES 
+          ('admin-1', 'Abdullah', 'Super Admin & Agency Lead', 'admin@remotale.com'),
+          ('mem-usman', 'Usman Ali', 'Full Stack Developer', 'usman@remotale.com'),
+          ('mem-hamza', 'Hamza Tariq', 'UI/UX Designer & Frontend', 'hamza@remotale.com')
         ON CONFLICT (id) DO UPDATE SET
           name = EXCLUDED.name,
           role = EXCLUDED.role,
@@ -3129,7 +3139,7 @@ const db = {
               role: user.role,
               company: user.company,
               avatar: user.avatar,
-              type: user.role === 'admin' ? 'admin' : 'client'
+              type: user.role === 'admin' ? 'admin' : (user.role === 'member' ? 'member' : 'client')
             };
           }
         }
@@ -3163,7 +3173,7 @@ const db = {
         role: user.role,
         company: user.company,
         avatar: user.avatar,
-        type: user.role === 'admin' ? 'admin' : 'client'
+        type: user.role === 'admin' ? 'admin' : (user.role === 'member' ? 'member' : 'client')
       };
     }
 
@@ -3280,6 +3290,7 @@ const db = {
           SELECT p.id, p.client_id, p.title, p.description, p.budget, p.deadline,
                  p.project_type, p.start_date, p.priority, p.credentials, p.reference_link,
                  p.notes, p.created_at, p.files,
+                 p.assigned_to, p.assigned_name, p.assigned_members,
                  p.progress,
                  CASE WHEN p.progress >= 100 THEN 'completed' ELSE p.status END as status,
                  u.name as "clientName", u.company as "companyName", u.avatar as "clientAvatar"
@@ -3353,13 +3364,18 @@ const db = {
 
   async addProject(projectObj) {
     if (initPromise) await initPromise;
+    const assignedTo = projectObj.assigned_to || projectObj.assignedTo || null;
+    const assignedName = projectObj.assigned_name || projectObj.assignedName || null;
+    const assignedMembers = projectObj.assigned_members || projectObj.assignedMembers || [];
+
     if (isPostgres && pgPool) {
       const res = await pgPool.query(
         `INSERT INTO projects (
           id, client_id, title, description, status, progress, budget, deadline,
-          project_type, start_date, priority, credentials, reference_link, notes
+          project_type, start_date, priority, credentials, reference_link, notes,
+          assigned_to, assigned_name, assigned_members
         )
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
          RETURNING *`,
         [
           projectObj.id,
@@ -3375,7 +3391,10 @@ const db = {
           projectObj.priority || 'Medium',
           JSON.stringify(projectObj.credentials || []),
           projectObj.reference_link || projectObj.referenceLink || '',
-          projectObj.notes || ''
+          projectObj.notes || '',
+          assignedTo,
+          assignedName,
+          JSON.stringify(assignedMembers)
         ]
       );
       return res.rows[0];
@@ -3383,9 +3402,10 @@ const db = {
 
     const local = readLocalStore();
     local.projects = local.projects || [];
-    local.projects.unshift(projectObj);
+    const item = { ...projectObj, assigned_to: assignedTo, assigned_name: assignedName, assigned_members: assignedMembers };
+    local.projects.unshift(item);
     writeLocalStore(local);
-    return projectObj;
+    return item;
   },
 
   async updateProject(id, updates) {
@@ -3447,6 +3467,19 @@ const db = {
       if (updates.notes !== undefined) {
         fields.push(`notes = $${i++}`);
         values.push(updates.notes);
+      }
+      if (updates.assignedTo !== undefined || updates.assigned_to !== undefined) {
+        fields.push(`assigned_to = $${i++}`);
+        values.push(updates.assignedTo || updates.assigned_to);
+      }
+      if (updates.assignedName !== undefined || updates.assigned_name !== undefined) {
+        fields.push(`assigned_name = $${i++}`);
+        values.push(updates.assignedName || updates.assigned_name);
+      }
+      if (updates.assignedMembers !== undefined || updates.assigned_members !== undefined) {
+        const am = updates.assignedMembers || updates.assigned_members;
+        fields.push(`assigned_members = $${i++}`);
+        values.push(typeof am === 'string' ? am : JSON.stringify(am));
       }
       if (updates.files !== undefined) {
         fields.push(`files = $${i++}`);
@@ -3812,29 +3845,41 @@ const db = {
 
   async addMessage(msgObj) {
     if (initPromise) await initPromise;
+    const msgId = msgObj.id || `msg-${Date.now()}`;
+    const senderId = msgObj.sender_id || msgObj.senderId || 'admin';
+    const senderName = msgObj.sender_name || msgObj.senderName || 'User';
+    const senderAvatar = msgObj.sender_avatar || msgObj.senderAvatar || '';
+    const receiverId = msgObj.receiver_id || msgObj.receiverId || null;
+    const projectId = msgObj.project_id || msgObj.projectId || null;
+    const content = msgObj.content !== undefined ? msgObj.content : '';
+    const imageUrl = msgObj.image_url || msgObj.imageUrl || null;
+
     if (isPostgres && pgPool) {
       const res = await pgPool.query(
-        `INSERT INTO messages (id, sender_id, sender_name, sender_avatar, receiver_id, project_id, content)
-         VALUES ($1, $2, $3, $4, $5, $6, $7)
+        `INSERT INTO messages (id, sender_id, sender_name, sender_avatar, receiver_id, project_id, content, image_url)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
          RETURNING *`,
-        [
-          msgObj.id || `msg-${Date.now()}`,
-          msgObj.sender_id || msgObj.senderId || 'admin',
-          msgObj.sender_name || msgObj.senderName || 'User',
-          msgObj.sender_avatar || msgObj.senderAvatar || '',
-          msgObj.receiver_id || msgObj.receiverId || null,
-          msgObj.project_id || msgObj.projectId || null,
-          msgObj.content
-        ]
+        [msgId, senderId, senderName, senderAvatar, receiverId, projectId, content, imageUrl]
       );
       return res.rows[0];
     }
 
     const local = readLocalStore();
     local.messages = local.messages || [];
-    local.messages.push(msgObj);
+    const savedLocal = {
+      id: msgId,
+      sender_id: senderId,
+      sender_name: senderName,
+      sender_avatar: senderAvatar,
+      receiver_id: receiverId,
+      project_id: projectId,
+      content,
+      image_url: imageUrl,
+      created_at: new Date().toISOString()
+    };
+    local.messages.push(savedLocal);
     writeLocalStore(local);
-    return msgObj;
+    return savedLocal;
   },
 
   // Team
@@ -3846,6 +3891,58 @@ const db = {
     }
     const local = readLocalStore();
     return local.team_members || [];
+  },
+
+  async addTeamMember(memberObj) {
+    if (initPromise) await initPromise;
+    const id = memberObj.id || `mem-${Date.now()}`;
+    const name = memberObj.name;
+    const role = memberObj.role || 'Team Member';
+    const email = (memberObj.email || '').trim().toLowerCase();
+    const avatar = memberObj.avatar || '';
+    const password = memberObj.password || 'member123';
+    const username = (email.split('@')[0] || name).toLowerCase().replace(/[^a-z0-9]/g, '');
+
+    if (isPostgres && pgPool) {
+      const res = await pgPool.query(
+        `INSERT INTO team_members (id, name, role, email, avatar)
+         VALUES ($1, $2, $3, $4, $5)
+         ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, role = EXCLUDED.role, email = EXCLUDED.email, avatar = EXCLUDED.avatar
+         RETURNING *`,
+        [id, name, role, email, avatar]
+      );
+      // Ensure member user account exists for logging in
+      await pgPool.query(
+        `INSERT INTO users (id, name, email, password, role, company, avatar, username)
+         VALUES ($1, $2, $3, $4, 'member', 'Remotale Team', $5, $6)
+         ON CONFLICT (email) DO UPDATE SET name = EXCLUDED.name, role = 'member', username = EXCLUDED.username`,
+        [id, name, email, password, avatar, username]
+      );
+      return res.rows[0];
+    }
+
+    const local = readLocalStore();
+    local.team_members = local.team_members || [];
+    const item = { id, name, role, email, avatar, created_at: new Date().toISOString() };
+    local.team_members.push(item);
+    local.users = local.users || [];
+    local.users.push({ id, name, email, password, role: 'member', company: 'Remotale Team', avatar, username });
+    writeLocalStore(local);
+    return item;
+  },
+
+  async deleteTeamMember(id) {
+    if (initPromise) await initPromise;
+    if (isPostgres && pgPool) {
+      await pgPool.query('DELETE FROM team_members WHERE id = $1', [id]);
+      await pgPool.query('DELETE FROM users WHERE id = $1', [id]);
+      return { id };
+    }
+    const local = readLocalStore();
+    local.team_members = (local.team_members || []).filter(m => m.id !== id);
+    local.users = (local.users || []).filter(u => u.id !== id);
+    writeLocalStore(local);
+    return { id };
   },
 
   async getTeamActivities() {

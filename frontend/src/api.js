@@ -206,6 +206,8 @@ export const api = {
 
   // Team
   getTeam: () => request('/api/team'),
+  addTeamMember: (memberData) => request('/api/team', { method: 'POST', body: JSON.stringify(memberData) }),
+  deleteTeamMember: (id) => request(`/api/team/${id}`, { method: 'DELETE' }),
   getTeamActivities: () => request('/api/team/activities'),
 
   // Invoices

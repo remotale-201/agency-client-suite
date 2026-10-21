@@ -188,6 +188,14 @@ function TrashIcon({ size = 14, color = 'currentColor' }) {
   );
 }
 
+function MessageCircleIcon({ size = 18, color = 'currentColor' }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+    </svg>
+  );
+}
+
 // Brand SVG icons for Shopify, WordPress, Figma
 function ShopifyBrandIcon() {
   return (
@@ -254,9 +262,13 @@ export default function ProjectDetailWorkspace({
   onUpdateProject,
   currentUser,
   onLogout,
-  onOpenProgressPdf
+  onOpenProgressPdf,
+  messages = [],
+  onSendMessage,
+  teamMembers = [],
+  isAdmin = false
 }) {
-  const [activeTab, setActiveTab] = useState('overview'); // overview, todo, files, credentials, notes
+  const [activeTab, setActiveTab] = useState('overview'); // overview, todo, files, credentials, notes, messages
   const [copiedKey, setCopiedKey] = useState(null);
   const [isTopMenuOpen, setIsTopMenuOpen] = useState(false);
   const [isAddingTask, setIsAddingTask] = useState(false);
@@ -267,6 +279,47 @@ export default function ProjectDetailWorkspace({
   const [newCredPw, setNewCredPw] = useState('');
   const [isEditingNotes, setIsEditingNotes] = useState(false);
   const [notesContent, setNotesContent] = useState('');
+
+  // Project Messages state inside workspace
+  const [workspaceMsgInput, setWorkspaceMsgInput] = useState('');
+  const [workspaceMsgImg, setWorkspaceMsgImg] = useState(null);
+  const wsFileInputRef = useRef(null);
+
+  const workspaceProjectMessages = useMemo(() => {
+    if (!project?.id) return [];
+    return messages.filter(m => (m.project_id === project.id || m.projectId === project.id));
+  }, [messages, project?.id]);
+
+  const handleWsFileSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      setWorkspaceMsgImg(ev.target.result);
+    };
+    reader.readAsDataURL(file);
+    if (wsFileInputRef.current) wsFileInputRef.current.value = '';
+  };
+
+  const handleWorkspaceSendMsg = async (e) => {
+    e.preventDefault();
+    if (!workspaceMsgInput.trim() && !workspaceMsgImg) return;
+    if (onSendMessage && project?.id) {
+      await onSendMessage({
+        id: `msg-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
+        project_id: project.id,
+        projectId: project.id,
+        sender_id: currentUser?.id || 'admin-1',
+        sender_name: currentUser?.name || (isAdmin ? 'Abdullah' : 'User'),
+        sender_avatar: currentUser?.avatar || '',
+        content: workspaceMsgInput.trim(),
+        image_url: workspaceMsgImg || null,
+        created_at: new Date().toISOString()
+      });
+      setWorkspaceMsgInput('');
+      setWorkspaceMsgImg(null);
+    }
+  };
 
   const menuRef = useRef(null);
 
@@ -884,9 +937,18 @@ export default function ProjectDetailWorkspace({
           <PencilEditIcon size={14} color={activeTab === 'notes' ? '#4338CA' : '#64748B'} />
           <span>Notes</span>
         </button>
+
+        <button
+          type="button"
+          className={`pdw-tab-btn ${activeTab === 'messages' ? 'active' : ''}`}
+          onClick={() => setActiveTab('messages')}
+        >
+          <MessageCircleIcon size={15} color={activeTab === 'messages' ? '#4338CA' : '#64748B'} />
+          <span>Discussion ({workspaceProjectMessages.length})</span>
+        </button>
       </div>
 
-      {/* 2-Column Grid (6 Cards) */}
+      {/* 2-Column Grid */}
       <div className="pdw-cards-grid">
         {/* CARD 1: Project Information */}
         {(activeTab === 'overview' || activeTab === 'notes') && (
@@ -953,6 +1015,59 @@ export default function ProjectDetailWorkspace({
                   <span>{project?.priority || 'Medium'}</span>
                 </div>
               </div>
+            </div>
+
+            {/* Assigned Team Member Section */}
+            <div className="pdw-info-field" style={{ marginTop: '16px', paddingTop: '12px', borderTop: '1px solid #f1f5f9' }}>
+              <div className="pdw-info-lbl" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+                <span>Assigned Team Member</span>
+                {project?.assigned_name && (
+                  <span style={{ fontSize: '11px', background: '#ecfdf5', color: '#059669', padding: '2px 8px', borderRadius: '12px', fontWeight: 600 }}>
+                    Assigned
+                  </span>
+                )}
+              </div>
+              {isAdmin ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <select
+                    value={project?.assigned_to || ''}
+                    onChange={(e) => {
+                      const selectedId = e.target.value;
+                      const selectedMem = teamMembers.find(m => m.id === selectedId);
+                      if (onUpdateProject && project?.id) {
+                        onUpdateProject(project.id, {
+                          assigned_to: selectedId || null,
+                          assigned_name: selectedMem ? selectedMem.name : null,
+                          assigned_members: selectedMem ? [{ id: selectedMem.id, name: selectedMem.name, role: selectedMem.role }] : []
+                        });
+                      }
+                    }}
+                    style={{
+                      flex: 1,
+                      padding: '8px 12px',
+                      borderRadius: '8px',
+                      border: '1px solid #cbd5e1',
+                      fontSize: '13px',
+                      fontWeight: 500,
+                      background: '#ffffff',
+                      color: '#0f172a',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <option value="">Unassigned (Admin Only)</option>
+                    {teamMembers.map(m => (
+                      <option key={m.id} value={m.id}>{m.name} ({m.role || 'Member'})</option>
+                    ))}
+                  </select>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <LetterAvatar name={project?.assigned_name || 'Abdullah'} size={28} />
+                  <span style={{ fontSize: '13.5px', fontWeight: 600, color: '#0f172a' }}>
+                    {project?.assigned_name || 'Abdullah (Admin)'}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -1446,6 +1561,158 @@ export default function ProjectDetailWorkspace({
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* CARD 7: Project Discussion & Messages */}
+        {(activeTab === 'overview' || activeTab === 'messages') && (
+          <div className="pdw-card" style={{ gridColumn: activeTab === 'messages' ? '1 / -1' : undefined }}>
+            <div className="pdw-card-header">
+              <div className="pdw-card-header-left">
+                <div className="pdw-card-icon-box" style={{ color: '#6366F1' }}>
+                  <MessageCircleIcon size={19} color="#6366F1" />
+                </div>
+                <h3 className="pdw-card-title">Project Discussion</h3>
+                <span style={{ fontSize: '11px', background: '#ede9fe', color: '#6366f1', padding: '2px 8px', borderRadius: '12px', fontWeight: 600 }}>
+                  {workspaceProjectMessages.length} msgs
+                </span>
+              </div>
+            </div>
+
+            {/* Messages Stream */}
+            <div style={{
+              maxHeight: activeTab === 'messages' ? '460px' : '300px',
+              overflowY: 'auto',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '12px',
+              padding: '12px 6px',
+              marginBottom: '14px',
+              background: '#f8fafc',
+              borderRadius: '12px',
+              border: '1px solid #e2e8f0'
+            }}>
+              {workspaceProjectMessages.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '30px 10px', color: '#94a3b8', fontSize: '13px' }}>
+                  <div style={{ fontSize: '26px', marginBottom: '8px' }}>💬</div>
+                  No messages for this project yet. Start the conversation below!
+                </div>
+              ) : (
+                workspaceProjectMessages.map((msg) => {
+                  const isMe = msg.sender_id === (currentUser?.id || 'admin-1');
+                  return (
+                    <div
+                      key={msg.id}
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: isMe ? 'flex-end' : 'flex-start',
+                        gap: '3px'
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: '#94a3b8' }}>
+                        <span style={{ fontWeight: 600, color: '#475569' }}>{msg.sender_name || 'Member'}</span>
+                        <span>•</span>
+                        <span>{msg.created_at ? new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Now'}</span>
+                      </div>
+                      <div
+                        style={{
+                          maxWidth: '85%',
+                          padding: '10px 14px',
+                          borderRadius: isMe ? '14px 14px 2px 14px' : '14px 14px 14px 2px',
+                          background: isMe ? '#4f46e5' : '#ffffff',
+                          color: isMe ? '#ffffff' : '#0f172a',
+                          border: isMe ? 'none' : '1px solid #e2e8f0',
+                          fontSize: '13px',
+                          lineHeight: '1.45',
+                          wordBreak: 'break-word',
+                          boxShadow: '0 1px 2px rgba(0,0,0,0.04)'
+                        }}
+                      >
+                        {msg.image_url && (
+                          <div style={{ marginBottom: msg.content ? '8px' : 0 }}>
+                            <img
+                              src={msg.image_url}
+                              alt="Attachment"
+                              style={{ maxWidth: '100%', maxHeight: '220px', borderRadius: '8px', cursor: 'pointer', objectFit: 'cover' }}
+                              onClick={() => window.open(msg.image_url, '_blank')}
+                            />
+                          </div>
+                        )}
+                        {msg.content && <div>{msg.content}</div>}
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+
+            {/* Quick send form */}
+            <form onSubmit={handleWorkspaceSendMsg} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {workspaceMsgImg && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 10px', background: '#eff6ff', borderRadius: '8px', border: '1px solid #bfdbfe' }}>
+                  <img src={workspaceMsgImg} alt="Preview" style={{ width: '36px', height: '36px', objectFit: 'cover', borderRadius: '6px' }} />
+                  <span style={{ fontSize: '12px', color: '#1e40af', flex: 1, fontWeight: 500 }}>Photo attached</span>
+                  <button type="button" onClick={() => setWorkspaceMsgImg(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444', fontWeight: 'bold' }}>✕</button>
+                </div>
+              )}
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <input
+                  type="file"
+                  accept="image/*"
+                  ref={wsFileInputRef}
+                  style={{ display: 'none' }}
+                  onChange={handleWsFileSelect}
+                />
+                <button
+                  type="button"
+                  onClick={() => wsFileInputRef.current?.click()}
+                  style={{
+                    padding: '8px 12px',
+                    borderRadius: '8px',
+                    border: '1px solid #e2e8f0',
+                    background: '#f8fafc',
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}
+                  title="Attach Photo"
+                >
+                  📷
+                </button>
+                <input
+                  type="text"
+                  placeholder="Type a message or project update..."
+                  value={workspaceMsgInput}
+                  onChange={(e) => setWorkspaceMsgInput(e.target.value)}
+                  style={{
+                    flex: 1,
+                    padding: '8px 12px',
+                    borderRadius: '8px',
+                    border: '1px solid #cbd5e1',
+                    fontSize: '13px'
+                  }}
+                />
+                <button
+                  type="submit"
+                  disabled={!workspaceMsgInput.trim() && !workspaceMsgImg}
+                  style={{
+                    padding: '8px 16px',
+                    borderRadius: '8px',
+                    background: (!workspaceMsgInput.trim() && !workspaceMsgImg) ? '#cbd5e1' : '#4f46e5',
+                    color: '#ffffff',
+                    border: 'none',
+                    fontWeight: 600,
+                    fontSize: '13px',
+                    cursor: (!workspaceMsgInput.trim() && !workspaceMsgImg) ? 'not-allowed' : 'pointer'
+                  }}
+                >
+                  Send
+                </button>
+              </div>
+            </form>
           </div>
         )}
       </div>

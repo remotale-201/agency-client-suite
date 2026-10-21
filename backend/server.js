@@ -13,7 +13,8 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
-app.use(express.json());
+app.use(express.json({ limit: '25mb' }));
+app.use(express.urlencoded({ extended: true, limit: '25mb' }));
 
 // Health check
 app.get('/api/health', (req, res) => {
@@ -221,7 +222,8 @@ app.post('/api/projects', async (req, res) => {
   try {
     const { 
       title, clientId, description, budget, deadline, status, progress,
-      projectType, startDate, priority, credentials, referenceLink, notes
+      projectType, startDate, priority, credentials, referenceLink, notes,
+      assignedTo, assigned_to, assignedName, assigned_name, assignedMembers, assigned_members
     } = req.body;
     if (!title) {
       return res.status(400).json({ error: 'Project title is required' });
@@ -244,7 +246,10 @@ app.post('/api/projects', async (req, res) => {
       priority: priority || 'Medium',
       credentials: credentials || [],
       reference_link: referenceLink || '',
-      notes: notes || ''
+      notes: notes || '',
+      assigned_to: assigned_to || assignedTo || null,
+      assigned_name: assigned_name || assignedName || null,
+      assigned_members: assigned_members || assignedMembers || []
     };
 
     const created = await db.addProject(newProject);
@@ -395,19 +400,22 @@ app.get('/api/messages', async (req, res) => {
 
 app.post('/api/messages', async (req, res) => {
   try {
-    const { senderId, senderName, senderAvatar, receiverId, projectId, content } = req.body;
-    if (!content || !content.trim()) {
-      return res.status(400).json({ error: 'Message content is required' });
+    const { senderId, senderName, senderAvatar, receiverId, projectId, content, imageUrl, image_url } = req.body;
+    const finalImage = imageUrl || image_url || null;
+    const finalContent = (content || '').trim();
+    if (!finalContent && !finalImage) {
+      return res.status(400).json({ error: 'Message content or image is required' });
     }
 
     const newMsg = {
       id: `msg-${Date.now()}`,
       sender_id: senderId || 'user-1',
       sender_name: senderName || 'User',
-      sender_avatar: senderAvatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80',
+      sender_avatar: senderAvatar || '',
       receiver_id: receiverId || null,
       project_id: projectId || null,
-      content: content.trim()
+      content: finalContent,
+      image_url: finalImage
     };
 
     const saved = await db.addMessage(newMsg);
@@ -424,6 +432,28 @@ app.get('/api/team', async (req, res) => {
   try {
     const team = await db.getTeam();
     res.json(team);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/team', async (req, res) => {
+  try {
+    const { name, role, email, avatar, password } = req.body;
+    if (!name || !email) {
+      return res.status(400).json({ error: 'Name and email are required for a team member' });
+    }
+    const member = await db.addTeamMember({ name, role, email, avatar, password });
+    res.status(201).json(member);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.delete('/api/team/:id', async (req, res) => {
+  try {
+    const result = await db.deleteTeamMember(req.params.id);
+    res.json({ success: true, ...result });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

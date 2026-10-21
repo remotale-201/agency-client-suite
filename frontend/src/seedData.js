@@ -4021,3 +4021,57 @@ export const SEED_ACTIVITIES = [
     created_at: new Date(Date.now() - 15 * 60000).toISOString()
   }
 ];
+
+export const SEED_TEAM_MEMBERS = [
+  {
+    id: 'admin-1',
+    name: 'Abdullah',
+    role: 'Super Admin & Agency Lead',
+    email: 'admin@remotale.com',
+    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80'
+  },
+  {
+    id: 'mem-usman',
+    name: 'Usman Ali',
+    role: 'Full Stack Developer',
+    email: 'usman@remotale.com',
+    avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80'
+  },
+  {
+    id: 'mem-hamza',
+    name: 'Hamza Tariq',
+    role: 'UI/UX Designer & Frontend Lead',
+    email: 'hamza@remotale.com',
+    avatar: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=100&auto=format&fit=crop&q=80'
+  }
+];
+
+export const SEED_MESSAGES = [
+  {
+    id: 'msg-1',
+    project_id: 'proj-awais-1',
+    sender_id: 'client-awais',
+    sender_name: 'Awais',
+    sender_avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80',
+    content: 'Assalam o Alaikum Abdullah bhai, Pak White Label store ki UI responsive checks done hain?',
+    created_at: new Date(Date.now() - 3600000 * 5).toISOString()
+  },
+  {
+    id: 'msg-2',
+    project_id: 'proj-awais-1',
+    sender_id: 'admin-1',
+    sender_name: 'Abdullah',
+    sender_avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80',
+    content: 'Walaikum Assalam Awais bhai! Mobile screens test ho chuki hain, conversion rate optimize kar diya hai.',
+    created_at: new Date(Date.now() - 3600000 * 4).toISOString()
+  },
+  {
+    id: 'msg-3',
+    project_id: 'proj-awais-1',
+    sender_id: 'mem-usman',
+    sender_name: 'Usman Ali',
+    sender_avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80',
+    content: 'Domain DNS aur payment gateway integration bhi verify ho gayi hai.',
+    created_at: new Date(Date.now() - 3600000 * 2).toISOString()
+  }
+];

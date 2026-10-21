@@ -7,10 +7,11 @@ import MyProjectsView from './MyProjectsView';
 import ProjectDetailWorkspace from './ProjectDetailWorkspace';
 import InvoicesView from './InvoicesView';
 import TasksView from './TasksView';
+import MessagesView from './MessagesView';
 import ComingSoonView from './ComingSoonView';
 import LetterAvatar from './LetterAvatar';
 import ClientProgressPdfModal from './ClientProgressPdfModal';
-import { SEED_PROJECTS, SEED_CLIENTS, SEED_STATS, SEED_INVOICES, SEED_ACTIVITIES } from '../seedData';
+import { SEED_PROJECTS, SEED_CLIENTS, SEED_STATS, SEED_INVOICES, SEED_ACTIVITIES, SEED_TEAM_MEMBERS, SEED_MESSAGES } from '../seedData';
 
 // Helper for relative time formatting
 function formatTimeAgo(dateStr) {
@@ -168,9 +169,11 @@ function BellIcon({ size = 18, color = 'currentColor' }) {
 // ==========================================
 export default function RemotaleDashboard({ user, onLogout }) {
   const isRealAdmin = user?.role === 'admin';
-  // Role: 'admin' or 'client'
-  const [role, setRole] = useState(() => (isRealAdmin ? 'admin' : 'client'));
+  const isRealMember = user?.role === 'member';
+  // Role: 'admin', 'client', or 'member'
+  const [role, setRole] = useState(() => (isRealAdmin ? 'admin' : (isRealMember ? 'member' : 'client')));
   const [previewClientId, setPreviewClientId] = useState('client-awais');
+  const [previewMemberId, setPreviewMemberId] = useState('mem-usman');
 
   const [isMobileScreen, setIsMobileScreen] = useState(() => (typeof window !== 'undefined' ? window.innerWidth < 1024 : false));
 
@@ -205,11 +208,20 @@ export default function RemotaleDashboard({ user, onLogout }) {
   const [stats, setStats] = useState(SEED_STATS);
   const [projects, setProjects] = useState(SEED_PROJECTS);
   const [tasks, setTasks] = useState(() => SEED_PROJECTS.flatMap(p => p.tasks || []));
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState(SEED_MESSAGES);
+  const [teamMembers, setTeamMembers] = useState(SEED_TEAM_MEMBERS);
   const [clients, setClients] = useState(SEED_CLIENTS);
   const [teamActivities, setTeamActivities] = useState(SEED_ACTIVITIES);
   const [invoices, setInvoices] = useState(SEED_INVOICES);
   const [loading, setLoading] = useState(false);
+
+  // Add Team Member Modal State
+  const [isAddTeamModalOpen, setIsAddTeamModalOpen] = useState(false);
+  const [newMemberName, setNewMemberName] = useState('');
+  const [newMemberEmail, setNewMemberEmail] = useState('');
+  const [newMemberRole, setNewMemberRole] = useState('Frontend & Shopify Engineer');
+  const [newMemberPw, setNewMemberPw] = useState('');
+  const [newMemberInitialProj, setNewMemberInitialProj] = useState('');
 
   // Selected Project for Detail View (Image 2)
   const [selectedProject, setSelectedProject] = useState(null);
@@ -229,20 +241,38 @@ export default function RemotaleDashboard({ user, onLogout }) {
   // Project to Edit in Modal
   const [projectToEdit, setProjectToEdit] = useState(null);
 
-  // Effective client ID when in client view:
-  // If real client: user.id (e.g. client-awais, client-afshal, client-1)
-  // If admin previewing client: previewClientId
+  // Effective IDs
   const effectiveClientId = !isRealAdmin ? (user?.id || 'client-awais') : (role === 'client' ? previewClientId : null);
+  const effectiveMemberId = isRealMember ? (user?.id || 'mem-usman') : (role === 'member' ? previewMemberId : null);
 
   // Active Client User Object
   const currentClientUser = useMemo(() => {
-    if (!isRealAdmin) return user;
+    if (!isRealAdmin && !isRealMember) return user;
     const found = clients.find(c => c.id === effectiveClientId);
     if (found) return found;
     if (effectiveClientId === 'client-awais') return { id: 'client-awais', name: 'Awais', email: 'awais@remotale.com', company: 'Awais Agency' };
     if (effectiveClientId === 'client-afshal') return { id: 'client-afshal', name: 'Afshal', email: 'afshal@remotale.com', company: 'Afshal Brand' };
     return { id: 'client-1', name: 'Ali Khan', email: 'ali@remotale.com', company: 'Acme Brand' };
-  }, [isRealAdmin, user, clients, effectiveClientId]);
+  }, [isRealAdmin, isRealMember, user, clients, effectiveClientId]);
+
+  // Active Team Member User Object
+  const currentMemberUser = useMemo(() => {
+    if (isRealMember && user) return user;
+    const found = teamMembers.find(m => m.id === effectiveMemberId);
+    if (found) return found;
+    return teamMembers[0] || { id: 'mem-usman', name: 'Usman Ali', role: 'Frontend & Shopify Engineer' };
+  }, [isRealMember, user, teamMembers, effectiveMemberId]);
+
+  // Unified Current User for active portal view
+  const currentUserForPortal = useMemo(() => {
+    if (role === 'admin') {
+      return user || { id: 'admin-1', name: 'Abdullah', role: 'admin' };
+    }
+    if (role === 'member') {
+      return currentMemberUser;
+    }
+    return currentClientUser;
+  }, [role, user, currentMemberUser, currentClientUser]);
 
   // Client Display Name Helper for Admin views
   const getClientDisplayName = (clientId, fallback) => {
@@ -256,17 +286,28 @@ export default function RemotaleDashboard({ user, onLogout }) {
   };
 
   // Filter projects strictly:
-  // For client view: ONLY show this client's projects!
-  // For admin view: show all 10 projects!
+  // For admin: show all projects
+  // For member: show projects assigned to this member
+  // For client: show projects belonging to this client
   const visibleProjects = useMemo(() => {
     if (role === 'admin') {
       return projects;
+    }
+    if (role === 'member') {
+      return projects.filter(p => {
+        const assignedTo = p.assigned_to || p.assignedTo;
+        if (assignedTo === effectiveMemberId) return true;
+        if (Array.isArray(p.assigned_members)) {
+          return p.assigned_members.some(m => (m?.id === effectiveMemberId || m === effectiveMemberId));
+        }
+        return false;
+      });
     }
     return projects.filter(p => {
       const pClientId = p.client_id || p.clientId;
       return pClientId === effectiveClientId;
     });
-  }, [role, projects, effectiveClientId]);
+  }, [role, projects, effectiveClientId, effectiveMemberId]);
 
   // Filter tasks strictly:
   const visibleTasks = useMemo(() => {
@@ -274,8 +315,11 @@ export default function RemotaleDashboard({ user, onLogout }) {
       return tasks;
     }
     const visibleProjIds = new Set(visibleProjects.map(p => p.id));
+    if (role === 'member') {
+      return tasks.filter(t => (t.assigned_to === effectiveMemberId || visibleProjIds.has(t.project_id)));
+    }
     return tasks.filter(t => (t.client_id === effectiveClientId || visibleProjIds.has(t.project_id)));
-  }, [role, tasks, visibleProjects, effectiveClientId]);
+  }, [role, tasks, visibleProjects, effectiveClientId, effectiveMemberId]);
 
   // Filter messages strictly:
   const visibleMessages = useMemo(() => {
@@ -283,8 +327,13 @@ export default function RemotaleDashboard({ user, onLogout }) {
       return messages;
     }
     const visibleProjIds = new Set(visibleProjects.map(p => p.id));
-    return messages.filter(m => (m.sender_id === effectiveClientId || m.receiver_id === effectiveClientId || visibleProjIds.has(m.project_id)));
-  }, [role, messages, visibleProjects, effectiveClientId]);
+    const targetId = role === 'member' ? effectiveMemberId : effectiveClientId;
+    return messages.filter(m => (
+      m.sender_id === targetId ||
+      m.receiver_id === targetId ||
+      visibleProjIds.has(m.project_id || m.projectId)
+    ));
+  }, [role, messages, visibleProjects, effectiveClientId, effectiveMemberId]);
 
   // Active Dots Dropdown ID on Project cards
   const [activeDotsId, setActiveDotsId] = useState(null);
@@ -348,14 +397,15 @@ export default function RemotaleDashboard({ user, onLogout }) {
   // Fetch all real database data with real-time sync
   const loadData = async () => {
     try {
-      const [statsRes, projsRes, tasksRes, msgsRes, clientsRes, actsRes, invsRes] = await Promise.all([
+      const [statsRes, projsRes, tasksRes, msgsRes, clientsRes, actsRes, invsRes, teamRes] = await Promise.all([
         api.getStats().catch((e) => { console.warn('[Stats Sync]', e.message); return null; }),
         api.getProjects().catch((e) => { console.warn('[Projects Sync]', e.message); return null; }),
         api.getTasks().catch((e) => { console.warn('[Tasks Sync]', e.message); return null; }),
         api.getMessages().catch((e) => { console.warn('[Messages Sync]', e.message); return null; }),
         api.getClients().catch((e) => { console.warn('[Clients Sync]', e.message); return null; }),
         api.getTeamActivities().catch((e) => { console.warn('[Activities Sync]', e.message); return null; }),
-        api.getInvoices({ includeDeleted: isRealAdmin }).catch((e) => { console.warn('[Invoices Sync]', e.message); return null; })
+        api.getInvoices({ includeDeleted: isRealAdmin }).catch((e) => { console.warn('[Invoices Sync]', e.message); return null; }),
+        api.getTeamMembers().catch((e) => { console.warn('[Team Members Sync]', e.message); return null; })
       ]);
 
       if (statsRes && typeof statsRes.totalProjects === 'number') {
@@ -383,6 +433,9 @@ export default function RemotaleDashboard({ user, onLogout }) {
       }
       if (Array.isArray(actsRes)) {
         setTeamActivities(prev => JSON.stringify(prev) === JSON.stringify(actsRes) ? prev : actsRes);
+      }
+      if (Array.isArray(teamRes) && teamRes.length > 0) {
+        setTeamMembers(prev => JSON.stringify(prev) === JSON.stringify(teamRes) ? prev : teamRes);
       }
       if (Array.isArray(invsRes)) {
         if (invsRes.length > 0) {
@@ -611,6 +664,67 @@ export default function RemotaleDashboard({ user, onLogout }) {
       return updated;
     } catch (err) {
       console.error('[Update Invoice Error]', err);
+    }
+  };
+
+  // Persistent Messages Handler (Text + Photo attachments stored as database records)
+  const handleSendMessage = async (msgPayload) => {
+    const tempId = msgPayload.id || `msg-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`;
+    const fullMsg = {
+      ...msgPayload,
+      id: tempId,
+      sender_id: currentUserForPortal?.id || 'admin-1',
+      sender_name: currentUserForPortal?.name || 'Abdullah',
+      sender_avatar: currentUserForPortal?.avatar || '',
+      created_at: msgPayload.created_at || new Date().toISOString()
+    };
+    setMessages(prev => [...prev, fullMsg]);
+    try {
+      const saved = await api.createMessage(fullMsg);
+      if (saved && saved.id) {
+        setMessages(prev => prev.map(m => m.id === tempId ? saved : m));
+      }
+      return saved || fullMsg;
+    } catch (err) {
+      console.error('Error saving message:', err);
+      return fullMsg;
+    }
+  };
+
+  // Team Member Management Handlers
+  const handleAddTeamMember = async (memberData) => {
+    try {
+      const created = await api.addTeamMember(memberData);
+      setTeamMembers(prev => [...prev.filter(m => m.id !== created.id), created]);
+      if (memberData.initialProjectId) {
+        await handleUpdateProject(memberData.initialProjectId, {
+          assigned_to: created.id,
+          assigned_name: created.name,
+          assigned_members: [{ id: created.id, name: created.name, role: created.role }]
+        });
+      }
+      setIsAddTeamModalOpen(false);
+      setNewMemberName('');
+      setNewMemberEmail('');
+      setNewMemberRole('Frontend & Shopify Engineer');
+      setNewMemberPw('');
+      setNewMemberInitialProj('');
+      await loadData();
+      return created;
+    } catch (err) {
+      alert(err.message || 'Failed to add team member');
+      throw err;
+    }
+  };
+
+  const handleDeleteTeamMember = async (memberId) => {
+    if (!window.confirm('Are you sure you want to remove this team member?')) return;
+    try {
+      await api.deleteTeamMember(memberId);
+      setTeamMembers(prev => prev.filter(m => m.id !== memberId));
+      await loadData();
+    } catch (err) {
+      alert(err.message || 'Failed to remove team member');
     }
   };
 
@@ -952,17 +1066,47 @@ export default function RemotaleDashboard({ user, onLogout }) {
   // ==========================================
   // RENDER: TEAM VIEW (1 Super Admin Abdullah with Universal Access)
   // ==========================================
+  // ==========================================
+  // RENDER: TEAM VIEW (Super Admin + Team Members with Project Assignments)
+  // ==========================================
   const renderTeamView = () => (
-    <div style={{ padding: '28px 32px', maxWidth: '1080px', margin: '0 auto' }}>
+    <div style={{ padding: '28px 32px', maxWidth: '1140px', margin: '0 auto' }}>
       {/* Header */}
-      <div style={{ marginBottom: '24px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
-          <span style={{ fontSize: '24px' }}>👥</span>
-          <h1 style={{ fontSize: '24px', fontWeight: 800, color: '#0f172a', margin: 0 }}>Agency Team & Administration</h1>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px', marginBottom: '24px' }}>
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
+            <span style={{ fontSize: '26px' }}>👥</span>
+            <h1 style={{ fontSize: '24px', fontWeight: 800, color: '#0f172a', margin: 0 }}>Agency Team & Members</h1>
+          </div>
+          <p style={{ fontSize: '13.5px', color: '#64748b', margin: 0, lineHeight: 1.6 }}>
+            Manage agency team members. Assign client projects so members receive dedicated project messages, to-do lists, and workspaces.
+          </p>
         </div>
-        <p style={{ fontSize: '13.5px', color: '#64748b', margin: 0, lineHeight: 1.6 }}>
-          Remotale operates under centralized administrative leadership. There is <strong>1 Super Admin</strong> who oversees and has universal access to all projects, client workspaces, credentials, and deliverables.
-        </p>
+
+        {isRealAdmin && (
+          <button
+            type="button"
+            onClick={() => setIsAddTeamModalOpen(true)}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '10px 18px',
+              borderRadius: '10px',
+              background: '#4f46e5',
+              color: '#ffffff',
+              border: 'none',
+              fontWeight: 700,
+              fontSize: '13.5px',
+              cursor: 'pointer',
+              boxShadow: '0 4px 12px rgba(79, 70, 229, 0.25)',
+              transition: 'all 0.15s ease'
+            }}
+          >
+            <span style={{ fontSize: '16px' }}>+</span>
+            <span>Add Team Member</span>
+          </button>
+        )}
       </div>
 
       {/* Admin Highlight Banner */}
@@ -970,7 +1114,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
         background: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)',
         color: '#ffffff',
         borderRadius: '16px',
-        padding: '26px 30px',
+        padding: '24px 28px',
         boxShadow: '0 10px 25px -5px rgba(15, 23, 42, 0.25)',
         marginBottom: '28px',
         display: 'flex',
@@ -979,8 +1123,8 @@ export default function RemotaleDashboard({ user, onLogout }) {
         flexWrap: 'wrap',
         gap: '20px'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '22px' }}>
-          <LetterAvatar name="Abdullah" size={68} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+          <LetterAvatar name="Abdullah" size={64} />
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
               <h2 style={{ fontSize: '22px', fontWeight: 800, margin: 0, color: '#ffffff' }}>Abdullah</h2>
@@ -997,17 +1141,17 @@ export default function RemotaleDashboard({ user, onLogout }) {
               </span>
             </div>
             <p style={{ margin: '0 0 8px 0', fontSize: '13px', color: '#cbd5e1' }}>
-              ✉️ admin@remotale.com • 🌐 Universal Access for All Clients & Projects
+              ✉️ admin@remotale.com • 🌐 Universal Oversight of All Clients & Projects
             </p>
             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-              <span style={{ background: 'rgba(255,255,255,0.12)', padding: '4px 10px', borderRadius: '6px', fontSize: '11.5px', color: '#e2e8f0', fontWeight: 500 }}>
+              <span style={{ background: 'rgba(255,255,255,0.12)', padding: '3px 9px', borderRadius: '6px', fontSize: '11.5px', color: '#e2e8f0', fontWeight: 500 }}>
                 Full System Administration
               </span>
-              <span style={{ background: 'rgba(255,255,255,0.12)', padding: '4px 10px', borderRadius: '6px', fontSize: '11.5px', color: '#e2e8f0', fontWeight: 500 }}>
-                All 10 Client Projects
+              <span style={{ background: 'rgba(255,255,255,0.12)', padding: '3px 9px', borderRadius: '6px', fontSize: '11.5px', color: '#e2e8f0', fontWeight: 500 }}>
+                All {projects.length} Client Projects
               </span>
-              <span style={{ background: 'rgba(255,255,255,0.12)', padding: '4px 10px', borderRadius: '6px', fontSize: '11.5px', color: '#e2e8f0', fontWeight: 500 }}>
-                Credentials & Files Access
+              <span style={{ background: 'rgba(255,255,255,0.12)', padding: '3px 9px', borderRadius: '6px', fontSize: '11.5px', color: '#e2e8f0', fontWeight: 500 }}>
+                Universal Workspace Access
               </span>
             </div>
           </div>
@@ -1017,11 +1161,144 @@ export default function RemotaleDashboard({ user, onLogout }) {
           background: 'rgba(255, 255, 255, 0.08)',
           border: '1px solid rgba(255, 255, 255, 0.15)',
           borderRadius: '14px',
-          padding: '16px 24px',
+          padding: '14px 22px',
           textAlign: 'center'
         }}>
-          <div style={{ fontSize: '28px', fontWeight: 800, color: '#38bdf8' }}>1</div>
-          <div style={{ fontSize: '12px', color: '#94a3b8', fontWeight: 600 }}>Active Admin User</div>
+          <div style={{ fontSize: '26px', fontWeight: 800, color: '#38bdf8' }}>{teamMembers.length + 1}</div>
+          <div style={{ fontSize: '11.5px', color: '#94a3b8', fontWeight: 600 }}>Total Agency Users</div>
+        </div>
+      </div>
+
+      {/* Active Team Members Grid */}
+      <div style={{ marginBottom: '32px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+          <h3 style={{ fontSize: '17px', fontWeight: 700, color: '#0f172a', margin: 0 }}>
+            Active Team Members ({teamMembers.length})
+          </h3>
+          <span style={{ fontSize: '12.5px', color: '#64748b' }}>
+            Click "Preview Portal" to view projects & tasks assigned to each member
+          </span>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '16px' }}>
+          {teamMembers.map((member) => {
+            const assignedProjects = projects.filter(p => (
+              p.assigned_to === member.id ||
+              p.assignedTo === member.id ||
+              (Array.isArray(p.assigned_members) && p.assigned_members.some(m => m?.id === member.id || m === member.id))
+            ));
+            return (
+              <div
+                key={member.id}
+                style={{
+                  background: '#ffffff',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: '14px',
+                  padding: '20px',
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '14px',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <LetterAvatar name={member.name} size={44} />
+                    <div>
+                      <h4 style={{ margin: '0 0 2px 0', fontSize: '15px', fontWeight: 700, color: '#0f172a' }}>{member.name}</h4>
+                      <span style={{ fontSize: '11.5px', color: '#6366f1', fontWeight: 600 }}>{member.role || 'Team Member'}</span>
+                    </div>
+                  </div>
+                  <span style={{ fontSize: '11px', background: '#ecfdf5', color: '#059669', padding: '3px 8px', borderRadius: '12px', fontWeight: 600 }}>
+                    Active
+                  </span>
+                </div>
+
+                <div style={{ fontSize: '12px', color: '#64748b' }}>
+                  ✉️ {member.email}
+                </div>
+
+                {/* Assigned Projects */}
+                <div>
+                  <div style={{ fontSize: '11.5px', fontWeight: 600, color: '#475569', marginBottom: '6px' }}>
+                    Assigned Projects ({assignedProjects.length}):
+                  </div>
+                  {assignedProjects.length === 0 ? (
+                    <div style={{ fontSize: '11.5px', color: '#94a3b8', fontStyle: 'italic' }}>
+                      No projects assigned yet
+                    </div>
+                  ) : (
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                      {assignedProjects.map(proj => (
+                        <span
+                          key={proj.id}
+                          onClick={() => handleSelectProject(proj)}
+                          style={{
+                            fontSize: '11px',
+                            background: '#eff6ff',
+                            color: '#1d4ed8',
+                            border: '1px solid #bfdbfe',
+                            padding: '3px 8px',
+                            borderRadius: '6px',
+                            cursor: 'pointer',
+                            fontWeight: 500
+                          }}
+                          title="Open project workspace"
+                        >
+                          📌 {proj.title}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Actions */}
+                <div style={{ display: 'flex', gap: '8px', marginTop: 'auto', paddingTop: '10px', borderTop: '1px solid #f1f5f9' }}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setRole('member');
+                      setPreviewMemberId(member.id);
+                      setSelectedProject(null);
+                    }}
+                    style={{
+                      flex: 1,
+                      padding: '7px 12px',
+                      borderRadius: '8px',
+                      border: '1px solid #cbd5e1',
+                      background: '#f8fafc',
+                      color: '#0f172a',
+                      fontSize: '12px',
+                      fontWeight: 600,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    ⚡ Preview Member Portal
+                  </button>
+                  {isRealAdmin && (
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteTeamMember(member.id)}
+                      style={{
+                        padding: '7px 10px',
+                        borderRadius: '8px',
+                        border: '1px solid #fee2e2',
+                        background: '#fef2f2',
+                        color: '#ef4444',
+                        fontSize: '12px',
+                        fontWeight: 600,
+                        cursor: 'pointer'
+                      }}
+                      title="Remove Member"
+                    >
+                      🗑️
+                    </button>
+                  )}
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -1040,20 +1317,20 @@ export default function RemotaleDashboard({ user, onLogout }) {
         <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
             <span style={{ fontSize: '20px' }}>⚡</span>
-            <h4 style={{ margin: 0, fontSize: '14px', fontWeight: 700, color: '#0f172a' }}>Real-Time Synchronization</h4>
+            <h4 style={{ margin: 0, fontSize: '14px', fontWeight: 700, color: '#0f172a' }}>Role Synchronization</h4>
           </div>
           <p style={{ margin: 0, fontSize: '12.5px', color: '#64748b', lineHeight: 1.5 }}>
-            All task completions, credential changes, notes, and progress updates submitted by the Super Admin sync instantly with client dashboards.
+            Projects assigned to members immediately appear in their workspace with live messages, to-do lists, and progress tracking.
           </p>
         </div>
 
         <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
             <span style={{ fontSize: '20px' }}>🛡️</span>
-            <h4 style={{ margin: 0, fontSize: '14px', fontWeight: 700, color: '#0f172a' }}>Isolated Client Views</h4>
+            <h4 style={{ margin: 0, fontSize: '14px', fontWeight: 700, color: '#0f172a' }}>Multi-Client Isolation</h4>
           </div>
           <p style={{ margin: 0, fontSize: '12.5px', color: '#64748b', lineHeight: 1.5 }}>
-            Clients only see their own assigned projects and nearest deadlines. Universal team management is retained solely by the Super Admin.
+            Clients only see their own assigned projects and nearest deadlines. Team member assignments remain cleanly organized.
           </p>
         </div>
       </div>
@@ -1153,10 +1430,10 @@ export default function RemotaleDashboard({ user, onLogout }) {
         {/* Bottom User Section with Dedicated Logout */}
         <div style={{ marginTop: 'auto', padding: '14px', borderTop: '1px solid #e2e8f0', background: '#fafafa' }}>
           <div className="remotale-sidebar-user-pill" style={{ marginBottom: '10px' }}>
-            <div className="remotale-sidebar-avatar-circle">{currentClientUser?.name?.[0] || 'C'}</div>
+            <div className="remotale-sidebar-avatar-circle">{currentUserForPortal?.name?.[0] || (role === 'member' ? 'M' : 'C')}</div>
             <div className="remotale-sidebar-user-info" style={{ flex: 1, minWidth: 0 }}>
-              <span className="remotale-sidebar-user-name" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>{currentClientUser?.name || 'Client'}</span>
-              <span className="remotale-sidebar-user-role">{currentClientUser?.company || 'Client'}</span>
+              <span className="remotale-sidebar-user-name" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>{currentUserForPortal?.name || (role === 'member' ? 'Team Member' : 'Client')}</span>
+              <span className="remotale-sidebar-user-role">{role === 'member' ? (currentMemberUser?.role || 'Team Member') : (currentClientUser?.company || 'Client')}</span>
             </div>
           </div>
           <button
@@ -1202,8 +1479,17 @@ export default function RemotaleDashboard({ user, onLogout }) {
             onAddTask={handleAddTaskInDetail}
             onDeleteTask={handleDeleteTask}
             onUpdateProject={handleUpdateProject}
-            currentUser={currentClientUser}
+            currentUser={currentUserForPortal}
             onLogout={onLogout}
+            messages={messages}
+            onSendMessage={handleSendMessage}
+            teamMembers={teamMembers}
+            isAdmin={role === 'admin'}
+            onOpenProgressPdf={(p) => {
+              const targetCid = p?.clientId || p?.client_id || (role === 'client' ? previewClientId : 'client-awais');
+              setProgressPdfClientId(targetCid);
+              setIsProgressPdfModalOpen(true);
+            }}
           />
         ) : activeTab === 'projects' ? (
           <MyProjectsView
@@ -1218,15 +1504,20 @@ export default function RemotaleDashboard({ user, onLogout }) {
               setIsNewProjectModalOpen(true);
             }}
             onDeleteProject={handleDeleteProject}
-            currentUser={currentClientUser}
+            currentUser={currentUserForPortal}
             onLogout={onLogout}
+            onOpenProgressPdf={() => {
+              const targetCid = role === 'client' ? previewClientId : 'client-awais';
+              setProgressPdfClientId(targetCid);
+              setIsProgressPdfModalOpen(true);
+            }}
           />
         ) : (activeTab === 'invoices' || activeTab === 'billing') ? (
           <InvoicesView
             invoices={invoices}
             clients={clients}
             projects={visibleProjects}
-            currentUser={currentClientUser}
+            currentUser={currentUserForPortal}
             isAdmin={false}
             onCreateInvoice={handleCreateInvoice}
             onPublishInvoice={handlePublishInvoice}
@@ -1243,9 +1534,19 @@ export default function RemotaleDashboard({ user, onLogout }) {
             onAddTask={handleAddTaskInDetail}
             onDeleteTask={handleDeleteTask}
             onSelectProject={handleSelectProject}
-            currentUser={currentClientUser}
+            currentUser={currentUserForPortal}
           />
-        ) : (activeTab === 'messages' || activeTab === 'files') ? (
+        ) : activeTab === 'messages' ? (
+          <MessagesView
+            projects={visibleProjects}
+            messages={messages}
+            currentUser={currentUserForPortal}
+            onSendMessage={handleSendMessage}
+            teamMembers={teamMembers}
+            clients={clients}
+            onSelectProject={handleSelectProject}
+          />
+        ) : activeTab === 'files' ? (
           <ComingSoonView
             section={activeTab}
             onBackToProjects={() => {
@@ -1260,8 +1561,8 @@ export default function RemotaleDashboard({ user, onLogout }) {
         {/* Top Header */}
         <div className="remotale-main-header">
           <div className="remotale-main-greeting">
-            <h1>Hello, {currentClientUser?.name?.split(' ')[0] || 'Client'} 👋</h1>
-            <p>Here's an overview of your projects.</p>
+            <h1>Hello, {currentUserForPortal?.name?.split(' ')[0] || (role === 'member' ? 'Member' : 'Client')} 👋</h1>
+            <p>{role === 'member' ? "Here's an overview of your assigned projects, tasks, and discussions." : "Here's an overview of your projects."}</p>
           </div>
 
           <div className="remotale-header-actions">
@@ -1821,6 +2122,10 @@ export default function RemotaleDashboard({ user, onLogout }) {
             onUpdateProject={handleUpdateProject}
             currentUser={user}
             onLogout={onLogout}
+            messages={messages}
+            onSendMessage={handleSendMessage}
+            teamMembers={teamMembers}
+            isAdmin={true}
             onOpenProgressPdf={(p) => {
               const targetCid = p?.clientId || p?.client_id || (role === 'client' ? previewClientId : 'client-awais');
               setProgressPdfClientId(targetCid);
@@ -1872,7 +2177,17 @@ export default function RemotaleDashboard({ user, onLogout }) {
             onSelectProject={handleSelectProject}
             currentUser={user}
           />
-        ) : (activeTab === 'messages' || activeTab === 'files') ? (
+        ) : activeTab === 'messages' ? (
+          <MessagesView
+            projects={projects}
+            messages={messages}
+            currentUser={user || { id: 'admin-1', name: 'Abdullah', role: 'admin' }}
+            onSendMessage={handleSendMessage}
+            teamMembers={teamMembers}
+            clients={clients}
+            onSelectProject={handleSelectProject}
+          />
+        ) : activeTab === 'files' ? (
           <ComingSoonView
             section={activeTab}
             onBackToProjects={() => {
@@ -1895,11 +2210,14 @@ export default function RemotaleDashboard({ user, onLogout }) {
             {isRealAdmin && (
               <select
                 className="remotale-persona-select"
-                value={role === 'admin' ? 'admin' : previewClientId}
+                value={role === 'admin' ? 'admin' : (role === 'member' ? `member-${previewMemberId}` : previewClientId)}
                 onChange={(e) => {
                   const val = e.target.value;
                   if (val === 'admin') {
                     setRole('admin');
+                  } else if (val.startsWith('member-')) {
+                    setRole('member');
+                    setPreviewMemberId(val.replace('member-', ''));
                   } else {
                     setRole('client');
                     setPreviewClientId(val);
@@ -1907,7 +2225,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
                   setSelectedProject(null);
                 }}
                 style={{
-                  background: role === 'admin' ? '#0f172a' : '#4338ca',
+                  background: role === 'admin' ? '#0f172a' : (role === 'member' ? '#047857' : '#4338ca'),
                   color: '#ffffff',
                   border: '1px solid #cbd5e1',
                   borderRadius: '999px',
@@ -1918,17 +2236,29 @@ export default function RemotaleDashboard({ user, onLogout }) {
                   outline: 'none',
                   boxShadow: '0 1px 4px rgba(0,0,0,0.06)'
                 }}
-                title="Switch between Super Admin and specific Client Portals"
+                title="Switch between Super Admin, Team Member portals, and Client Portals"
               >
                 <option value="admin" style={{ background: '#0f172a', color: '#ffffff' }}>👑 Super Admin (All {projects.length} Projects)</option>
-                {clients.map(cl => {
-                  const count = projects.filter(p => (p.client_id === cl.id || p.clientId === cl.id)).length;
-                  return (
-                    <option key={cl.id} value={cl.id} style={{ background: '#0f172a', color: '#ffffff' }}>
-                      👤 Client Portal: {cl.name} ({count} {count === 1 ? 'Project' : 'Projects'})
-                    </option>
-                  );
-                })}
+                <optgroup label="── Team Members ──" style={{ background: '#064e3b', color: '#a7f3d0' }}>
+                  {teamMembers.map(mem => {
+                    const count = projects.filter(p => (p.assigned_to === mem.id || p.assignedTo === mem.id || (Array.isArray(p.assigned_members) && p.assigned_members.some(m => m.id === mem.id || m === mem.id)))).length;
+                    return (
+                      <option key={mem.id} value={`member-${mem.id}`} style={{ background: '#0f172a', color: '#ffffff' }}>
+                        ⚡ Team Member: {mem.name} ({count} {count === 1 ? 'Project' : 'Projects'})
+                      </option>
+                    );
+                  })}
+                </optgroup>
+                <optgroup label="── Clients ──" style={{ background: '#1e1b4b', color: '#a5b4fc' }}>
+                  {clients.map(cl => {
+                    const count = projects.filter(p => (p.client_id === cl.id || p.clientId === cl.id)).length;
+                    return (
+                      <option key={cl.id} value={cl.id} style={{ background: '#0f172a', color: '#ffffff' }}>
+                        👤 Client Portal: {cl.name} ({count} {count === 1 ? 'Project' : 'Projects'})
+                      </option>
+                    );
+                  })}
+                </optgroup>
               </select>
             )}
 
@@ -3314,7 +3644,17 @@ export default function RemotaleDashboard({ user, onLogout }) {
                 onAddTask={handleAddTaskInDetail}
                 onDeleteTask={handleDeleteTask}
                 onSelectProject={handleSelectProject}
-                currentUser={currentClientUser}
+                currentUser={currentUserForPortal}
+              />
+            ) : activeTab === 'messages' ? (
+              <MessagesView
+                projects={visibleProjects}
+                messages={messages}
+                currentUser={currentUserForPortal}
+                onSendMessage={handleSendMessage}
+                teamMembers={teamMembers}
+                clients={clients}
+                onSelectProject={handleSelectProject}
               />
             ) : (
               <ComingSoonView
@@ -3887,6 +4227,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
         projectToEdit={projectToEdit}
         isAdmin={role === 'admin'}
         clients={clients}
+        teamMembers={teamMembers}
         currentUser={user}
       />
 
@@ -3899,6 +4240,207 @@ export default function RemotaleDashboard({ user, onLogout }) {
         initialClientId={progressPdfClientId}
         currentAdminName="Ameen"
       />
+
+      {/* Add New Team Member Modal */}
+      {isAddTeamModalOpen && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(15, 23, 42, 0.65)',
+          backdropFilter: 'blur(4px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 9999,
+          padding: '20px'
+        }}>
+          <div style={{
+            background: '#ffffff',
+            borderRadius: '16px',
+            width: '100%',
+            maxWidth: '480px',
+            padding: '28px',
+            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+            border: '1px solid #e2e8f0',
+            animation: 'fadeIn 0.2s ease-out'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+              <div>
+                <h3 style={{ margin: '0 0 4px 0', fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>
+                  Add Agency Team Member
+                </h3>
+                <p style={{ margin: 0, fontSize: '12.5px', color: '#64748b' }}>
+                  Create an engineer or designer account and assign projects.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsAddTeamModalOpen(false)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  fontSize: '20px',
+                  color: '#94a3b8',
+                  cursor: 'pointer',
+                  padding: '4px'
+                }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={async (e) => {
+              e.preventDefault();
+              if (!newMemberName.trim() || !newMemberEmail.trim()) return;
+              await handleAddTeamMember({
+                name: newMemberName.trim(),
+                email: newMemberEmail.trim(),
+                role: newMemberRole.trim() || 'Frontend Engineer',
+                password: newMemberPw.trim() || 'member123',
+                initialProjectId: newMemberInitialProj || null
+              });
+            }}>
+              <div style={{ marginBottom: '14px' }}>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: '#334155', marginBottom: '5px' }}>
+                  Full Name *
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Usman Ali or Sarah Jen"
+                  value={newMemberName}
+                  onChange={(e) => setNewMemberName(e.target.value)}
+                  required
+                  style={{
+                    width: '100%',
+                    padding: '9px 12px',
+                    borderRadius: '8px',
+                    border: '1px solid #cbd5e1',
+                    fontSize: '13.5px'
+                  }}
+                />
+              </div>
+
+              <div style={{ marginBottom: '14px' }}>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: '#334155', marginBottom: '5px' }}>
+                  Email Address (Login ID) *
+                </label>
+                <input
+                  type="email"
+                  placeholder="e.g. usman@remotale.com"
+                  value={newMemberEmail}
+                  onChange={(e) => setNewMemberEmail(e.target.value)}
+                  required
+                  style={{
+                    width: '100%',
+                    padding: '9px 12px',
+                    borderRadius: '8px',
+                    border: '1px solid #cbd5e1',
+                    fontSize: '13.5px'
+                  }}
+                />
+              </div>
+
+              <div style={{ marginBottom: '14px' }}>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: '#334155', marginBottom: '5px' }}>
+                  Role / Title
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Frontend & Shopify Engineer"
+                  value={newMemberRole}
+                  onChange={(e) => setNewMemberRole(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '9px 12px',
+                    borderRadius: '8px',
+                    border: '1px solid #cbd5e1',
+                    fontSize: '13.5px'
+                  }}
+                />
+              </div>
+
+              <div style={{ marginBottom: '14px' }}>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: '#334155', marginBottom: '5px' }}>
+                  Password
+                </label>
+                <input
+                  type="password"
+                  placeholder="Default: member123"
+                  value={newMemberPw}
+                  onChange={(e) => setNewMemberPw(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '9px 12px',
+                    borderRadius: '8px',
+                    border: '1px solid #cbd5e1',
+                    fontSize: '13.5px'
+                  }}
+                />
+              </div>
+
+              <div style={{ marginBottom: '22px' }}>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: '#334155', marginBottom: '5px' }}>
+                  Assign Initial Project (Optional)
+                </label>
+                <select
+                  value={newMemberInitialProj}
+                  onChange={(e) => setNewMemberInitialProj(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '9px 12px',
+                    borderRadius: '8px',
+                    border: '1px solid #cbd5e1',
+                    fontSize: '13.5px',
+                    background: '#ffffff'
+                  }}
+                >
+                  <option value="">No initial project (Assign later)</option>
+                  {projects.map(p => (
+                    <option key={p.id} value={p.id}>
+                      {p.title} ({p.deadline || 'Upcoming'})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+                <button
+                  type="button"
+                  onClick={() => setIsAddTeamModalOpen(false)}
+                  style={{
+                    padding: '9px 18px',
+                    borderRadius: '8px',
+                    border: '1px solid #cbd5e1',
+                    background: '#f8fafc',
+                    color: '#475569',
+                    fontWeight: 600,
+                    fontSize: '13px',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  style={{
+                    padding: '9px 22px',
+                    borderRadius: '8px',
+                    border: 'none',
+                    background: '#4f46e5',
+                    color: '#ffffff',
+                    fontWeight: 700,
+                    fontSize: '13px',
+                    cursor: 'pointer',
+                    boxShadow: '0 2px 6px rgba(79, 70, 229, 0.3)'
+                  }}
+                >
+                  Create Member
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

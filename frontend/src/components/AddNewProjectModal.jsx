@@ -96,6 +96,7 @@ export default function AddNewProjectModal({
   onSubmit,
   isAdmin = false,
   clients = [],
+  teamMembers = [],
   currentUser,
   projectToEdit = null
 }) {
@@ -107,6 +108,8 @@ export default function AddNewProjectModal({
     if (isAdmin && clients.length > 0) return clients[0].id;
     return currentUser?.id || 'client-1';
   });
+  const [selectedMemberId, setSelectedMemberId] = useState(projectToEdit?.assigned_to || projectToEdit?.assignedTo || 'admin-1');
+  const [selectedMemberName, setSelectedMemberName] = useState(projectToEdit?.assigned_name || projectToEdit?.assignedName || 'Abdullah');
   const todayStr = useMemo(() => new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }), []);
   const defaultDeadlineStr = useMemo(() => new Date(Date.now() + 7 * 86400000).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }), []);
 
@@ -150,6 +153,8 @@ export default function AddNewProjectModal({
         setTitle(projectToEdit.title || '');
         setDescription(projectToEdit.description || '');
         setSelectedClientId(projectToEdit.client_id || projectToEdit.clientId || (isAdmin && clients.length > 0 ? clients[0].id : currentUser?.id || 'client-1'));
+        setSelectedMemberId(projectToEdit.assigned_to || projectToEdit.assignedTo || 'admin-1');
+        setSelectedMemberName(projectToEdit.assigned_name || projectToEdit.assignedName || 'Abdullah');
         setProjectType(projectToEdit.project_type || projectToEdit.projectType || 'Web Development');
         setStartDate(projectToEdit.start_date || projectToEdit.startDate || todayStr);
         setDeadline(projectToEdit.deadline || defaultDeadlineStr);
@@ -178,6 +183,8 @@ export default function AddNewProjectModal({
         setTitle('');
         setDescription('');
         setSelectedClientId(isAdmin && clients.length > 0 ? clients[0].id : currentUser?.id || 'client-1');
+        setSelectedMemberId('admin-1');
+        setSelectedMemberName('Abdullah');
         setProjectType('Web Development');
         setStartDate(todayStr);
         setDeadline(defaultDeadlineStr);
@@ -235,6 +242,9 @@ export default function AddNewProjectModal({
         title: title.trim(),
         description: description.trim(),
         clientId: isAdmin ? selectedClientId : (currentUser?.id || 'client-1'),
+        assigned_to: selectedMemberId || 'admin-1',
+        assigned_name: selectedMemberName || 'Abdullah',
+        assigned_members: [selectedMemberId || 'admin-1'],
         projectType,
         startDate,
         deadline,
@@ -379,6 +389,34 @@ export default function AddNewProjectModal({
                 </select>
                 <span className="anp-field-hint">
                   Select which client account this project will be assigned to.
+                </span>
+              </div>
+            )}
+
+            {isAdmin && (
+              <div className="anp-field-group" style={{ marginBottom: '16px' }}>
+                <label className="anp-label">
+                  Assign to Team Member
+                </label>
+                <select
+                  className="anp-input anp-select"
+                  value={selectedMemberId}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setSelectedMemberId(val);
+                    const m = (teamMembers || []).find(tm => tm.id === val);
+                    setSelectedMemberName(m ? m.name : (val === 'admin-1' ? 'Abdullah' : 'Team Member'));
+                  }}
+                >
+                  <option value="admin-1">👑 Abdullah (Super Admin)</option>
+                  {(teamMembers || []).filter(m => m.id !== 'admin-1').map(m => (
+                    <option key={m.id} value={m.id}>
+                      ⚡ {m.name} ({m.role || 'Team Member'})
+                    </option>
+                  ))}
+                </select>
+                <span className="anp-field-hint">
+                  The assigned member will see this project in their portal with full access to its messages, to-do list, and notepad.
                 </span>
               </div>
             )}
