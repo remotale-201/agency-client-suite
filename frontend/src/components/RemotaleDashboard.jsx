@@ -222,6 +222,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
     return [];
   });
   const [teamMembers, setTeamMembers] = useState(SEED_TEAM_MEMBERS);
+  const [teamActivities, setTeamActivities] = useState(SEED_ACTIVITIES || []);
   const [clients, setClients] = useState(SEED_CLIENTS);
   const [invoices, setInvoices] = useState(() => {
     try {
