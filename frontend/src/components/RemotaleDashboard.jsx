@@ -508,8 +508,6 @@ export default function RemotaleDashboard({ user, onLogout }) {
       }
     } catch (err) {
       console.error('Failed to load dashboard data:', err);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -719,7 +717,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
           setSelectedProject(prev => ({ ...prev, ...updated }));
         }
       }
-      await loadData();
+      loadData().catch(e => console.warn('[Background sync notice]', e.message));
       return updated;
     } catch (err) {
       console.error('[Update Project Error]', err);
