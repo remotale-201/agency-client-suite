@@ -106,7 +106,14 @@ export default function CreateInvoiceModal({
 
     prevIsOpenRef.current = isOpen;
     prevInvoiceIdRef.current = currentInvoiceId;
-  }, [isOpen, initialInvoice]);
+  }, [isOpen, initialInvoice, clients]);
+
+  // Ensure client is automatically selected as soon as clients array is available
+  useEffect(() => {
+    if (isOpen && !initialInvoice && !selectedClientId && Array.isArray(clients) && clients.length > 0) {
+      setSelectedClientId(clients[0].id);
+    }
+  }, [isOpen, initialInvoice, selectedClientId, clients]);
 
   // Filter projects by selected client
   const clientProjects = projects.filter(p => {

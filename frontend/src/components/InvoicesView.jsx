@@ -73,7 +73,8 @@ export default function InvoicesView({
       } else if (statusFilter === 'published') {
         if (inv.status !== 'published' || isArchived) return false;
       } else if (statusFilter === 'draft') {
-        if (inv.status !== 'draft' || isArchived) return false;
+        const isDraft = inv.status === 'draft' || (!inv.published && inv.status !== 'paid');
+        if (!isDraft || isArchived) return false;
       } else if (statusFilter === 'paid') {
         if (inv.status !== 'paid' || isArchived) return false;
       } else if (statusFilter === 'archived') {
@@ -121,7 +122,7 @@ export default function InvoicesView({
         paidVal += amt;
       } else if (inv.status === 'published' || inv.published) {
         pendingVal += amt;
-      } else if (inv.status === 'draft') {
+      } else if (inv.status === 'draft' || (!inv.published && inv.status !== 'paid')) {
         draftCount++;
       }
     });
@@ -365,7 +366,7 @@ export default function InvoicesView({
           {filteredInvoices.map((inv) => {
             const isArchived = inv.status === 'archived' || inv.is_deleted;
             const isPaid = inv.status === 'paid';
-            const isDraft = inv.status === 'draft';
+            const isDraft = inv.status === 'draft' || (!inv.published && inv.status !== 'paid');
             const isPub = inv.status === 'published' || inv.published;
             const currency = inv.currency || 'PKR';
             const amount = Number(inv.amount || 0);
@@ -376,8 +377,8 @@ export default function InvoicesView({
                 <div className="inv-card-left">
                   <div className="inv-card-number-row">
                     <span className="inv-card-number">{inv.invoice_number || 'INV-2026-001'}</span>
-                    <span className={`inv-status-pill ${inv.status || 'published'}`}>
-                      {isArchived ? '📦 Archived (Saved in DB)' : isPaid ? '✓ Paid' : isDraft ? 'Draft' : '● Published'}
+                    <span className={`inv-status-pill ${isArchived ? 'archived' : isPaid ? 'paid' : isDraft ? 'draft' : 'published'}`}>
+                      {isArchived ? '📦 Archived (Saved in DB)' : isPaid ? '✓ Paid' : isDraft ? '📝 Draft (Unpublished)' : '● Published'}
                     </span>
                   </div>
 

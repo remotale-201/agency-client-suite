@@ -2731,7 +2731,67 @@ function ensureLocalStore() {
         }
       ],
       files: [],
-      invoices: (store && Array.isArray(store.invoices)) ? store.invoices : []
+      invoices: (store && Array.isArray(store.invoices) && store.invoices.length > 0) ? store.invoices : [
+        {
+          id: "inv-1792441924496",
+          client_id: "client-awais",
+          client_name: "Awais Agency",
+          client_company: "Awais Agency",
+          client_email: "awais@remotale.com",
+          project_id: null,
+          project_ids: [],
+          title: "Test Draft Invoice",
+          invoice_number: "INV-2026-DRAFT-01",
+          amount: 25000,
+          subtotal: 25000,
+          tax: 0,
+          discount: 0,
+          currency: "PKR",
+          status: "draft",
+          due_date: "25/10/2026",
+          issue_date: "15/10/2026",
+          notes: "Thank you for your business!",
+          payment_details: "Bank: Meezan Bank | Title: Abdullah | Account: 0102-0103948291",
+          published: false,
+          items: [{ description: "Test Draft Feature", qty: 1, rate: 25000, amount: 25000 }],
+          is_deleted: false,
+          created_at: "2026-10-19T15:32:04.463Z"
+        },
+        {
+          id: "inv-1792100301148",
+          client_id: "client-awais",
+          client_name: "Adeel Bhai",
+          client_company: "Designation / Business",
+          client_email: "client@company.com",
+          project_id: null,
+          project_ids: [],
+          title: "Web Development & E-Commerce Services",
+          invoice_number: "INV-2026-08",
+          amount: 13000,
+          subtotal: 13000,
+          tax: 0,
+          discount: 0,
+          currency: "PKR",
+          status: "published",
+          due_date: "2026-09-10",
+          issue_date: "2026-09-03",
+          notes: "Thank you for your business!",
+          payment_details: "JazzCash: 03293003719\nMeezan Bank A/C: 00300115381875",
+          published: true,
+          items: [
+            { description: "Dfynex 15 Post", qty: 15, rate: 100, amount: 1500 },
+            { description: "Oxytees", qty: 20, rate: 100, amount: 2000 },
+            { description: "Mr Gym Wear", qty: 20, rate: 100, amount: 2000 },
+            { description: "Gym Shire", qty: 10, rate: 100, amount: 1000 },
+            { description: "GymVare", qty: 20, rate: 100, amount: 2000 },
+            { description: "WearPhare", qty: 20, rate: 100, amount: 2000 },
+            { description: "FytNix", qty: 15, rate: 100, amount: 1500 },
+            { description: "10 Brand Logo + Bnanner", qty: 10, rate: 100, amount: 1000 }
+          ],
+          is_deleted: false,
+          created_at: "2026-10-15T16:38:22.359Z"
+        }
+      ]
     };
 
     fs.writeFileSync(STORE_PATH, JSON.stringify(cleanStore, null, 2), 'utf-8');
@@ -3650,17 +3710,43 @@ const db = {
     let updatedTask = null;
     const nowIso = new Date().toISOString();
 
+    const resolveTaskCanonicalIds = (taskId) => {
+      if (!taskId || typeof taskId !== 'string') return [taskId];
+      const ids = [taskId];
+      if (taskId.startsWith('t-awais-')) {
+        const num = parseInt(taskId.replace('t-awais-', ''), 10);
+        if (!isNaN(num) && num > 0) {
+          const pIdx = Math.floor((num - 1) / 8) + 1;
+          const tIdx = ((num - 1) % 8) + 1;
+          const canon = `task-proj-awais-${pIdx}-${tIdx}`;
+          if (!ids.includes(canon)) ids.push(canon);
+        }
+      } else if (taskId.startsWith('task-proj-awais-')) {
+        const m = taskId.match(/task-proj-awais-(\d+)-(\d+)/);
+        if (m) {
+          const pNum = parseInt(m[1], 10);
+          const tNum = parseInt(m[2], 10);
+          const tAwaisNum = (pNum - 1) * 8 + tNum;
+          const alias = `t-awais-${tAwaisNum}`;
+          if (!ids.includes(alias)) ids.push(alias);
+        }
+      }
+      return ids;
+    };
+
+    const targetIds = resolveTaskCanonicalIds(id);
+
     if (isPostgres && pgPool) {
       try {
         let q = '';
         let params = [];
         if (completed !== undefined) {
           const isComp = Boolean(completed);
-          q = 'UPDATE tasks SET completed = $1, completed_at = CASE WHEN $1 = true THEN COALESCE(completed_at, NOW()) ELSE NULL END WHERE id = $2 RETURNING *';
-          params = [isComp, id];
+          q = 'UPDATE tasks SET completed = $1, completed_at = CASE WHEN $1 = true THEN COALESCE(completed_at, NOW()) ELSE NULL END WHERE id = ANY($2::varchar[]) RETURNING *';
+          params = [isComp, targetIds];
         } else {
-          q = 'UPDATE tasks SET completed = NOT completed, completed_at = CASE WHEN completed = false THEN NOW() ELSE NULL END WHERE id = $1 RETURNING *';
-          params = [id];
+          q = 'UPDATE tasks SET completed = NOT completed, completed_at = CASE WHEN completed = false THEN NOW() ELSE NULL END WHERE id = ANY($1::varchar[]) RETURNING *';
+          params = [targetIds];
         }
         const res = await pgPool.query(q, params);
         if (res.rows[0]) {
@@ -3689,19 +3775,20 @@ const db = {
 
     // Always mirror to local store as well
     const local = readLocalStore();
-    const task = (local.tasks || []).find(t => t.id === id);
+    const task = (local.tasks || []).find(t => targetIds.includes(t.id));
     if (task) {
       const nextComp = completed !== undefined ? Boolean(completed) : !task.completed;
       task.completed = nextComp;
       task.completed_at = nextComp ? (task.completed_at || nowIso) : null;
       if (!updatedTask) updatedTask = task;
       // Also update project progress in local store
-      if (task.project_id) {
-        const projTasks = (local.tasks || []).filter(t => t.project_id === task.project_id);
+      const projId = task.project_id || task.projectId;
+      if (projId) {
+        const projTasks = (local.tasks || []).filter(t => (t.project_id === projId || t.projectId === projId));
         const total = projTasks.length;
         const done = projTasks.filter(t => t.completed).length;
         const pct = total > 0 ? Math.round((done / total) * 100) : 0;
-        const proj = (local.projects || []).find(p => p.id === task.project_id);
+        const proj = (local.projects || []).find(p => p.id === projId);
         if (proj) {
           proj.progress = pct;
           if (pct >= 100) {
@@ -3713,6 +3800,11 @@ const db = {
         }
       }
       writeLocalStore(local);
+    } else if (updatedTask) {
+      // If found in Postgres but missing in local store, mirror it to local store
+      local.tasks = local.tasks || [];
+      local.tasks.push(updatedTask);
+      writeLocalStore(local);
     }
 
     if (updatedTask) {
@@ -3720,17 +3812,44 @@ const db = {
       this.logActivity('Abdullah', isDone ? 'completed task on' : 'reopened task on', `${updatedTask.title || 'Task'}`).catch(() => {});
     }
 
-    return updatedTask;
+    return updatedTask || { id, completed: Boolean(completed), completed_at: completed ? nowIso : null };
   },
 
   async deleteTask(id) {
     if (initPromise) await initPromise;
     let targetProjId = null;
+
+    const resolveTaskCanonicalIds = (taskId) => {
+      if (!taskId || typeof taskId !== 'string') return [taskId];
+      const ids = [taskId];
+      if (taskId.startsWith('t-awais-')) {
+        const num = parseInt(taskId.replace('t-awais-', ''), 10);
+        if (!isNaN(num) && num > 0) {
+          const pIdx = Math.floor((num - 1) / 8) + 1;
+          const tIdx = ((num - 1) % 8) + 1;
+          const canon = `task-proj-awais-${pIdx}-${tIdx}`;
+          if (!ids.includes(canon)) ids.push(canon);
+        }
+      } else if (taskId.startsWith('task-proj-awais-')) {
+        const m = taskId.match(/task-proj-awais-(\d+)-(\d+)/);
+        if (m) {
+          const pNum = parseInt(m[1], 10);
+          const tNum = parseInt(m[2], 10);
+          const tAwaisNum = (pNum - 1) * 8 + tNum;
+          const alias = `t-awais-${tAwaisNum}`;
+          if (!ids.includes(alias)) ids.push(alias);
+        }
+      }
+      return ids;
+    };
+
+    const targetIds = resolveTaskCanonicalIds(id);
+
     if (isPostgres && pgPool) {
       try {
-        const found = await pgPool.query('SELECT project_id FROM tasks WHERE id = $1', [id]);
+        const found = await pgPool.query('SELECT project_id FROM tasks WHERE id = ANY($1::varchar[])', [targetIds]);
         if (found.rows[0]) targetProjId = found.rows[0].project_id;
-        await pgPool.query('DELETE FROM tasks WHERE id = $1', [id]);
+        await pgPool.query('DELETE FROM tasks WHERE id = ANY($1::varchar[])', [targetIds]);
         if (targetProjId) {
           const stats = await pgPool.query(
             `SELECT COUNT(*)::int as total, COUNT(*) FILTER (WHERE completed = true)::int as done
@@ -3749,9 +3868,9 @@ const db = {
     }
 
     const local = readLocalStore();
-    const t = (local.tasks || []).find(x => x.id === id);
+    const t = (local.tasks || []).find(x => targetIds.includes(x.id));
     if (t) targetProjId = t.project_id || t.projectId;
-    local.tasks = (local.tasks || []).filter(x => x.id !== id);
+    local.tasks = (local.tasks || []).filter(x => !targetIds.includes(x.id));
 
     if (targetProjId) {
       const projTasks = (local.tasks || []).filter(x => (x.project_id === targetProjId || x.projectId === targetProjId));
@@ -3772,6 +3891,32 @@ const db = {
     if (initPromise) await initPromise;
     let updatedTask = null;
     const nowIso = new Date().toISOString();
+
+    const resolveTaskCanonicalIds = (taskId) => {
+      if (!taskId || typeof taskId !== 'string') return [taskId];
+      const ids = [taskId];
+      if (taskId.startsWith('t-awais-')) {
+        const num = parseInt(taskId.replace('t-awais-', ''), 10);
+        if (!isNaN(num) && num > 0) {
+          const pIdx = Math.floor((num - 1) / 8) + 1;
+          const tIdx = ((num - 1) % 8) + 1;
+          const canon = `task-proj-awais-${pIdx}-${tIdx}`;
+          if (!ids.includes(canon)) ids.push(canon);
+        }
+      } else if (taskId.startsWith('task-proj-awais-')) {
+        const m = taskId.match(/task-proj-awais-(\d+)-(\d+)/);
+        if (m) {
+          const pNum = parseInt(m[1], 10);
+          const tNum = parseInt(m[2], 10);
+          const tAwaisNum = (pNum - 1) * 8 + tNum;
+          const alias = `t-awais-${tAwaisNum}`;
+          if (!ids.includes(alias)) ids.push(alias);
+        }
+      }
+      return ids;
+    };
+
+    const targetIds = resolveTaskCanonicalIds(id);
 
     if (isPostgres && pgPool) {
       try {
@@ -3796,8 +3941,8 @@ const db = {
           }
         }
         if (fields.length > 0) {
-          values.push(id);
-          const q = `UPDATE tasks SET ${fields.join(', ')} WHERE id = $${i} RETURNING *`;
+          values.push(targetIds);
+          const q = `UPDATE tasks SET ${fields.join(', ')} WHERE id = ANY($${i}::varchar[]) RETURNING *`;
           const res = await pgPool.query(q, values);
           if (res.rows[0]) updatedTask = res.rows[0];
         }
@@ -3807,7 +3952,7 @@ const db = {
     }
 
     const local = readLocalStore();
-    const task = (local.tasks || []).find(t => t.id === id);
+    const task = (local.tasks || []).find(t => targetIds.includes(t.id));
     if (task) {
       Object.assign(task, updates);
       if (updates.completed !== undefined) {
@@ -3817,7 +3962,7 @@ const db = {
       if (!updatedTask) updatedTask = task;
       writeLocalStore(local);
     }
-    return updatedTask;
+    return updatedTask || { id, ...updates };
   },
 
   // Messages
@@ -4074,55 +4219,59 @@ const db = {
   async getInvoices(clientId, projectId, status, includeDeleted = false) {
     if (initPromise) await initPromise;
     if (isPostgres && pgPool) {
-      const conditions = [];
-      const values = [];
-      let i = 1;
+      try {
+        const conditions = [];
+        const values = [];
+        let i = 1;
 
-      if (!includeDeleted) {
-        conditions.push(`(i.is_deleted IS FALSE OR i.is_deleted IS NULL)`);
-      }
-      if (clientId) {
-        conditions.push(`i.client_id = $${i++}`);
-        values.push(clientId);
-      }
-      if (projectId) {
-        conditions.push(`i.project_id = $${i++}`);
-        values.push(projectId);
-      }
-      if (status) {
-        conditions.push(`i.status = $${i++}`);
-        values.push(status);
-      }
+        if (!includeDeleted) {
+          conditions.push(`(i.is_deleted IS FALSE OR i.is_deleted IS NULL)`);
+        }
+        if (clientId) {
+          conditions.push(`i.client_id = $${i++}`);
+          values.push(clientId);
+        }
+        if (projectId) {
+          conditions.push(`i.project_id = $${i++}`);
+          values.push(projectId);
+        }
+        if (status) {
+          conditions.push(`i.status = $${i++}`);
+          values.push(status);
+        }
 
-      const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
-      const query = `
-        SELECT i.*, 
-               COALESCE(i.client_name, u.name, 'Client') as client_name,
-               COALESCE(i.client_company, u.company, 'Agency Client') as client_company,
-               COALESCE(i.client_email, u.email, '') as client_email,
-               COALESCE(NULLIF(i.project_title, ''), p.title, '') as project_title
-        FROM invoices i
-        LEFT JOIN users u ON i.client_id = u.id
-        LEFT JOIN projects p ON i.project_id = p.id
-        ${whereClause}
-        ORDER BY i.created_at DESC
-      `;
-      const res = await pgPool.query(query, values);
-      return res.rows.map(inv => {
-        const pIds = typeof inv.project_ids === 'string' ? JSON.parse(inv.project_ids) : (inv.project_ids || (inv.project_id ? [inv.project_id] : []));
-        const pTitles = typeof inv.project_titles === 'string' ? JSON.parse(inv.project_titles) : (inv.project_titles || (inv.project_title ? [inv.project_title] : []));
-        return {
-          ...inv,
-          project_ids: pIds,
-          project_titles: pTitles,
-          project_title: inv.project_title || (pTitles.length > 0 ? pTitles.join(', ') : ''),
-          amount: Number(inv.amount),
-          subtotal: Number(inv.subtotal || inv.amount),
-          tax: Number(inv.tax || 0),
-          discount: Number(inv.discount || 0),
-          items: typeof inv.items === 'string' ? JSON.parse(inv.items) : (inv.items || [])
-        };
-      });
+        const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+        const query = `
+          SELECT i.*, 
+                 COALESCE(i.client_name, u.name, 'Client') as client_name,
+                 COALESCE(i.client_company, u.company, 'Agency Client') as client_company,
+                 COALESCE(i.client_email, u.email, '') as client_email,
+                 COALESCE(NULLIF(i.project_title, ''), p.title, '') as project_title
+          FROM invoices i
+          LEFT JOIN users u ON i.client_id = u.id
+          LEFT JOIN projects p ON i.project_id = p.id
+          ${whereClause}
+          ORDER BY i.created_at DESC
+        `;
+        const res = await pgPool.query(query, values);
+        return res.rows.map(inv => {
+          const pIds = typeof inv.project_ids === 'string' ? JSON.parse(inv.project_ids) : (inv.project_ids || (inv.project_id ? [inv.project_id] : []));
+          const pTitles = typeof inv.project_titles === 'string' ? JSON.parse(inv.project_titles) : (inv.project_titles || (inv.project_title ? [inv.project_title] : []));
+          return {
+            ...inv,
+            project_ids: pIds,
+            project_titles: pTitles,
+            project_title: inv.project_title || (pTitles.length > 0 ? pTitles.join(', ') : ''),
+            amount: Number(inv.amount),
+            subtotal: Number(inv.subtotal || inv.amount),
+            tax: Number(inv.tax || 0),
+            discount: Number(inv.discount || 0),
+            items: typeof inv.items === 'string' ? JSON.parse(inv.items) : (inv.items || [])
+          };
+        });
+      } catch (pgErr) {
+        console.error('[Postgres getInvoices Error, falling back to local store]:', pgErr.message);
+      }
     }
 
     const local = readLocalStore();
@@ -4166,32 +4315,37 @@ const db = {
   async getInvoiceById(id) {
     if (initPromise) await initPromise;
     if (isPostgres && pgPool) {
-      const res = await pgPool.query(`
-        SELECT i.*, 
-               COALESCE(i.client_name, u.name, 'Client') as client_name,
-               COALESCE(i.client_company, u.company, 'Agency Client') as client_company,
-               COALESCE(i.client_email, u.email, '') as client_email,
-               COALESCE(NULLIF(i.project_title, ''), p.title, '') as project_title
-        FROM invoices i
-        LEFT JOIN users u ON i.client_id = u.id
-        LEFT JOIN projects p ON i.project_id = p.id
-        WHERE i.id = $1
-      `, [id]);
-      if (res.rows.length === 0) return null;
-      const inv = res.rows[0];
-      const pIds = typeof inv.project_ids === 'string' ? JSON.parse(inv.project_ids) : (inv.project_ids || (inv.project_id ? [inv.project_id] : []));
-      const pTitles = typeof inv.project_titles === 'string' ? JSON.parse(inv.project_titles) : (inv.project_titles || (inv.project_title ? [inv.project_title] : []));
-      return {
-        ...inv,
-        project_ids: pIds,
-        project_titles: pTitles,
-        project_title: inv.project_title || (pTitles.length > 0 ? pTitles.join(', ') : ''),
-        amount: Number(inv.amount),
-        subtotal: Number(inv.subtotal || inv.amount),
-        tax: Number(inv.tax || 0),
-        discount: Number(inv.discount || 0),
-        items: typeof inv.items === 'string' ? JSON.parse(inv.items) : (inv.items || [])
-      };
+      try {
+        const res = await pgPool.query(`
+          SELECT i.*, 
+                 COALESCE(i.client_name, u.name, 'Client') as client_name,
+                 COALESCE(i.client_company, u.company, 'Agency Client') as client_company,
+                 COALESCE(i.client_email, u.email, '') as client_email,
+                 COALESCE(NULLIF(i.project_title, ''), p.title, '') as project_title
+          FROM invoices i
+          LEFT JOIN users u ON i.client_id = u.id
+          LEFT JOIN projects p ON i.project_id = p.id
+          WHERE i.id = $1
+        `, [id]);
+        if (res.rows.length > 0) {
+          const inv = res.rows[0];
+          const pIds = typeof inv.project_ids === 'string' ? JSON.parse(inv.project_ids) : (inv.project_ids || (inv.project_id ? [inv.project_id] : []));
+          const pTitles = typeof inv.project_titles === 'string' ? JSON.parse(inv.project_titles) : (inv.project_titles || (inv.project_title ? [inv.project_title] : []));
+          return {
+            ...inv,
+            project_ids: pIds,
+            project_titles: pTitles,
+            project_title: inv.project_title || (pTitles.length > 0 ? pTitles.join(', ') : ''),
+            amount: Number(inv.amount),
+            subtotal: Number(inv.subtotal || inv.amount),
+            tax: Number(inv.tax || 0),
+            discount: Number(inv.discount || 0),
+            items: typeof inv.items === 'string' ? JSON.parse(inv.items) : (inv.items || [])
+          };
+        }
+      } catch (pgErr) {
+        console.error('[Postgres getInvoiceById Error, falling back to local store]:', pgErr.message);
+      }
     }
 
     const local = readLocalStore();
@@ -4268,72 +4422,80 @@ const db = {
     };
 
     if (isPostgres && pgPool) {
-      await pgPool.query(`
-        INSERT INTO invoices (
-          id, client_id, project_id, title, invoice_number, amount, status,
-          due_date, issue_date, currency, subtotal, tax, discount, notes,
-          payment_details, published, items, project_ids, project_titles,
-          client_name, client_company, client_email, project_title, is_deleted
-        )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17::jsonb, $18::jsonb, $19::jsonb, $20, $21, $22, $23, $24)
-        ON CONFLICT (id) DO UPDATE SET
-          title = EXCLUDED.title,
-          amount = EXCLUDED.amount,
-          status = EXCLUDED.status,
-          due_date = EXCLUDED.due_date,
-          issue_date = EXCLUDED.issue_date,
-          currency = EXCLUDED.currency,
-          subtotal = EXCLUDED.subtotal,
-          tax = EXCLUDED.tax,
-          discount = EXCLUDED.discount,
-          notes = EXCLUDED.notes,
-          payment_details = EXCLUDED.payment_details,
-          published = EXCLUDED.published,
-          items = EXCLUDED.items,
-          project_ids = EXCLUDED.project_ids,
-          project_titles = EXCLUDED.project_titles,
-          client_name = EXCLUDED.client_name,
-          client_company = EXCLUDED.client_company,
-          client_email = EXCLUDED.client_email,
-          client_id = EXCLUDED.client_id,
-          invoice_number = EXCLUDED.invoice_number,
-          project_id = EXCLUDED.project_id,
-          project_title = EXCLUDED.project_title,
-          is_deleted = EXCLUDED.is_deleted;
-      `, [
-        cleanInvoice.id,
-        cleanInvoice.client_id,
-        cleanInvoice.project_id,
-        cleanInvoice.title,
-        cleanInvoice.invoice_number,
-        cleanInvoice.amount,
-        cleanInvoice.status,
-        cleanInvoice.due_date,
-        cleanInvoice.issue_date,
-        cleanInvoice.currency,
-        cleanInvoice.subtotal,
-        cleanInvoice.tax,
-        cleanInvoice.discount,
-        cleanInvoice.notes,
-        cleanInvoice.payment_details,
-        cleanInvoice.published,
-        JSON.stringify(cleanInvoice.items),
-        JSON.stringify(cleanInvoice.project_ids),
-        JSON.stringify(cleanInvoice.project_titles),
-        cleanInvoice.client_name,
-        cleanInvoice.client_company,
-        cleanInvoice.client_email,
-        cleanInvoice.project_title,
-        cleanInvoice.is_deleted
-      ]);
+      try {
+        await pgPool.query(`
+          INSERT INTO invoices (
+            id, client_id, project_id, title, invoice_number, amount, status,
+            due_date, issue_date, currency, subtotal, tax, discount, notes,
+            payment_details, published, items, project_ids, project_titles,
+            client_name, client_company, client_email, project_title, is_deleted
+          )
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17::jsonb, $18::jsonb, $19::jsonb, $20, $21, $22, $23, $24)
+          ON CONFLICT (id) DO UPDATE SET
+            title = EXCLUDED.title,
+            amount = EXCLUDED.amount,
+            status = EXCLUDED.status,
+            due_date = EXCLUDED.due_date,
+            issue_date = EXCLUDED.issue_date,
+            currency = EXCLUDED.currency,
+            subtotal = EXCLUDED.subtotal,
+            tax = EXCLUDED.tax,
+            discount = EXCLUDED.discount,
+            notes = EXCLUDED.notes,
+            payment_details = EXCLUDED.payment_details,
+            published = EXCLUDED.published,
+            items = EXCLUDED.items,
+            project_ids = EXCLUDED.project_ids,
+            project_titles = EXCLUDED.project_titles,
+            client_name = EXCLUDED.client_name,
+            client_company = EXCLUDED.client_company,
+            client_email = EXCLUDED.client_email,
+            client_id = EXCLUDED.client_id,
+            invoice_number = EXCLUDED.invoice_number,
+            project_id = EXCLUDED.project_id,
+            project_title = EXCLUDED.project_title,
+            is_deleted = EXCLUDED.is_deleted;
+        `, [
+          cleanInvoice.id,
+          cleanInvoice.client_id,
+          cleanInvoice.project_id,
+          cleanInvoice.title,
+          cleanInvoice.invoice_number,
+          cleanInvoice.amount,
+          cleanInvoice.status,
+          cleanInvoice.due_date,
+          cleanInvoice.issue_date,
+          cleanInvoice.currency,
+          cleanInvoice.subtotal,
+          cleanInvoice.tax,
+          cleanInvoice.discount,
+          cleanInvoice.notes,
+          cleanInvoice.payment_details,
+          cleanInvoice.published,
+          JSON.stringify(cleanInvoice.items),
+          JSON.stringify(cleanInvoice.project_ids),
+          JSON.stringify(cleanInvoice.project_titles),
+          cleanInvoice.client_name,
+          cleanInvoice.client_company,
+          cleanInvoice.client_email,
+          cleanInvoice.project_title,
+          cleanInvoice.is_deleted
+        ]);
+      } catch (pgErr) {
+        console.error('[Postgres createInvoice Error, mirroring to local store]:', pgErr.message);
+      }
     }
 
-    // Mirror to local store reliably
-    const local = readLocalStore();
-    local.invoices = [cleanInvoice, ...(local.invoices || []).filter(i => i.id !== cleanInvoice.id)];
-    writeLocalStore(local);
+    // Mirror to local store reliably (Guaranteed to execute even if Postgres drops)
+    try {
+      const local = readLocalStore();
+      local.invoices = [cleanInvoice, ...(local.invoices || []).filter(i => i.id !== cleanInvoice.id)];
+      writeLocalStore(local);
+    } catch (storeErr) {
+      console.error('[Local Store write error in createInvoice]:', storeErr.message);
+    }
 
-    return this.getInvoiceById(id);
+    return cleanInvoice;
   },
 
   async updateInvoice(id, updates) {
@@ -4347,65 +4509,69 @@ const db = {
     }
 
     if (isPostgres && pgPool) {
-      await pgPool.query(`
-        UPDATE invoices SET
-          title = COALESCE($1, title),
-          amount = COALESCE($2, amount),
-          status = COALESCE($3, status),
-          due_date = COALESCE($4, due_date),
-          notes = COALESCE($5, notes),
-          payment_details = COALESCE($6, payment_details),
-          published = COALESCE($7, published),
-          items = COALESCE($8::jsonb, items),
-          client_id = COALESCE($9, client_id),
-          invoice_number = COALESCE($10, invoice_number),
-          issue_date = COALESCE($11, issue_date),
-          currency = COALESCE($12, currency),
-          subtotal = COALESCE($13, subtotal),
-          tax = COALESCE($14, tax),
-          discount = COALESCE($15, discount),
-          project_ids = COALESCE($16::jsonb, project_ids),
-          project_titles = COALESCE($17::jsonb, project_titles),
-          client_name = COALESCE($18, client_name),
-          client_company = COALESCE($19, client_company),
-          client_email = COALESCE($20, client_email),
-          project_id = COALESCE($21, project_id),
-          project_title = COALESCE($22, project_title),
-          is_deleted = COALESCE($23, is_deleted)
-        WHERE id = $24
-      `, [
-        updates.title || null,
-        updates.amount !== undefined ? Number(updates.amount) : null,
-        updates.status || null,
-        updates.due_date || updates.dueDate || null,
-        updates.notes !== undefined ? updates.notes : null,
-        updates.payment_details || updates.paymentDetails || null,
-        updates.published !== undefined ? Boolean(updates.published) : null,
-        updates.items ? JSON.stringify(updates.items) : null,
-        updates.client_id || updates.clientId || null,
-        updates.invoice_number || null,
-        updates.issue_date || null,
-        updates.currency || null,
-        updates.subtotal !== undefined ? Number(updates.subtotal) : null,
-        updates.tax !== undefined ? Number(updates.tax) : null,
-        updates.discount !== undefined ? Number(updates.discount) : null,
-        updates.project_ids ? JSON.stringify(updates.project_ids) : null,
-        updates.project_titles ? JSON.stringify(updates.project_titles) : null,
-        updates.client_name || null,
-        updates.client_company || null,
-        updates.client_email || null,
-        updates.project_id || null,
-        updates.project_title || null,
-        updates.is_deleted !== undefined ? Boolean(updates.is_deleted) : null,
-        id
-      ]);
+      try {
+        await pgPool.query(`
+          UPDATE invoices SET
+            title = COALESCE($1, title),
+            amount = COALESCE($2, amount),
+            status = COALESCE($3, status),
+            due_date = COALESCE($4, due_date),
+            notes = COALESCE($5, notes),
+            payment_details = COALESCE($6, payment_details),
+            published = COALESCE($7, published),
+            items = COALESCE($8::jsonb, items),
+            client_id = COALESCE($9, client_id),
+            invoice_number = COALESCE($10, invoice_number),
+            issue_date = COALESCE($11, issue_date),
+            currency = COALESCE($12, currency),
+            subtotal = COALESCE($13, subtotal),
+            tax = COALESCE($14, tax),
+            discount = COALESCE($15, discount),
+            project_ids = COALESCE($16::jsonb, project_ids),
+            project_titles = COALESCE($17::jsonb, project_titles),
+            client_name = COALESCE($18, client_name),
+            client_company = COALESCE($19, client_company),
+            client_email = COALESCE($20, client_email),
+            project_id = COALESCE($21, project_id),
+            project_title = COALESCE($22, project_title),
+            is_deleted = COALESCE($23, is_deleted)
+          WHERE id = $24
+        `, [
+          updates.title || null,
+          updates.amount !== undefined ? Number(updates.amount) : null,
+          updates.status || null,
+          updates.due_date || updates.dueDate || null,
+          updates.notes !== undefined ? updates.notes : null,
+          updates.payment_details || updates.paymentDetails || null,
+          updates.published !== undefined ? Boolean(updates.published) : null,
+          updates.items ? JSON.stringify(updates.items) : null,
+          updates.client_id || updates.clientId || null,
+          updates.invoice_number || null,
+          updates.issue_date || null,
+          updates.currency || null,
+          updates.subtotal !== undefined ? Number(updates.subtotal) : null,
+          updates.tax !== undefined ? Number(updates.tax) : null,
+          updates.discount !== undefined ? Number(updates.discount) : null,
+          updates.project_ids ? JSON.stringify(updates.project_ids) : null,
+          updates.project_titles ? JSON.stringify(updates.project_titles) : null,
+          updates.client_name || null,
+          updates.client_company || null,
+          updates.client_email || null,
+          updates.project_id || null,
+          updates.project_title || null,
+          updates.is_deleted !== undefined ? Boolean(updates.is_deleted) : null,
+          id
+        ]);
+      } catch (pgErr) {
+        console.error('[Postgres updateInvoice Error, updating local store]:', pgErr.message);
+      }
     }
 
     const local = readLocalStore();
     local.invoices = (local.invoices || []).map(inv => inv.id === id ? { ...inv, ...updates } : inv);
     writeLocalStore(local);
 
-    return this.getInvoiceById(id);
+    return { ...existing, ...updates };
   },
 
   async publishInvoice(id) {
@@ -4419,8 +4585,11 @@ const db = {
   async deleteInvoice(id) {
     if (initPromise) await initPromise;
     if (isPostgres && pgPool) {
-      // Soft delete: Never permanently wipe invoice records from PostgreSQL
-      await pgPool.query("UPDATE invoices SET is_deleted = TRUE, status = 'archived' WHERE id = $1", [id]);
+      try {
+        await pgPool.query("UPDATE invoices SET is_deleted = TRUE, status = 'archived' WHERE id = $1", [id]);
+      } catch (pgErr) {
+        console.error('[Postgres deleteInvoice Error]:', pgErr.message);
+      }
     }
     const local = readLocalStore();
     local.invoices = (local.invoices || []).map(inv => inv.id === id ? { ...inv, is_deleted: true, status: 'archived' } : inv);

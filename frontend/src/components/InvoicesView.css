@@ -280,7 +280,8 @@
 
 .inv-status-pill.published { background: #e0e7ff; color: #4338ca; }
 .inv-status-pill.paid { background: #dcfce7; color: #166534; }
-.inv-status-pill.draft { background: #fef3c7; color: #92400e; }
+.inv-status-pill.draft { background: #fef3c7; color: #92400e; font-weight: 700; }
+.inv-status-pill.archived { background: #f1f5f9; color: #475569; }
 
 .inv-card-title {
   font-size: 16px;

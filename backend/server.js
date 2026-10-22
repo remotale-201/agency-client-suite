@@ -285,6 +285,24 @@ app.put('/api/projects/:id', async (req, res) => {
   }
 });
 
+// Dedicated Deliverables toggle endpoint
+app.patch('/api/projects/:projectId/deliverables/:delivId', async (req, res) => {
+  try {
+    const { projectId, delivId } = req.params;
+    const { completed } = req.body;
+    const proj = await db.getProjectById(projectId);
+    if (!proj) return res.status(404).json({ error: 'Project not found' });
+    const delivs = (proj.deliverables || []).map(d => {
+      if (d.id === delivId) return { ...d, completed: Boolean(completed) };
+      return d;
+    });
+    const updated = await db.updateProject(projectId, { deliverables: delivs });
+    res.json(updated || { id: projectId, deliverables: delivs });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Dedicated Project Notepad endpoints
 app.get('/api/projects/:id/notepad', async (req, res) => {
   try {

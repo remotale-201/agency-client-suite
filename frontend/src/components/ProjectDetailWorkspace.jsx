@@ -413,13 +413,23 @@ export default function ProjectDetailWorkspace({
   };
 
   // Real tasks list directly with optimistic local state for instant tick responsiveness
-  const [localTasks, setLocalTasks] = useState(() => (project?.tasks && project.tasks.length > 0) ? project.tasks : []);
+  const [localTasks, setLocalTasks] = useState(() => {
+    if (project?.tasks && project.tasks.length > 0) return project.tasks;
+    if (project?.id && api.getStoredTasks) {
+      const stored = api.getStoredTasks().filter(t => (t.project_id === project.id || t.projectId === project.id));
+      if (stored.length > 0) return stored;
+    }
+    return [];
+  });
 
   useEffect(() => {
-    if (project?.tasks) {
+    if (project?.tasks && project.tasks.length > 0) {
       setLocalTasks(project.tasks);
+    } else if (project?.id && api.getStoredTasks) {
+      const stored = api.getStoredTasks().filter(t => (t.project_id === project.id || t.projectId === project.id));
+      if (stored.length > 0) setLocalTasks(stored);
     }
-  }, [project?.tasks]);
+  }, [project?.id, project?.tasks]);
 
   // Real-time calculated progress percentage based on completed tasks
   const calculatedProgress = useMemo(() => {
@@ -441,7 +451,7 @@ export default function ProjectDetailWorkspace({
     const nowIso = new Date().toISOString();
     // 1. Instant optimistic local UI update with 0 latency including exact completed_at timestamp
     const nextTasks = localTasks.map(t => {
-      if (t.id === taskId) {
+      if (t.id === taskId || (t.aliasId && t.aliasId === taskId)) {
         return {
           ...t,
           completed: nextCompleted,
@@ -457,12 +467,12 @@ export default function ProjectDetailWorkspace({
     const newProgress = total > 0 ? Math.round((done / total) * 100) : 0;
     const newStatus = (total > 0 && done === total) ? 'completed' : 'in-progress';
 
-    // 2. Propagate to parent handler to sync to PostgreSQL and dashboard
+    // 2. Propagate to parent handler to sync to PostgreSQL, localStorage, and dashboard
     if (onToggleTask) {
       onToggleTask(taskId, currentCompleted);
     } else {
       api.toggleTask(taskId, nextCompleted).catch(err => {
-        console.error('Error toggling task:', err);
+        console.warn('Notice toggling task:', err.message);
       });
     }
 
@@ -507,6 +517,7 @@ export default function ProjectDetailWorkspace({
       try {
         const saved = await onAddTask({
           projectId: project?.id,
+          clientId: project?.client_id || project?.clientId,
           title,
           dueDate: newTask.due_date
         });
@@ -543,7 +554,7 @@ export default function ProjectDetailWorkspace({
 
   const handleDeleteTaskInternal = async (taskId) => {
     if (!window.confirm('Delete this task?')) return;
-    const nextTasks = localTasks.filter(t => t.id !== taskId);
+    const nextTasks = localTasks.filter(t => t.id !== taskId && t.aliasId !== taskId);
     setLocalTasks(nextTasks);
 
     const total = nextTasks.length;

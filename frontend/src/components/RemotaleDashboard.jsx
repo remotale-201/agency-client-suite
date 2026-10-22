@@ -206,8 +206,8 @@ export default function RemotaleDashboard({ user, onLogout }) {
 
   // Live Database State with Instant Resilience
   const [stats, setStats] = useState(SEED_STATS);
-  const [projects, setProjects] = useState(SEED_PROJECTS);
-  const [tasks, setTasks] = useState(() => SEED_PROJECTS.flatMap(p => p.tasks || []));
+  const [projects, setProjects] = useState(() => (api.getStoredProjects ? api.getStoredProjects() : SEED_PROJECTS));
+  const [tasks, setTasks] = useState(() => (api.getStoredTasks ? api.getStoredTasks() : SEED_PROJECTS.flatMap(p => p.tasks || [])));
   const [messages, setMessages] = useState(() => {
     if (typeof window === 'undefined') return [];
     try {
@@ -223,9 +223,15 @@ export default function RemotaleDashboard({ user, onLogout }) {
   });
   const [teamMembers, setTeamMembers] = useState(SEED_TEAM_MEMBERS);
   const [clients, setClients] = useState(SEED_CLIENTS);
-  const [teamActivities, setTeamActivities] = useState(SEED_ACTIVITIES);
-  const [invoices, setInvoices] = useState(SEED_INVOICES);
-  const [loading, setLoading] = useState(false);
+  const [invoices, setInvoices] = useState(() => {
+    try {
+      if (api.getStoredInvoices) {
+        const stored = api.getStoredInvoices();
+        if (Array.isArray(stored) && stored.length > 0) return stored;
+      }
+    } catch (e) {}
+    return SEED_INVOICES;
+  });
 
   // Add Team Member Modal State
   const [isAddTeamModalOpen, setIsAddTeamModalOpen] = useState(false);
@@ -567,6 +573,93 @@ export default function RemotaleDashboard({ user, onLogout }) {
     };
   }, []);
 
+  // Real-time cross-tab & cross-window invoices synchronization
+  useEffect(() => {
+    const handleInvoiceSync = () => {
+      try {
+        if (api.getStoredInvoices) {
+          const stored = api.getStoredInvoices();
+          if (Array.isArray(stored) && stored.length > 0) {
+            setInvoices(prev => {
+              const prevStr = JSON.stringify(prev);
+              const nextStr = JSON.stringify(stored);
+              return prevStr === nextStr ? prev : stored;
+            });
+          }
+        }
+      } catch (err) {}
+    };
+
+    let bc;
+    if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
+      try {
+        bc = new BroadcastChannel('remotale_invoices_sync');
+        bc.onmessage = () => {
+          handleInvoiceSync();
+        };
+      } catch (e) {}
+    }
+
+    window.addEventListener('storage', handleInvoiceSync);
+    window.addEventListener('remotale_invoice_event', handleInvoiceSync);
+
+    return () => {
+      if (bc) {
+        try { bc.close(); } catch (e) {}
+      }
+      window.removeEventListener('storage', handleInvoiceSync);
+      window.removeEventListener('remotale_invoice_event', handleInvoiceSync);
+    };
+  }, []);
+
+  // Real-time synchronization for Tasks & Projects across windows and tabs
+  useEffect(() => {
+    const handleTaskSync = (e) => {
+      try {
+        const stored = api.getStoredTasks ? api.getStoredTasks() : [];
+        if (Array.isArray(stored) && stored.length > 0) {
+          setTasks(stored);
+        }
+      } catch (err) {}
+    };
+
+    const handleProjectSync = (e) => {
+      try {
+        const stored = api.getStoredProjects ? api.getStoredProjects() : [];
+        if (Array.isArray(stored) && stored.length > 0) {
+          setProjects(stored);
+        }
+      } catch (err) {}
+    };
+
+    let tasksBc;
+    let projsBc;
+    if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
+      try {
+        tasksBc = new BroadcastChannel('remotale_tasks_sync');
+        tasksBc.onmessage = handleTaskSync;
+        projsBc = new BroadcastChannel('remotale_projects_sync');
+        projsBc.onmessage = handleProjectSync;
+      } catch (e) {}
+    }
+
+    window.addEventListener('storage', handleTaskSync);
+    window.addEventListener('remotale_task_event', handleTaskSync);
+    window.addEventListener('remotale_project_event', handleProjectSync);
+
+    return () => {
+      if (tasksBc) {
+        try { tasksBc.close(); } catch (e) {}
+      }
+      if (projsBc) {
+        try { projsBc.close(); } catch (e) {}
+      }
+      window.removeEventListener('storage', handleTaskSync);
+      window.removeEventListener('remotale_task_event', handleTaskSync);
+      window.removeEventListener('remotale_project_event', handleProjectSync);
+    };
+  }, []);
+
   // Handle New Project Creation -> saves to PostgreSQL 'projects' table
   const handleCreateProject = async (projectData) => {
     try {
@@ -845,20 +938,20 @@ export default function RemotaleDashboard({ user, onLogout }) {
   };
 
   // Handle Add Task inside Project Detail View
-  const handleAddTaskInDetail = async ({ projectId, title, dueDate }) => {
+  const handleAddTaskInDetail = async ({ projectId, clientId, title, dueDate }) => {
     try {
       const targetProjId = projectId || selectedProject?.id;
-      const targetClientId = selectedProject?.client_id || selectedProject?.clientId;
+      const targetClientId = clientId || selectedProject?.client_id || selectedProject?.clientId;
       const created = await api.createTask({
         projectId: targetProjId,
         clientId: targetClientId,
         title,
         dueDate: dueDate || '25/10/2026'
       });
-      setTasks(prev => [created, ...prev]);
+      setTasks(prev => [created, ...prev.filter(t => t.id !== created.id)]);
 
       const updateProjWithNewTask = (p) => {
-        const nextTasks = [...(p.tasks || []), created];
+        const nextTasks = [created, ...(p.tasks || []).filter(t => t.id !== created.id)];
         const total = nextTasks.length;
         const done = nextTasks.filter(t => t.completed).length;
         const newProgress = total > 0 ? Math.round((done / total) * 100) : 0;
@@ -872,13 +965,14 @@ export default function RemotaleDashboard({ user, onLogout }) {
       };
 
       if (selectedProject) {
-        setSelectedProject(prev => updateProjWithNewTask(prev));
+        setSelectedProject(prev => prev ? updateProjWithNewTask(prev) : null);
       }
       setProjects(prev => prev.map(p => p.id === targetProjId ? updateProjWithNewTask(p) : p));
       api.updateProject(targetProjId, { status: 'in-progress' }).catch(() => {});
-      await loadData();
+      return created;
     } catch (err) {
       console.error('Error adding task:', err);
+      throw err;
     }
   };
 
@@ -889,7 +983,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
 
     // 1. Optimistically update tasks state with completed_at
     setTasks(prev => prev.map(t => {
-      if (t.id === taskId) {
+      if (t.id === taskId || (t.aliasId && t.aliasId === taskId)) {
         return {
           ...t,
           completed: nextCompleted,
@@ -901,7 +995,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
 
     const recalculateProj = (p) => {
       const updatedTasks = (p.tasks || []).map(t => {
-        if (t.id === taskId) {
+        if (t.id === taskId || (t.aliasId && t.aliasId === taskId)) {
           return {
             ...t,
             completed: nextCompleted,
@@ -934,7 +1028,7 @@ export default function RemotaleDashboard({ user, onLogout }) {
     let targetStatus = 'in-progress';
     let targetProgress = 0;
     setProjects(prev => prev.map(p => {
-      const hasTask = (p.tasks || []).some(t => t.id === taskId);
+      const hasTask = (p.tasks || []).some(t => t.id === taskId || (t.aliasId && t.aliasId === taskId));
       if (!hasTask) return p;
       const updated = recalculateProj(p);
       targetProjId = updated.id;
@@ -943,27 +1037,25 @@ export default function RemotaleDashboard({ user, onLogout }) {
       return updated;
     }));
 
-    // 4. Send to backend database
+    // 4. Send to backend database (api.toggleTask saves locally and in cloud)
     try {
       const updatedBackendTask = await api.toggleTask(taskId, nextCompleted);
       if (updatedBackendTask) {
-        setTasks(prev => prev.map(t => t.id === taskId ? { ...t, ...updatedBackendTask } : t));
+        setTasks(prev => prev.map(t => (t.id === taskId || t.id === updatedBackendTask.id || (t.aliasId && t.aliasId === taskId)) ? { ...t, ...updatedBackendTask } : t));
         setSelectedProject(prev => {
           if (!prev) return null;
           return {
             ...prev,
-            tasks: (prev.tasks || []).map(t => t.id === taskId ? { ...t, ...updatedBackendTask } : t)
+            tasks: (prev.tasks || []).map(t => (t.id === taskId || t.id === updatedBackendTask.id || (t.aliasId && t.aliasId === taskId)) ? { ...t, ...updatedBackendTask } : t)
           };
         });
       }
       if (targetProjId) {
         api.updateProject(targetProjId, { status: targetStatus, progress: targetProgress }).catch(() => {});
       }
-      api.getProjects().then(setProjects).catch(() => {});
     } catch (err) {
-      console.error('Error toggling task:', err);
-      // Revert if error
-      loadData();
+      console.warn('Notice syncing task toggle:', err.message);
+      // Dual-tier persistence holds state locally; do not revert
     }
   };
 
